@@ -1,0 +1,91 @@
+/* Outer wrapper for the whole calendar */
+.weekly-wrapper {
+  background: #ffffff;
+  border: 1px solid #E6E6E6;
+  border-radius: 14px;
+  padding: 24px;
+  margin-top: 20px;
+  box-shadow: 0 3px 12px rgba(0,0,0,0.05);
+}
+
+/* 5 columns for 5 weeks */
+.weekly-container {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 20px;
+  width: 100%;
+}
+
+/* Each week column */
+.week-column {
+  padding-top: 12px;
+  background: none;
+  border: none;
+  border-radius: 0;
+}
+
+/* Week header */
+.week-header {
+  padding: 0 0 12px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.week-header h4 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: #1C1C1C;
+}
+
+.week-header span {
+  font-size: 12px;
+  color: #7C7C7C;
+}
+
+/* Only 5 rows */
+.week-rows {
+  margin-top: 12px;
+  display: grid;
+  grid-template-rows: repeat(5, 75px);
+  gap: 10px;
+}
+
+/* Empty slot */
+.week-slot {
+  background: #F8F9FC;
+  border: 1px solid #EFEFEF;
+  border-radius: 10px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Shift card */
+.shift-card {
+  position: absolute;
+  inset: 6px;
+  padding: 8px 10px;
+
+  background: #DFF7DF;
+  border-left: 4px solid #249D46;
+  border-radius: 8px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+}
+
+.shift-card .day {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.shift-card .label {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.shift-card .time {
+  font-size: 12px;
+  opacity: 0.8;
+}
