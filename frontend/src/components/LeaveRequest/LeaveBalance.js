@@ -1,14 +1,39 @@
 import { useState, useEffect } from 'react';
-import { leaveBalanceData } from '../../data';
+import { supabase } from "../../supabase";
 import '../../styles/LeaveRequest.css';
 
 export default function LeaveBalance() {
-    const [leaveBalance, setLeaveBalance] = useState(leaveBalanceData);
-    const leaveBalance_Rows = leaveBalance.map((leave) => ({
-        id: leave.id,
-        leaveType: leave.leave_types.name,
-        usedDays: leave.used_days,
-        remainingDays: leave.remaining_days,
+    const [leaveBalance, setLeaveBalance] = useState([]);
+    const DEMO_USER_ID = "43f7e8dc-365b-4aa1-ace6-44b790687780"; // TEMP until you use auth
+
+    // Function to fetch leave balance from Supabase
+    const fetchLeaveBalance = async () => {
+        const { data, error } = await supabase
+            .from("user_leave_balance")
+            .select(`
+            id,
+            remaining_days,
+            leave_types (name, annual_quota)
+            `)
+            .eq("user_id", DEMO_USER_ID);
+
+            if (error) {
+                console.error("Error fetching leave balance:", error);
+                return;
+            }
+            setLeaveBalance(data);
+    }
+    
+    // Fetch leave balance on component mount
+    useEffect(() => {
+        fetchLeaveBalance();
+    }, []);
+
+    const leaveBalance_Rows = leaveBalance.map((row) => ({
+        id: row.id,
+        leaveType: row.leave_types.name,
+        remainingDays: row.remaining_days,
+        annualQuota: row.leave_types.annual_quota
     }));
 
     return (
@@ -18,7 +43,7 @@ export default function LeaveBalance() {
                 {leaveBalance_Rows.map((row) => (
                     <div key={row.id} className="leaveBalanceCard">
                         <h4>{row.leaveType}</h4>
-                        <p>{row.usedDays}/{row.remainingDays} days left</p>
+                        <p>{row.remainingDays}/{row.annualQuota} days left</p>
                     </div>
                 ))}
             </div>

@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react';
+import { supabase } from "../../supabase";
+
 // Components
 import LeaveBalance from '../../components/LeaveRequest/LeaveBalance';
 import LeaveReqHistory from '../../components/LeaveRequest/LeaveReqHistory';
@@ -8,30 +10,47 @@ import RequestModal from '../../components/LeaveRequest/RequestModal';
 // Data 
 import { leaveRequestHistoryData } from '../../data';
 
+
 export default function LeaveRequest() {
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [leaveReqHistory, setLeaveReqHistory] = useState(leaveRequestHistoryData);
+    const [history, setHistory] = useState([]);
 
-    const addLeaveRequest = (newReq) => {
-        console.log("Adding new leave request:", newReq);
+    useEffect(() => {
+        fetchHistory();
+    }, []);
 
-        setLeaveReqHistory((prev) => {
-            const updated = [...prev, newReq];
+    const fetchHistory = async () => {
+        const { data, error } = await supabase
+            .from("leave_requests")
+            .select(`
+                *,
+                leave_types (name)
+            `)
+            .order("applied_date", { ascending: false });
 
-            console.log("Updated leave history:", updated);
-            return updated;
-        });
+        if (error) {
+            console.error(error);
+        } else {
+            setHistory(data);
+        }
     }
+
+    // To update 
+    const addLeaveRequest = (newItem) => {
+        setHistory((prev) => [newItem, ...prev]); // add to UI instantly
+    };
 
     return (
         <div>
             <Header onOpenModal={() => setIsModalOpen(true)} />
             <LeaveBalance />
-            <LeaveReqHistory leaveReqHistoryData={leaveReqHistory} />
+            <LeaveReqHistory
+                leaveReqHistoryData={history}
+            />
             <RequestModal
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
-                onSubmit={addLeaveRequest}
+                onSubmit={addLeaveRequest}  // pass function to modal
             />
         </div>
     )

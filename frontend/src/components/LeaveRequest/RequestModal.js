@@ -1,6 +1,7 @@
 import '../../styles/LeaveRequest.css';
-import { leaveBalanceData } from "../../data";
+import { formatDate } from '../../utils/dateUtils';
 import { useState } from "react";
+import { supabase } from '../../supabase';
 
 export default function RequestModal({ isOpen, onClose, onSubmit }) {
   const [leaveType, setLeaveType] = useState("");
@@ -11,6 +12,7 @@ export default function RequestModal({ isOpen, onClose, onSubmit }) {
   const [error, setError] = useState("");
 
   const today = new Date().toISOString().split("T")[0];
+  const DEMO_USER_ID = "43f7e8dc-365b-4aa1-ace6-44b790687780"; // TEMP until you use auth
 
   const calculateDays = (start, end) => {
     if (!start || !end) return 0;
@@ -22,29 +24,52 @@ export default function RequestModal({ isOpen, onClose, onSubmit }) {
     return diff / (1000 * 60 * 60 * 24) + 1;
   }
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!leaveType || !startDate || !endDate) {
       setError("All fields are required.");
       return;
     }
+
+    if (new Date(endDate) < new Date(startDate)) {
+      setError("End date cannot be earlier than start date.");
+      return;
+    }
+  
     if (totalDays > remaining) {
       setError(`You only have ${remaining} days left.`);
       return;
     }
 
+    setError("");
+
     const newRequest = {
-      id: Date.now(),
-      user_id: 12,
+      user_id: DEMO_USER_ID,  // use auth later
+      leave_type_id: leaveType,
       start_date: startDate,
       end_date: endDate,
       total_days: totalDays,
       applied_date: new Date().toISOString().split("T")[0],
       status: "Pending",
-      leave_types: { name: leaveType }
     };
 
-    onSubmit(newRequest);  // Update parent state
-    setError("");
+    const { data, error } = await supabase
+      .from("leave_requests")
+      .insert([newRequest])
+      // After inserting, return the row + related leave_types name (via FK join) to update UI
+      .select(`
+        *,
+        leave_types ( name )
+    `)
+      .single();
+
+    if (error) {
+      console.error("Error submitting leave request:", error);
+      setError("Something went wrong. Please try again.");
+      return;
+    }
+
+    onSubmit(data) // Sends new row to parent state to update UI
+    console.log("Leave request inserted:", data);
     alert("Leave request submitted.");
     onClose();
   }
@@ -67,23 +92,31 @@ export default function RequestModal({ isOpen, onClose, onSubmit }) {
               <label>Leave Type</label>
               <select
                 value={leaveType}
-                onChange={(e) => {
+                onChange={async (e) => {
                   const selectedType = e.target.value;
                   setLeaveType(selectedType);
                   setError("");
 
-                  const balance = leaveBalanceData.find(
-                    (item) => item.leave_types.name === selectedType
-                  );
+                  // Fetch remaining days for this leave type
+                  const { data, error } = await supabase
+                    .from("user_leave_balance")
+                    .select("remaining_days")
+                    .eq("user_id", DEMO_USER_ID)
+                    .eq("leave_type_id", selectedType)
+                    .single();
 
-                  setRemaining(balance ? balance.remaining_days : null);
+                  if (error) {
+                    console.error("Error fetching leave balance:", error);
+                  } else {
+                    setRemaining(data.remaining_days || 0);
+                  }
                 }}
 
               >
                 <option value="">Select Leave Type</option>
-                <option value="Annual Leave">Annual Leave</option>
-                <option value="Sick Leave">Sick Leave</option>
-                <option value="Childcare Leave">Childcare Leave</option>
+                <option value="1">Annual Leave</option>
+                <option value="2">Sick Leave</option>
+                <option value="3">Childcare Leave</option>
               </select>
             </div>
 
@@ -127,12 +160,12 @@ export default function RequestModal({ isOpen, onClose, onSubmit }) {
 
             <div className="review-detail">
               <span>Start Date:</span>
-              <p>{startDate || "—"}</p>
+              <p>{formatDate(startDate) || "—"}</p>
             </div>
 
             <div className="review-detail">
               <span>End Date:</span>
-              <p>{endDate || "—"}</p>
+              <p>{formatDate(endDate) || "—"}</p>
             </div>
 
             <div className="review-detail">

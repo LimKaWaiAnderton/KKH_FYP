@@ -1,4 +1,7 @@
 import React from 'react';
+import { useEffect, useState } from "react";
+import { formatDate } from '../../utils/dateUtils';
+// Modules
 import TablePaginationActions from "./TablePaginationActions";
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -11,24 +14,13 @@ import TableFooter from "@mui/material/TableFooter";
 import Chip from '@mui/material/Chip';
 
 export default function LeaveReqHistory({ leaveReqHistoryData }) {
-
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
-    // Sort newest first based on applied_date
-    const sortedHistory = [...leaveReqHistoryData].sort((a, b) => {
-        return new Date(b.applied_date) - new Date(a.applied_date);
-    });
-
-    const leaveReq_Rows = sortedHistory.map((leave) => ({
-        id: leave.id,
-        leaveType: leave.leave_types.name,
-        startDate: leave.start_date,
-        endDate: leave.end_date,
-        totalDays: leave.total_days,
-        status: leave.status,
-        appliedDate: leave.applied_date,
-    }));
+    const paginatedRows =
+        rowsPerPage > 0
+            ? leaveReqHistoryData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+            : leaveReqHistoryData;
 
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
@@ -63,19 +55,16 @@ export default function LeaveReqHistory({ leaveReqHistoryData }) {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {(rowsPerPage > 0
-                            ? leaveReq_Rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                            : leaveReq_Rows
-                        ).map((row) => (
+                        {paginatedRows.map((row) => (
                             <TableRow
                                 key={row.id}
                                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                             >
-                                <TableCell>{row.appliedDate}</TableCell>
-                                <TableCell>{row.leaveType}</TableCell>
-                                <TableCell>{row.startDate}</TableCell>
-                                <TableCell>{row.endDate}</TableCell>
-                                <TableCell>{row.totalDays}</TableCell>
+                                <TableCell>{formatDate(row.applied_date)}</TableCell>
+                                <TableCell>{row.leave_types.name}</TableCell>
+                                <TableCell>{formatDate(row.start_date)}</TableCell>
+                                <TableCell>{formatDate(row.end_date)}</TableCell>
+                                <TableCell>{row.total_days}</TableCell>
                                 <TableCell>
                                     <Chip
                                         label={row.status}
@@ -110,7 +99,7 @@ export default function LeaveReqHistory({ leaveReqHistoryData }) {
                             <TablePagination
                                 rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
                                 colSpan={3}
-                                count={leaveReq_Rows.length}
+                                count={leaveReqHistoryData.length}
                                 rowsPerPage={rowsPerPage}
                                 page={page}
                                 slotProps={{
