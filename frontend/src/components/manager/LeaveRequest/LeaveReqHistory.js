@@ -1,8 +1,8 @@
-import React from 'react';
-import { useEffect, useState } from "react";
-import { formatDate } from '../../utils/dateUtils';
+import { useState } from 'react';
+import { formatDate } from '../../../utils/dateUtils';
+import TablePaginationActions from "../../TablePaginationActions";
+
 // Modules
-import TablePaginationActions from "./TablePaginationActions";
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -12,15 +12,28 @@ import TableRow from '@mui/material/TableRow';
 import TablePagination from '@mui/material/TablePagination';
 import TableFooter from "@mui/material/TableFooter";
 import Chip from '@mui/material/Chip';
+import SearchIcon from '@mui/icons-material/Search';
+import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 
-export default function LeaveReqHistory({ leaveReqHistoryData }) {
-    const [page, setPage] = React.useState(0);
-    const [rowsPerPage, setRowsPerPage] = React.useState(5);
+export default function LeaveReqHistory({ leaveReqHistoryData, onSelectRequest }) {
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
+    const [searchQuery, setSearchQuery] = useState("");
 
+    // Filter data based on search query
+    const filteredRows = leaveReqHistoryData.filter((row) => {
+        const query = searchQuery.toLowerCase();
+        return (
+            row.users.name.toLowerCase().includes(query) ||
+            row.leave_types.name.toLowerCase().includes(query)
+        );
+    })
+
+    // Paginate the filtered data
     const paginatedRows =
         rowsPerPage > 0
-            ? leaveReqHistoryData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-            : leaveReqHistoryData;
+            ? filteredRows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+            : filteredRows;
 
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
@@ -34,6 +47,18 @@ export default function LeaveReqHistory({ leaveReqHistoryData }) {
     return (
         <div className='container'>
             <h2>Leave Request History</h2>
+            <div className="search-wrapper">
+                <SearchIcon
+                    className="search-icon"
+                    fontSize="small"
+                    sx={{ color: "var(--primary-color-muted)" }} />
+                <input
+                    type="text"
+                    placeholder="Search by name or leave type"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                />
+            </div>
             <TableContainer>
                 <Table sx={{ minWidth: 650, border: '1px solid var(--border-color)', }} aria-label="leave request history table">
                     <TableHead>
@@ -42,16 +67,17 @@ export default function LeaveReqHistory({ leaveReqHistoryData }) {
                                 "& .MuiTableCell-root": {
                                     fontFamily: "var(--font-family)",
                                     fontWeight: "bold",
-                                    backgroundColor: "var(--primary-bg-color)",
+                                    backgroundColor: "#f6f8fa",
                                 }
                             }}
                         >
-                            <TableCell sx={{ width: "150px" }}>Applied Date</TableCell>
-                            <TableCell sx={{ width: "150px" }}>Leave Type</TableCell>
-                            <TableCell sx={{ width: "120px" }}>Start Date</TableCell>
-                            <TableCell sx={{ width: "120px" }}>End Date</TableCell>
-                            <TableCell sx={{ width: "100px" }}>Total Days</TableCell>
-                            <TableCell sx={{ width: "120px" }}>Status</TableCell>
+                            <TableCell sx={{ width: 200 }}>Name</TableCell>
+                            <TableCell sx={{ width: 160 }}>Applied Date</TableCell>
+                            <TableCell sx={{ width: 160 }}>Leave Type</TableCell>
+                            <TableCell sx={{ width: 250 }}>Start Date to End Date</TableCell>
+                            <TableCell sx={{ width: 120 }}>Total Days</TableCell>
+                            <TableCell sx={{ width: 150 }}>Status</TableCell>
+                            <TableCell sx={{ width: 48 }}>Action</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -60,12 +86,14 @@ export default function LeaveReqHistory({ leaveReqHistoryData }) {
                                 key={row.id}
                                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                             >
-                                <TableCell>{formatDate(row.applied_date)}</TableCell>
-                                <TableCell>{row.leave_types.name}</TableCell>
-                                <TableCell>{formatDate(row.start_date)}</TableCell>
-                                <TableCell>{formatDate(row.end_date)}</TableCell>
-                                <TableCell>{row.total_days}</TableCell>
-                                <TableCell>
+                                <TableCell sx={{ width: 200 }}>{row.users.name}</TableCell>
+                                <TableCell sx={{ width: 160 }}>{formatDate(row.applied_date)}</TableCell>
+                                <TableCell sx={{ width: 160 }}>{row.leave_types.name}</TableCell>
+                                <TableCell sx={{ width: 250 }}>
+                                    {formatDate(row.start_date)} - {formatDate(row.end_date)}
+                                </TableCell>
+                                <TableCell sx={{ width: 120 }}>{row.total_days}</TableCell>
+                                <TableCell sx={{ width: 150 }}>
                                     <Chip
                                         label={row.status}
                                         sx={{
@@ -90,6 +118,10 @@ export default function LeaveReqHistory({ leaveReqHistoryData }) {
                                         }}
                                         size="big"
                                     />
+                                </TableCell>
+                                <TableCell sx={{ width: 48 }}>
+                                    <MoreHorizIcon
+                                        onClick={() => onSelectRequest(row)} />
                                 </TableCell>
                             </TableRow>
                         ))}

@@ -1,7 +1,7 @@
-import '../../styles/LeaveRequest.css';
-import { formatDate } from '../../utils/dateUtils';
+import '../../../styles/EmployeeLeaveReq.css';
+import { formatDate } from '../../../utils/dateUtils';
 import { useState } from "react";
-import { supabase } from '../../supabase';
+import { supabase } from '../../../supabase';
 
 export default function RequestModal({ isOpen, onClose, onSubmit }) {
   const [leaveType, setLeaveType] = useState("");

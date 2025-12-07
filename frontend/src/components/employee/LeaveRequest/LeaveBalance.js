@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { supabase } from "../../supabase";
-import '../../styles/LeaveRequest.css';
+import { supabase } from "../../../supabase";
+import '../../../styles/EmployeeLeaveReq.css';
 
 export default function LeaveBalance() {
     const [leaveBalance, setLeaveBalance] = useState([]);
@@ -13,7 +13,8 @@ export default function LeaveBalance() {
             .select(`
             id,
             remaining_days,
-            leave_types (name, annual_quota)
+            total_quota,
+            leave_types (name)
             `)
             .eq("user_id", DEMO_USER_ID);
 
@@ -33,7 +34,7 @@ export default function LeaveBalance() {
         id: row.id,
         leaveType: row.leave_types.name,
         remainingDays: row.remaining_days,
-        annualQuota: row.leave_types.annual_quota
+        annualQuota: row.total_quota,
     }));
 
     return (
