@@ -5,10 +5,11 @@ import MonthSelector from "../../components/ShiftRequestComponents/MonthSelector
 import Header from "../../components/ShiftRequestComponents/Header";
 import { supabase } from "../../supabase";
 import "../../styles/ShiftRequest/ShiftRequestPage.css";
+import EmployeeLayout from "../../layouts/EmployeeLayout.js";
 
 const monthNames = [
-  "January", "February", "March", "April", "May", "June",
-  "July", "August", "September", "October", "November", "December"
+  "January","February","March","April","May","June",
+  "July","August","September","October","November","December"
 ];
 
 export default function ShiftRequestPage() {
@@ -16,38 +17,42 @@ export default function ShiftRequestPage() {
   const [month, setMonth] = useState(9);
   const [modalOpen, setModalOpen] = useState(false);
   const [shifts, setShifts] = useState([]);
+  const [shiftTypes, setShiftTypes] = useState([]);
   const [user, setUser] = useState(null);
 
-  // ---------------------------
-  // Fetch user
-  // ---------------------------
+  // Get logged in user
   useEffect(() => {
-    const fetch = async () => {
+    const loadUser = async () => {
       const { data } = await supabase.auth.getUser();
       setUser(data.user);
     };
-    fetch();
+    loadUser();
   }, []);
 
-  // Load user's shift requests
+  // Load user shift requests
   useEffect(() => {
     if (!user) return;
-
     const load = async () => {
-      const { data, error } = await supabase
+      const { data } = await supabase
         .from("shift_requests")
         .select("*")
         .eq("user_id", user.id);
 
-      if (!error) setShifts(data);
+      if (data) setShifts(data);
     };
-
     load();
   }, [user]);
 
-  // ---------------------------
-  // Lookup map
-  // ---------------------------
+  // Load shift types with colors
+  useEffect(() => {
+    const loadTypes = async () => {
+      const { data } = await supabase.from("shift_types").select("*");
+      if (data) setShiftTypes(data);
+    };
+    loadTypes();
+  }, []);
+
+  // Convert shifts to map
   const shiftMap = useMemo(() => {
     const map = new Map();
     shifts.forEach((s) => {
@@ -57,66 +62,50 @@ export default function ShiftRequestPage() {
     return map;
   }, [shifts]);
 
-  // ---------------------------
-  // Get week range
-  // ---------------------------
-  function getWeekRange(dateStr) {
+  // Week range (Mon–Sun)
+  const getWeekRange = (dateStr) => {
     const d = new Date(dateStr);
-    const dayOfWeek = d.getDay(); // 0 = Sun
-
-    // Week starts on Monday
+    const dow = (d.getDay() + 6) % 7;
     const monday = new Date(d);
-    monday.setDate(d.getDate() - ((dayOfWeek + 6) % 7));
-
+    monday.setDate(d.getDate() - dow);
     const sunday = new Date(monday);
     sunday.setDate(monday.getDate() + 6);
-
     return { monday, sunday };
-  }
+  };
 
-  function countShiftsInWeek(dateStr) {
+  const countShiftsInWeek = (dateStr) => {
     const { monday, sunday } = getWeekRange(dateStr);
-
     return shifts.filter((s) => {
       const sd = new Date(s.date);
       return sd >= monday && sd <= sunday;
     }).length;
-  }
+  };
 
-  // ---------------------------
-  // Insert shift (NOW RETURNS ERROR CODES)
-  // ---------------------------
+  // Add shift
   const handleAddShift = async (newShift) => {
     if (!user) return { error: "no-user" };
 
-    const weekCount = countShiftsInWeek(newShift.date);
-    if (weekCount >= 5) {
-      return { error: "week-limit" };  // 🔥 AddShiftModal will display red box
+    if (countShiftsInWeek(newShift.date) >= 5) {
+      return { error: "week-limit" };
     }
 
-    const duplicate = shifts.some((s) => s.date === newShift.date);
-    if (duplicate) {
-      return { error: "duplicate" }; // AddShiftModal handles this too
+    if (shifts.some((s) => s.date === newShift.date)) {
+      return { error: "duplicate" };
     }
 
-    // Insert
-    const shiftTypeMap = { RD: 5, PM: 6, AM: 4, OFF: 7 };
-    const shift_type_id = shiftTypeMap[newShift.label];
+    const type = shiftTypes.find((t) => t.name === newShift.label);
 
     const { error } = await supabase.from("shift_requests").insert({
       user_id: user.id,
       date: newShift.date,
       preferred_shift: newShift.label,
-      shift_type_id,
       time: newShift.time || "",
-      status: "Pending"
+      shift_type_id: type?.id ?? null,
+      status: "Pending",
     });
 
-    if (error) {
-      return { error: "db-error", message: error.message };
-    }
+    if (error) return { error: "db-error", message: error.message };
 
-    // Reload
     const { data } = await supabase
       .from("shift_requests")
       .select("*")
@@ -124,13 +113,10 @@ export default function ShiftRequestPage() {
 
     setShifts(data);
     setModalOpen(false);
-
     return { success: true };
   };
 
-  // ---------------------------
   // Build weeks
-  // ---------------------------
   const daysInMonth = new Date(year, month + 1, 0).getDate();
 
   const weeks = useMemo(() => {
@@ -143,63 +129,61 @@ export default function ShiftRequestPage() {
       const w = { weekNumber, month: month + 1, start, end, shifts: [] };
 
       for (let d = start; d <= end; d++) {
-        const iso = `${year}-${String(month + 1).padStart(2, "0")}-${String(
-          d
-        ).padStart(2, "0")}`;
-
+        const iso = `${year}-${String(month + 1).padStart(2, "0")}-${String(d).padStart(2,"0")}`;
         const list = shiftMap.get(iso) || [];
 
-        list.forEach((s) =>
+        list.forEach((s) => {
+          const st = shiftTypes.find((t) => t.id === s.shift_type_id);
+          const bg = st ? `${st.color_hex}20` : "#DFF7DF";
+          const border = st ? st.color_hex : "#249D46";
+
           w.shifts.push({
             day: d,
             label: s.preferred_shift,
             time: s.time,
-            color: "#249D46",
-            bgColor: "#D8F7D8"
-          })
-        );
+            bgColor: bg,
+            borderColor: border,
+            rowIndex: w.shifts.length,
+          });
+        });
       }
 
-      w.shifts.sort((a, b) => a.day - b.day);
-      w.shifts.forEach((s, i) => (s.rowIndex = i));
       arr.push(w);
-
       weekNumber++;
       start = end + 1;
     }
 
     return arr;
-  }, [year, month, shiftMap]);
+  }, [year, month, shiftMap, shiftTypes]);
 
-  // ---------------------------
-  // Return UI
-  // ---------------------------
   return (
-    <div className="sr-page">
-      <Header onAddShift={() => setModalOpen(true)} />
+    <EmployeeLayout>
+      <div className="sr-page">
+        <Header onAddShift={() => setModalOpen(true)} />
 
-      <div className="sr-container">
-        <MonthSelector
-          month={month}
-          year={year}
-          setMonth={setMonth}
-          setYear={setYear}
-          monthNames={monthNames}
-        />
+        <div className="sr-container">
+          <MonthSelector
+            month={month}
+            year={year}
+            setMonth={setMonth}
+            setYear={setYear}
+            monthNames={monthNames}
+          />
 
-        <div className="weekly-container">
-          {weeks.map((w) => (
-            <WeeklyGrid key={w.weekNumber} week={w} />
-          ))}
+          <div className="weekly-container">
+            {weeks.map((w) => (
+              <WeeklyGrid key={w.weekNumber} week={w} />
+            ))}
+          </div>
         </div>
-      </div>
 
-      <AddShiftModal
-        open={modalOpen}
-        onClose={() => setModalOpen(false)}
-        onSave={handleAddShift} // returns {error: "..."}
-        checkDuplicate={(d) => shifts.some((s) => s.date === d)}
-      />
-    </div>
+        <AddShiftModal
+          open={modalOpen}
+          onClose={() => setModalOpen(false)}
+          onSave={handleAddShift}
+          checkDuplicate={(d) => shifts.some((s) => s.date === d)}
+        />
+      </div>
+    </EmployeeLayout>
   );
 }

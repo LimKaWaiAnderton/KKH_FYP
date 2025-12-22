@@ -22,7 +22,13 @@ export default function WeeklyGrid({ week }) {
           return (
             <div key={index} className="week-slot">
               {shift && (
-                <div className="shift-card">
+                <div
+                  className="shift-card"
+                  style={{
+                    background: shift.bgColor,
+                    borderLeft: `4px solid ${shift.borderColor}`,
+                  }}
+                >
                   <span className="day">{shift.day}</span>
                   <span className="label">{shift.label}</span>
                   {shift.time && <span className="time">{shift.time}</span>}

@@ -1,4 +1,4 @@
-/* Outer wrapper for the whole calendar */
+/* Outer wrapper */
 .weekly-wrapper {
   background: #ffffff;
   border: 1px solid #E6E6E6;
@@ -8,7 +8,7 @@
   box-shadow: 0 3px 12px rgba(0,0,0,0.05);
 }
 
-/* 5 columns for 5 weeks */
+/* Grid of 5 weeks */
 .weekly-container {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
@@ -16,12 +16,9 @@
   width: 100%;
 }
 
-/* Each week column */
+/* Single week column */
 .week-column {
   padding-top: 12px;
-  background: none;
-  border: none;
-  border-radius: 0;
 }
 
 /* Week header */
@@ -42,7 +39,7 @@
   color: #7C7C7C;
 }
 
-/* Only 5 rows */
+/* 5 rows only */
 .week-rows {
   margin-top: 12px;
   display: grid;
@@ -64,9 +61,6 @@
   position: absolute;
   inset: 6px;
   padding: 8px 10px;
-
-  background: #DFF7DF;
-  border-left: 4px solid #249D46;
   border-radius: 8px;
 
   display: flex;

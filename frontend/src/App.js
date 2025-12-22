@@ -1,16 +1,19 @@
-import React from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Login from "./pages/auth/Login";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+
 import ShiftRequestPage from "./pages/employee/ShiftRequestPage";
+import Home from "./pages/employee/Home";
 
 function App() {
   return (
-    <BrowserRouter>
+    <Router>
       <Routes>
-        <Route path="/" element={<Login />} />
-        <Route path="/shift-request" element={<ShiftRequestPage />} />
+        <Route path="/employee/home" element={<Home />} />
+        <Route
+          path="/employee/requests/shift"
+          element={<ShiftRequestPage />}
+        />
       </Routes>
-    </BrowserRouter>
+    </Router>
   );
 }
 
