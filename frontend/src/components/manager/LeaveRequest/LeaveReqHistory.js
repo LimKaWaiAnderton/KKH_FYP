@@ -24,7 +24,8 @@ export default function LeaveReqHistory({ leaveReqHistoryData, onSelectRequest }
     const filteredRows = leaveReqHistoryData.filter((row) => {
         const query = searchQuery.toLowerCase();
         return (
-            row.users.name.toLowerCase().includes(query) ||
+            row.users.first_name.toLowerCase().includes(query) ||
+            row.users.last_name.toLowerCase().includes(query) ||
             row.leave_types.name.toLowerCase().includes(query)
         );
     })
@@ -86,7 +87,7 @@ export default function LeaveReqHistory({ leaveReqHistoryData, onSelectRequest }
                                 key={row.id}
                                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                             >
-                                <TableCell sx={{ width: 200 }}>{row.users.name}</TableCell>
+                                <TableCell sx={{ width: 200 }}>{row.users.first_name} {row.users.last_name}</TableCell>
                                 <TableCell sx={{ width: 160 }}>{formatDate(row.applied_date)}</TableCell>
                                 <TableCell sx={{ width: 160 }}>{row.leave_types.name}</TableCell>
                                 <TableCell sx={{ width: 250 }}>

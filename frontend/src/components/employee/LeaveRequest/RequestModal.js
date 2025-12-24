@@ -14,6 +14,16 @@ export default function RequestModal({ isOpen, onClose, onSubmit }) {
   const today = new Date().toISOString().split("T")[0];
   const DEMO_USER_ID = "43f7e8dc-365b-4aa1-ace6-44b790687780"; // TEMP until you use auth
 
+  const closeModal = () => {
+    setLeaveType("");
+    setStartDate("");
+    setEndDate("");
+    setRemaining(null);
+    setTotalDays(0);
+    setError("");
+    onClose();
+  };
+
   const calculateDays = (start, end) => {
     if (!start || !end) return 0;
 
@@ -37,6 +47,25 @@ export default function RequestModal({ isOpen, onClose, onSubmit }) {
   
     if (totalDays > remaining) {
       setError(`You only have ${remaining} days left.`);
+      return;
+    }
+
+    const { data: overlappingRequests, error: overlapError } = await supabase
+    .from("leave_requests")
+    .select("id, start_date, end_date, status")
+    .eq("user_id", DEMO_USER_ID)
+    .neq("status", "Rejected")
+    .lte("start_date", endDate)
+    .gte("end_date", startDate);
+
+    if (overlapError) {
+      console.error("Error checking overlapping requests:", overlapError);
+      setError("Something went wrong. Please try again.");
+      return;
+    }
+
+    if (overlappingRequests.length > 0) {
+      setError("You have overlapping leave requests during this period.");
       return;
     }
 
@@ -176,7 +205,7 @@ export default function RequestModal({ isOpen, onClose, onSubmit }) {
           </div>
 
           <div className="modal-actions">
-            <button className="btn-cancel" onClick={onClose}>Cancel</button>
+            <button className="btn-cancel" onClick={closeModal}>Cancel</button>
             <button className="btn-primary" onClick={handleSubmit}>Submit</button>
           </div>
         </div>

@@ -58,7 +58,7 @@ export default function ManagerLeaveRequest() {
             .select(`
                 *,
                 leave_types (name),
-                users (name, departments(name))
+                users (first_name, last_name, departments(name))
             `)
             .order("applied_date", { ascending: false });
 

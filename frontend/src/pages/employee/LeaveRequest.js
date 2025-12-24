@@ -52,7 +52,7 @@ export default function EmployeeLeaveRequest() {
             />
             <RequestModal
                 isOpen={isModalOpen}
-                onClose={() =>  (false)}
+                onClose={() => setIsModalOpen(false)}
                 onSubmit={addLeaveRequest}  // pass function to modal
             />
         </div>

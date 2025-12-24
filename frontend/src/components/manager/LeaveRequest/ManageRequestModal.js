@@ -32,7 +32,7 @@ export default function ManageRequestModal({
             <div className="review-box">
               <div className="review-detail">
                 <span>Staff</span>
-                <p>{request.users.name}</p>
+                <p>{request.users.first_name} {request.users.last_name}</p>
               </div>
 
               <div className="review-detail">
