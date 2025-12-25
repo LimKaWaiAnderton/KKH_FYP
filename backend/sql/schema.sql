@@ -1,17 +1,22 @@
 begin; 
 
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
 create table public.departments (
   id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   name VARCHAR(100) NOT NULL UNIQUE
 );
 
-create table public.roles (
+CREATE TABLE public.roles (
   id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  name VARCHAR(50) NOT NULL UNIQUE
+  name VARCHAR(50) NOT NULL UNIQUE,
+
+  CONSTRAINT roles_name_check
+    CHECK (name IN ('admin', 'user'))
 );
 
 create table public.users (
-  id UUID PRIMARY KEY,
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   first_name VARCHAR(50) NOT NULL,
   last_name VARCHAR(50) NOT NULL,
   email VARCHAR(255) NOT NULL UNIQUE,
@@ -37,7 +42,7 @@ create table public.leave_types (
 create table public.shift_types (
   id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   name VARCHAR(20) NOT NULL,
-  color_hex VARCHAR(7)
+  color_hex VARCHAR(7) NOT NULL
 );
 
 create table public.leave_requests (
@@ -50,10 +55,11 @@ create table public.leave_requests (
   end_date DATE NOT NULL,
   total_days INTEGER NOT NULL,
 
-  status VARCHAR(20) NOT NULL,
-  applied_date DATE NOT NULL,
+  status VARCHAR(20) NOT NULL DEFAULT 'pending',
+  applied_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP,
 
   CONSTRAINT fk_leave_requests_user
     FOREIGN KEY (user_id)
@@ -108,7 +114,7 @@ create table public.shift_requests (
   user_id UUID NOT NULL,
   date DATE NOT NULL,
   preferred_shift VARCHAR(20),
-  status VARCHAR(20) NOT NULL,
+  status VARCHAR(20) NOT NULL DEFAULT 'pending',
   shift_type_id BIGINT,
   time VARCHAR(20),
 

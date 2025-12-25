@@ -17,20 +17,21 @@ insert into public.departments (name) VALUES
 ('Surg/55');
 
 insert into public.roles (name) VALUES
-('Admin'),
-('Supervisor'),
-('Employee');
+('admin'),
+('user');
 
 insert into public.users
 (id, first_name, last_name, email, department_id, role_id, password_hash)
 VALUES
+-- Clara = regular user
+-- Anderton = admin user
 (
   '43f7e8dc-365b-4aa1-ace6-44b790687780',
   'Clara',
   'Lim',
   'clara@kkh.com.sg',
   1,
-  3,
+  2,
   '$2b$10$1vbz4yLy.5F7hlkX.9xbAeHoJ/rLsGi.TSQGzUDtoGKdB/mRPLWOW'
 ),
 (
