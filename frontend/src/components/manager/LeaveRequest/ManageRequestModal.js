@@ -1,5 +1,9 @@
+import { useState } from 'react';
+
 import '../../../styles/ManagerLeaveReq.css';
 import { formatDate } from '../../../utils/dateUtils';
+import capitalizeFirst from '../../../utils/capitalizeUtils';
+
 import Chip from '@mui/material/Chip';
 import CloseIcon from '@mui/icons-material/Close';
 
@@ -7,11 +11,20 @@ export default function ManageRequestModal({
   isOpen,
   onClose,
   request,
-  onApprove,
-  onReject
+  onSubmit
 }) {
-  if (!isOpen) return null;
+  const [error, setError] = useState("");
 
+  if (!isOpen || !request) return null;
+  
+  const handleSubmit = async (status) => {
+    try {
+      setError("");
+      await onSubmit({ ...request, status });
+    } catch (error) {
+      setError(error.message || "Failed to update leave request.");
+    }
+  }
 
   return (
     <>
@@ -32,12 +45,12 @@ export default function ManageRequestModal({
             <div className="review-box">
               <div className="review-detail">
                 <span>Staff</span>
-                <p>{request.users.first_name} {request.users.last_name}</p>
+                <p>{request.first_name} {request.last_name}</p>
               </div>
 
               <div className="review-detail">
                 <span>Department</span>
-                <p>{request.users.departments.name}</p>
+                <p>{request.department_name}</p>
               </div>
 
               <div className="review-detail">
@@ -55,26 +68,26 @@ export default function ManageRequestModal({
               <div className="review-detail">
                 <span>Status</span>
                 <Chip
-                  label={request.status}
+                  label={capitalizeFirst(request.status)}
                   sx={{
                     "& .MuiChip-label": {
                       color:
-                        request.status === "Approved"
+                        request.status === "approved"
                           ? "var(--status-approved)"
-                          : request.status === "Pending"
+                          : request.status === "pending"
                             ? "var(--status-pending)"
                             : "var(--status-rejected)",
                     },
                     backgroundColor:
-                      request.status === "Approved"
+                      request.status === "approved"
                         ? "var(--status-approved-bg)"
-                        : request.status === "Pending"
+                        : request.status === "pending"
                           ? "var(--status-pending-bg)"
                           : "var(--status-rejected-bg)",
                     border:
-                      request.status === "Approved"
+                      request.status === "approved"
                         ? "1px solid var(--status-approved)"
-                        : request.status === "Pending"
+                        : request.status === "pending"
                           ? "1px solid var(--status-pending)"
                           : "1px solid var(--status-rejected)"
                   }}
@@ -84,12 +97,17 @@ export default function ManageRequestModal({
             </div>
           </div>
           <div className="modal-actions">
-            {request.status === 'Pending' && (
+            {request.status === 'pending' && (
               <>
-                <button className="btn-approve" onClick={() => onApprove(request)}>Approve</button>
-                <button className="btn-reject" onClick={() => onReject(request)}>Reject</button>
+                <button
+                  className="btn-approve"
+                  onClick={() => handleSubmit('approved')}>Approve</button>
+                <button
+                  className="btn-reject"
+                  onClick={() => handleSubmit('rejected')}>Reject</button>
               </>
             )}
+            {error && <p className="error-message">{error}</p>}
           </div>
         </div>
       </div>

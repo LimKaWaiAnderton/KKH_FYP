@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { formatDate } from '../../../utils/dateUtils';
 import TablePaginationActions from "../../TablePaginationActions";
+import capitalizeFirst from '../../../utils/capitalizeUtils';
 
 // Modules
 import Table from '@mui/material/Table';
@@ -24,9 +25,9 @@ export default function LeaveReqHistory({ leaveReqHistoryData, onSelectRequest }
     const filteredRows = leaveReqHistoryData.filter((row) => {
         const query = searchQuery.toLowerCase();
         return (
-            row.users.first_name.toLowerCase().includes(query) ||
-            row.users.last_name.toLowerCase().includes(query) ||
-            row.leave_types.name.toLowerCase().includes(query)
+            row.first_name.toLowerCase().includes(query) ||
+            row.last_name.toLowerCase().includes(query) ||
+            row.leave_type.toLowerCase().includes(query)
         );
     })
 
@@ -87,33 +88,33 @@ export default function LeaveReqHistory({ leaveReqHistoryData, onSelectRequest }
                                 key={row.id}
                                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                             >
-                                <TableCell sx={{ width: 200 }}>{row.users.first_name} {row.users.last_name}</TableCell>
+                                <TableCell sx={{ width: 200 }}>{row.first_name} {row.last_name}</TableCell>
                                 <TableCell sx={{ width: 160 }}>{formatDate(row.applied_date)}</TableCell>
-                                <TableCell sx={{ width: 160 }}>{row.leave_types.name}</TableCell>
+                                <TableCell sx={{ width: 160 }}>{row.leave_type}</TableCell>
                                 <TableCell sx={{ width: 250 }}>
                                     {formatDate(row.start_date)} - {formatDate(row.end_date)}
                                 </TableCell>
                                 <TableCell sx={{ width: 120 }}>{row.total_days}</TableCell>
                                 <TableCell sx={{ width: 150 }}>
                                     <Chip
-                                        label={row.status}
+                                        label={capitalizeFirst(row.status)}
                                         sx={{
                                             backgroundColor:
-                                                row.status === 'Approved'
+                                                row.status === 'approved'
                                                     ? "var(--status-approved-bg)"
-                                                    : row.status === 'Pending'
+                                                    : row.status === 'pending'
                                                         ? 'var(--status-pending-bg)'
                                                         : 'var(--status-rejected-bg)',
                                             color:
-                                                row.status === 'Approved'
+                                                row.status === 'approved'
                                                     ? "var(--status-approved)"
-                                                    : row.status === 'Pending'
+                                                    : row.status === 'pending'
                                                         ? 'var(--status-pending)'
                                                         : 'var(--status-rejected)',
                                             border:
-                                                row.status === "Approved"
+                                                row.status === "approved"
                                                     ? "1px solid var(--status-approved)"
-                                                    : row.status === "Pending"
+                                                    : row.status === "pending"
                                                         ? "1px solid var(--status-pending)"
                                                         : "1px solid var(--status-rejected)",
                                         }}

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { formatDate } from '../../../utils/dateUtils';
 import TablePaginationActions from "../../TablePaginationActions";
+import capitalizeFirst from '../../../utils/capitalizeUtils';
 // Modules
 
 import Table from '@mui/material/Table';
@@ -61,30 +62,30 @@ export default function LeaveReqHistory({ leaveReqHistoryData }) {
                                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                             >
                                 <TableCell>{formatDate(row.applied_date)}</TableCell>
-                                <TableCell>{row.leave_types.name}</TableCell>
+                                <TableCell>{row.leave_type}</TableCell>
                                 <TableCell>{formatDate(row.start_date)}</TableCell>
                                 <TableCell>{formatDate(row.end_date)}</TableCell>
                                 <TableCell>{row.total_days}</TableCell>
                                 <TableCell>
                                     <Chip
-                                        label={row.status}
+                                        label={capitalizeFirst(row.status)}
                                         sx={{
                                             backgroundColor:
-                                                row.status === 'Approved'
+                                                row.status === 'approved'
                                                     ? "var(--status-approved-bg)"
-                                                    : row.status === 'Pending'
+                                                    : row.status === 'pending'
                                                         ? 'var(--status-pending-bg)'
                                                         : 'var(--status-rejected-bg)',
                                             color:
-                                                row.status === 'Approved'
+                                                row.status === 'approved'
                                                     ? "var(--status-approved)"
-                                                    : row.status === 'Pending'
+                                                    : row.status === 'pending'
                                                         ? 'var(--status-pending)'
                                                         : 'var(--status-rejected)',
                                             border:
-                                                row.status === "Approved"
+                                                row.status === "approved"
                                                     ? "1px solid var(--status-approved)"
-                                                    : row.status === "Pending"
+                                                    : row.status === "pending"
                                                         ? "1px solid var(--status-pending)"
                                                         : "1px solid var(--status-rejected)",
                                         }}

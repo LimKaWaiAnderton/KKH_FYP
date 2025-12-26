@@ -1,30 +1,20 @@
 import { useState, useEffect } from 'react';
-import { supabase } from "../../../supabase";
 import '../../../styles/EmployeeLeaveReq.css';
 
 export default function LeaveBalance() {
     const [leaveBalance, setLeaveBalance] = useState([]);
-    const DEMO_USER_ID = "43f7e8dc-365b-4aa1-ace6-44b790687780"; // TEMP until you use auth
-
-    // Function to fetch leave balance from Supabase
-    const fetchLeaveBalance = async () => {
-        const { data, error } = await supabase
-            .from("user_leave_balance")
-            .select(`
-            id,
-            remaining_days,
-            total_quota,
-            leave_types (name)
-            `)
-            .eq("user_id", DEMO_USER_ID);
-
-            if (error) {
-                console.error("Error fetching leave balance:", error);
-                return;
-            }
-            setLeaveBalance(data);
-    }
     
+    const fetchLeaveBalance = async () => {
+        try {
+            const res = await fetch('http://localhost:5000/api/leaves/balance');
+            const data = await res.json();
+            console.log(data);
+            setLeaveBalance(data);
+        } catch (error) {
+            console.error('Error fetching leave request history:', error);
+        }
+    };
+
     // Fetch leave balance on component mount
     useEffect(() => {
         fetchLeaveBalance();
@@ -32,7 +22,7 @@ export default function LeaveBalance() {
 
     const leaveBalance_Rows = leaveBalance.map((row) => ({
         id: row.id,
-        leaveType: row.leave_types.name,
+        leaveType: row.leave_type,
         remainingDays: row.remaining_days,
         annualQuota: row.total_quota,
     }));

@@ -16,8 +16,8 @@ export default function LeaveReqStatus({ leaveReqStatusCounts, onStatusClick, fi
                 </div>
             </div>
             <div
-                className={`leave-req-status-container approved ${filterStatus === "Approved" ? "active" : ""}`}
-                onClick={() => onStatusClick("Approved")}>
+                className={`leave-req-status-container approved ${filterStatus === "approved" ? "active" : ""}`}
+                onClick={() => onStatusClick("approved")}>
                 <h2>{leaveReqStatusCounts.approved}</h2>
                 <div className="leave-req-status">
                     <CheckCircleOutlineIcon sx={{ color: "var(--status-approved)" }} />
@@ -25,8 +25,8 @@ export default function LeaveReqStatus({ leaveReqStatusCounts, onStatusClick, fi
                 </div>
             </div>
             <div
-                className={`leave-req-status-container pending ${filterStatus === "Pending" ? "active" : ""}`}
-                onClick={() => onStatusClick("Pending")}>
+                className={`leave-req-status-container pending ${filterStatus === "pending" ? "active" : ""}`}
+                onClick={() => onStatusClick("pending")}>
                 <h2>{leaveReqStatusCounts.pending}</h2>
                 <div className="leave-req-status">
                     <HourglassTopIcon sx={{ color: "var(--status-pending)" }} />
@@ -34,8 +34,8 @@ export default function LeaveReqStatus({ leaveReqStatusCounts, onStatusClick, fi
                 </div>
             </div>
             <div
-                className={`leave-req-status-container rejected ${filterStatus === "Rejected" ? "active" : ""}`}
-                onClick={() => onStatusClick("Rejected")}>
+                className={`leave-req-status-container rejected ${filterStatus === "rejected" ? "active" : ""}`}
+                onClick={() => onStatusClick("rejected")}>
                 <h2>{leaveReqStatusCounts.rejected}</h2>
                 <div className="leave-req-status">
                     <HighlightOffIcon sx={{ color: "var(--status-rejected)" }} />

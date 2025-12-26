@@ -1,24 +1,37 @@
 import '../../../styles/EmployeeLeaveReq.css';
 import { formatDate } from '../../../utils/dateUtils';
-import { useState } from "react";
-import { supabase } from '../../../supabase';
+import { useState, useEffect } from "react";
 
 export default function RequestModal({ isOpen, onClose, onSubmit }) {
   const [leaveType, setLeaveType] = useState("");
+  const [leaveTypeName, setLeaveTypeName] = useState([]);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-  const [remaining, setRemaining] = useState(null);
   const [totalDays, setTotalDays] = useState(0);
   const [error, setError] = useState("");
 
+  const fetchLeaveTypeName = async () => {
+    try {
+      const res = await fetch('http://localhost:5000/api/leaves/types');
+      const data = await res.json();
+      setLeaveTypeName(data);
+    } catch (error) {
+      console.error('Error fetching leave type name:', error);
+    }
+  };
+
+  const selectedLeaveType = leaveTypeName.find(type => type.id === leaveType);
+
+  useEffect(() => {
+    fetchLeaveTypeName();
+  }, []);
+
   const today = new Date().toISOString().split("T")[0];
-  const DEMO_USER_ID = "43f7e8dc-365b-4aa1-ace6-44b790687780"; // TEMP until you use auth
 
   const closeModal = () => {
     setLeaveType("");
     setStartDate("");
     setEndDate("");
-    setRemaining(null);
     setTotalDays(0);
     setError("");
     onClose();
@@ -44,63 +57,19 @@ export default function RequestModal({ isOpen, onClose, onSubmit }) {
       setError("End date cannot be earlier than start date.");
       return;
     }
-  
-    if (totalDays > remaining) {
-      setError(`You only have ${remaining} days left.`);
-      return;
-    }
-
-    const { data: overlappingRequests, error: overlapError } = await supabase
-    .from("leave_requests")
-    .select("id, start_date, end_date, status")
-    .eq("user_id", DEMO_USER_ID)
-    .neq("status", "Rejected")
-    .lte("start_date", endDate)
-    .gte("end_date", startDate);
-
-    if (overlapError) {
-      console.error("Error checking overlapping requests:", overlapError);
-      setError("Something went wrong. Please try again.");
-      return;
-    }
-
-    if (overlappingRequests.length > 0) {
-      setError("You have overlapping leave requests during this period.");
-      return;
-    }
 
     setError("");
 
-    const newRequest = {
-      user_id: DEMO_USER_ID,  // use auth later
-      leave_type_id: leaveType,
-      start_date: startDate,
-      end_date: endDate,
-      total_days: totalDays,
-      applied_date: new Date().toISOString().split("T")[0],
-      status: "Pending",
-    };
-
-    const { data, error } = await supabase
-      .from("leave_requests")
-      .insert([newRequest])
-      // After inserting, return the row + related leave_types name (via FK join) to update UI
-      .select(`
-        *,
-        leave_types ( name )
-    `)
-      .single();
-
-    if (error) {
-      console.error("Error submitting leave request:", error);
-      setError("Something went wrong. Please try again.");
-      return;
+    try {
+      await onSubmit({
+        leave_type_id: Number(leaveType),
+        start_date: startDate,
+        end_date: endDate,
+      });
+      closeModal();
+    } catch (error) {
+      setError(error.message || "Failed to submit leave request.");
     }
-
-    onSubmit(data) // Sends new row to parent state to update UI
-    console.log("Leave request inserted:", data);
-    alert("Leave request submitted.");
-    onClose();
   }
 
   if (!isOpen) return null;
@@ -121,31 +90,19 @@ export default function RequestModal({ isOpen, onClose, onSubmit }) {
               <label>Leave Type</label>
               <select
                 value={leaveType}
-                onChange={async (e) => {
-                  const selectedType = e.target.value;
-                  setLeaveType(selectedType);
+                onChange={(e) => {
+                  setLeaveType(e.target.value);
                   setError("");
-
-                  // Fetch remaining days for this leave type
-                  const { data, error } = await supabase
-                    .from("user_leave_balance")
-                    .select("remaining_days")
-                    .eq("user_id", DEMO_USER_ID)
-                    .eq("leave_type_id", selectedType)
-                    .single();
-
-                  if (error) {
-                    console.error("Error fetching leave balance:", error);
-                  } else {
-                    setRemaining(data.remaining_days || 0);
-                  }
                 }}
-
               >
-                <option value="">Select Leave Type</option>
-                <option value="1">Annual Leave</option>
-                <option value="2">Sick Leave</option>
-                <option value="3">Childcare Leave</option>
+                <option value="" disabled>
+                  Select Leave Type
+                </option>
+                {leaveTypeName.map(type => (
+                  <option key={type.id} value={type.id}>
+                    {type.name}
+                  </option>
+                ))}
               </select>
             </div>
 
@@ -184,7 +141,7 @@ export default function RequestModal({ isOpen, onClose, onSubmit }) {
             <h3>Review Request</h3>
             <div className="review-detail">
               <span>Leave Type:</span>
-              <p>{leaveType || "—"}</p>
+              <p>{selectedLeaveType?.name || "—"}</p>
             </div>
 
             <div className="review-detail">
