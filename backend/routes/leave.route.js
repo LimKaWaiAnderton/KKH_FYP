@@ -4,6 +4,7 @@ import mockAuth from '../middlewares/mockAuth.js';
 import {
     getLeaveRequests,
     getLeaveBalance,
+    getLeaveType,
     applyLeave,
     getLeaveRequestById,
     manageLeaveRequest
@@ -16,6 +17,7 @@ leaveRouter.get('/', mockAuth, getLeaveRequests);
 
 // User
 leaveRouter.get('/balance', mockAuth, getLeaveBalance);
+leaveRouter.get('/types', mockAuth, getLeaveType);
 leaveRouter.post('/', mockAuth, applyLeave);
 
 // Admin

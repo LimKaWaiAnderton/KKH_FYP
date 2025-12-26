@@ -20,7 +20,8 @@ export const getLeaveRequests = async (req, res) => {
                 JOIN leave_types lt
                 ON lr.leave_type_id = lt.id
                 JOIN users u
-                ON lr.user_id = u.id`
+                ON lr.user_id = u.id
+                ORDER BY lr.applied_date DESC`
             );
         } else {
             leaveReqHistory = await pool.query(
@@ -35,7 +36,8 @@ export const getLeaveRequests = async (req, res) => {
                 FROM leave_requests lr
                 JOIN leave_types lt
                 ON lr.leave_type_id = lt.id
-                WHERE lr.user_id = $1`,
+                WHERE lr.user_id = $1
+                ORDER BY lr.applied_date DESC`,
                 [id]
             );
         }
@@ -68,6 +70,18 @@ export const getLeaveBalance = async (req, res) => {
         res.status(500).send('Server Error');
     }
 };
+
+export const getLeaveType = async (req, res) => {
+    try {
+        const leaveTypes = await pool.query(
+            `SELECT * FROM leave_types`
+        );
+        res.json(leaveTypes.rows);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+}
 
 export const applyLeave = async (req, res) => {
     const { id } = req.user;
@@ -105,7 +119,25 @@ export const applyLeave = async (req, res) => {
         const total_days =
             Math.ceil((end - start) / (1000 * 60 * 60 * 24)) + 1;
 
-        const newLeaveReq = await pool.query(
+        const balanceRes = await pool.query(
+            `SELECT remaining_days
+            FROM user_leave_balance
+            WHERE user_id = $1 AND leave_type_id = $2`,
+            [id, leave_type_id]
+        );
+
+        if (balanceRes.rows.length === 0) {
+            return res.status(400).json({ msg: 'Leave balance not found for this leave type.' });
+        }
+
+        const { remaining_days } = balanceRes.rows[0];
+        if (remaining_days < total_days) {
+            return res.status(400).json({
+                msg: `Insufficient leave balance. You only have ${remaining_days} day(s) left.`
+            });
+        }
+
+        const insertRes = await pool.query(
             `INSERT INTO leave_requests
                 (user_id, leave_type_id, start_date, end_date, total_days)
             VALUES
@@ -113,6 +145,26 @@ export const applyLeave = async (req, res) => {
             RETURNING *`,
             [id, leave_type_id, start_date, end_date, total_days]
         );
+
+        const leaveId = insertRes.rows[0].id;
+
+        // Fetch the newly created leave request with leave type name to update UI
+        const newLeaveReq = await pool.query(
+            `SELECT
+            lr.id,
+            lr.start_date,
+            lr.end_date,
+            lr.total_days,
+            lr.status,
+            lr.applied_date,
+            lt.name AS leave_type
+        FROM leave_requests lr
+        JOIN leave_types lt
+        ON lr.leave_type_id = lt.id
+        WHERE lr.id = $1`,
+            [leaveId]
+        );
+
         res.status(201).json(newLeaveReq.rows[0]);
 
     } catch (err) {
@@ -134,12 +186,15 @@ export const getLeaveRequestById = async (req, res) => {
                 lr.applied_date,
                 lt.name AS leave_type,
                 u.first_name,
-                u.last_name
+                u.last_name,
+                d.name AS department_name
             FROM leave_requests lr
             JOIN leave_types lt
             ON lr.leave_type_id = lt.id
             JOIN users u
             ON lr.user_id = u.id
+            JOIN departments d
+            ON u.department_id = d.id
             WHERE lr.id = $1`,
             [id]
         );
@@ -226,9 +281,29 @@ export const manageLeaveRequest = async (req, res) => {
             [status, id]
         );
 
+        const updatedLeaveReq = await client.query(
+            `SELECT
+            lr.id,
+            lr.start_date,
+            lr.end_date,
+            lr.total_days,
+            lr.status,
+            lr.applied_date,
+            lt.name AS leave_type,
+            u.first_name,
+            u.last_name
+        FROM leave_requests lr
+        JOIN leave_types lt
+        ON lr.leave_type_id = lt.id
+        JOIN users u
+        ON lr.user_id = u.id
+        WHERE lr.id = $1`,
+            [id]
+        );
+
         await client.query('COMMIT');
 
-        res.json({ msg: `Leave request ${status} successfully` });
+        return res.json(updatedLeaveReq.rows[0]);
 
     } catch (err) {
         await client.query('ROLLBACK');
