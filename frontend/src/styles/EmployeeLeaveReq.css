@@ -1,0 +1,179 @@
+hr {
+  border: none;
+  border-top: 1px solid var(--border-color);
+  margin: 0;
+}
+
+.leaveBalanceGroup {
+  display: flex;
+  gap: 32px;
+}
+
+.leaveBalanceCard {
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  align-items: left;
+  width: 220px;
+  padding: 16px;
+  background-color: var(--secondary-bg-color);
+}
+
+.leaveBalanceCard h4 {
+  color: var(--primary-color-darkpink);
+}
+
+.leaveBalanceCard p {
+  margin: 0;
+  color: var(--primary-color-muted);
+}
+
+
+
+.requestBtn {
+  background-color: var(--primary-color-pink);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.requestBtn:hover {
+  background-color: var(--primary-color-darkpink);
+}
+
+/* Modal */
+
+/* Dark overlay */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+/* Modal container */
+.modal-container {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Modal box */
+.modal-box {
+  width: 420px;
+  background: var(--secondary-bg-color);
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0px 10px 35px rgba(0, 0, 0, 0.2);
+}
+
+.modal-title {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.modal-description {
+  font-size: 14px;
+  color: var(--primary-color-muted);
+  margin-bottom: 16px;
+}
+
+.modal-actions {
+  margin-top: 20px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+/* Leave Request Form */
+.leave-request-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  background-color: var(--secondary-bg-color);
+  border: 1px solid var(--border-color);
+  padding: 16px;
+  border-radius: 8px;
+  margin-bottom: 32px;
+}
+
+.leave-request-form label,
+.review-box strong {
+  font-size: 14px;
+  font-weight: 600;
+  width: 20%;
+}
+
+.leave-request-form input, select {
+  font-family: inherit;
+  padding: 8px;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.leave-type-input {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+select option[value=""] {
+  color: var(--primary-color-muted);
+}
+
+.leave-startDate-input,
+.leave-endDate-input {
+  display: flex;
+  align-items: center;
+}
+
+.review-box {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.review-detail {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.review-detail p {
+  margin: 0;
+}
+
+.review-detail span {
+  color: var(--primary-color-muted);
+}
+
+.btn-cancel {
+  padding: 8px 16px;
+  background: #eee;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.btn-primary {
+  padding: 8px 16px;
+  background: var(--primary-color-pink);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.btn-primary:hover {
+  background: var(--primary-color-darkpink);
+}
+
+.error-message {
+  color: red;
+  font-size: 14px;
+}
