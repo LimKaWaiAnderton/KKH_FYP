@@ -3,66 +3,99 @@ import WeeklyGrid from "../../components/ShiftRequestComponents/WeeklyGrid";
 import AddShiftModal from "../../components/ShiftRequestComponents/AddShiftModal";
 import MonthSelector from "../../components/ShiftRequestComponents/MonthSelector";
 import Header from "../../components/ShiftRequestComponents/Header";
-import { supabase } from "../../supabase";
+import { authFetch } from "../../utils/authFetch";
 import "../../styles/ShiftRequest/ShiftRequestPage.css";
 import EmployeeLayout from "../../layouts/EmployeeLayout.js";
 
 const monthNames = [
-  "January","February","March","April","May","June",
-  "July","August","September","October","November","December"
+  "January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December"
 ];
 
 export default function ShiftRequestPage() {
-  const [year, setYear] = useState(2025);
-  const [month, setMonth] = useState(9);
+  const today = new Date();
+
+  const [year, setYear] = useState(today.getFullYear());
+  const [month, setMonth] = useState(today.getMonth()); // 0-based
   const [modalOpen, setModalOpen] = useState(false);
   const [shifts, setShifts] = useState([]);
   const [shiftTypes, setShiftTypes] = useState([]);
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  // Get logged in user
+  /* =========================
+     LOAD LOGGED IN USER
+     ========================= */
   useEffect(() => {
-    const loadUser = async () => {
-      const { data } = await supabase.auth.getUser();
-      setUser(data.user);
-    };
+    async function loadUser() {
+      try {
+        const res = await authFetch("http://localhost:5000/auth/me");
+        if (!res || !res.ok) throw new Error("Auth failed");
+
+        const data = await res.json();
+        setUser(data);
+      } catch (err) {
+        console.error("❌ Failed to load user", err);
+      } finally {
+        setLoading(false);
+      }
+    }
     loadUser();
   }, []);
 
-  // Load user shift requests
+  /* =========================
+     LOAD SHIFT REQUESTS
+     ========================= */
   useEffect(() => {
     if (!user) return;
-    const load = async () => {
-      const { data } = await supabase
-        .from("shift_requests")
-        .select("*")
-        .eq("user_id", user.id);
 
-      if (data) setShifts(data);
-    };
-    load();
+    async function loadShifts() {
+      const res = await authFetch("http://localhost:5000/api/shifts");
+      if (!res || !res.ok) return;
+
+      const data = await res.json();
+      setShifts(data);
+    }
+
+    loadShifts();
   }, [user]);
 
-  // Load shift types with colors
+  /* =========================
+     LOAD SHIFT TYPES
+     ========================= */
   useEffect(() => {
-    const loadTypes = async () => {
-      const { data } = await supabase.from("shift_types").select("*");
-      if (data) setShiftTypes(data);
-    };
+    async function loadTypes() {
+      const res = await authFetch("http://localhost:5000/api/shifts/types");
+      if (!res || !res.ok) return;
+
+      const data = await res.json();
+      setShiftTypes(data);
+    }
+
     loadTypes();
   }, []);
 
-  // Convert shifts to map
+  /* =========================
+     🔴 IMPORTANT FIX HERE
+     NORMALISE DATE STRINGS
+     ========================= */
   const shiftMap = useMemo(() => {
     const map = new Map();
+
     shifts.forEach((s) => {
-      if (!map.has(s.date)) map.set(s.date, []);
-      map.get(s.date).push(s);
+      // ✅ FIX: convert Postgres timestamp → YYYY-MM-DD
+      const dateKey = new Date(s.date).toISOString().split("T")[0];
+
+      if (!map.has(dateKey)) map.set(dateKey, []);
+      map.get(dateKey).push(s);
     });
+
     return map;
   }, [shifts]);
 
-  // Week range (Mon–Sun)
+  /* =========================
+     WEEK HELPERS
+     ========================= */
   const getWeekRange = (dateStr) => {
     const d = new Date(dateStr);
     const dow = (d.getDay() + 6) % 7;
@@ -81,42 +114,43 @@ export default function ShiftRequestPage() {
     }).length;
   };
 
-  // Add shift
+  /* =========================
+     ADD SHIFT
+     ========================= */
   const handleAddShift = async (newShift) => {
     if (!user) return { error: "no-user" };
 
-    if (countShiftsInWeek(newShift.date) >= 5) {
+    if (countShiftsInWeek(newShift.date) >= 5)
       return { error: "week-limit" };
-    }
 
-    if (shifts.some((s) => s.date === newShift.date)) {
+    if (shifts.some((s) => new Date(s.date).toISOString().split("T")[0] === newShift.date))
       return { error: "duplicate" };
-    }
 
     const type = shiftTypes.find((t) => t.name === newShift.label);
 
-    const { error } = await supabase.from("shift_requests").insert({
-      user_id: user.id,
-      date: newShift.date,
-      preferred_shift: newShift.label,
-      time: newShift.time || "",
-      shift_type_id: type?.id ?? null,
-      status: "Pending",
+    const res = await authFetch("http://localhost:5000/api/shifts", {
+      method: "POST",
+      body: JSON.stringify({
+        date: newShift.date,
+        preferred_shift: newShift.label,
+        time: newShift.time || "",
+        shift_type_id: type?.id ?? null,
+      }),
     });
 
-    if (error) return { error: "db-error", message: error.message };
+    if (!res || !res.ok) return { error: "db-error" };
 
-    const { data } = await supabase
-      .from("shift_requests")
-      .select("*")
-      .eq("user_id", user.id);
+    // Reload shifts
+    const refresh = await authFetch("http://localhost:5000/api/shifts");
+    setShifts(await refresh.json());
 
-    setShifts(data);
     setModalOpen(false);
     return { success: true };
   };
 
-  // Build weeks
+  /* =========================
+     BUILD WEEKS
+     ========================= */
   const daysInMonth = new Date(year, month + 1, 0).getDate();
 
   const weeks = useMemo(() => {
@@ -129,7 +163,7 @@ export default function ShiftRequestPage() {
       const w = { weekNumber, month: month + 1, start, end, shifts: [] };
 
       for (let d = start; d <= end; d++) {
-        const iso = `${year}-${String(month + 1).padStart(2, "0")}-${String(d).padStart(2,"0")}`;
+        const iso = `${year}-${String(month + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
         const list = shiftMap.get(iso) || [];
 
         list.forEach((s) => {
@@ -156,6 +190,20 @@ export default function ShiftRequestPage() {
     return arr;
   }, [year, month, shiftMap, shiftTypes]);
 
+  /* =========================
+     LOADING
+     ========================= */
+  if (loading) {
+    return (
+      <EmployeeLayout>
+        <div style={{ padding: 40 }}>Loading shifts…</div>
+      </EmployeeLayout>
+    );
+  }
+
+  /* =========================
+     RENDER
+     ========================= */
   return (
     <EmployeeLayout>
       <div className="sr-page">
@@ -181,7 +229,11 @@ export default function ShiftRequestPage() {
           open={modalOpen}
           onClose={() => setModalOpen(false)}
           onSave={handleAddShift}
-          checkDuplicate={(d) => shifts.some((s) => s.date === d)}
+          checkDuplicate={(d) =>
+            shifts.some(
+              (s) => new Date(s.date).toISOString().split("T")[0] === d
+            )
+          }
         />
       </div>
     </EmployeeLayout>
