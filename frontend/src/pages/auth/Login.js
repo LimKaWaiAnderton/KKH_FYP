@@ -26,7 +26,7 @@ export default function Login() {
     localStorage.setItem("token", data.token);
 
     if (data.role === "admin") {
-      window.location.href = "/manager/home";
+      window.location.href = "/manager/requests/leave";
     } else {
       window.location.href = "/employee/requests/shift";
     }
