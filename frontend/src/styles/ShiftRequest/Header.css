@@ -1,0 +1,22 @@
+/* Make the header follow global container spacing */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Pink request button */
+.request-btn {
+    background: var(--primary-color-pink);
+    color: white;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.request-btn:hover {
+    background: var(--primary-color-darkpink);
+}
