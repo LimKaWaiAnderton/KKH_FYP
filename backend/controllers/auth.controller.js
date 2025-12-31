@@ -30,9 +30,11 @@ export const login = async (req, res) => {
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
+    const roleId = Number(user.role_id);
+
     // 3. Create token
     const token = jwt.sign(
-      { id: user.id, role: user.role_id },
+      { id: user.id, role: roleId },
       process.env.JWT_SECRET,
       { expiresIn: "1d" }
     );
@@ -40,7 +42,7 @@ export const login = async (req, res) => {
     // 4. Send token
     res.json({
       token,
-      role: user.role_id === 1 ? "admin" : "employee",
+      role: roleId === 1 ? "admin" : "employee",
     });
   } catch (err) {
     console.error("Login error:", err);
