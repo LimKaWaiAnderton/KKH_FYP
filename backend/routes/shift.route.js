@@ -4,7 +4,7 @@ import {
   createShiftRequest,
   getShiftTypes
 } from "../controllers/shift.controller.js";
-import auth from "../middlewares/auth.js";
+import auth from "../middlewares/auth.middleware.js";
 
 const shiftRoutes = express.Router();
 
