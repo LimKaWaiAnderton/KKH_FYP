@@ -8,7 +8,7 @@ import LeaveReqHistory from '../../components/manager/LeaveRequest/LeaveReqHisto
 import ManageRequestModal from '../../components/manager/LeaveRequest/ManageRequestModal';
 
 // API call
-import { fetchHistory, fetchRequestedHistory, updateLeaveRequest } from '../../api/leave.api.js';
+import { fetchHistory, fetchRequestedHistory } from '../../api/leave.api.js';
 
 export default function ManagerLeaveRequest() {
     const [isModalOpen, setIsModalOpen] = useState(false);
