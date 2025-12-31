@@ -65,7 +65,7 @@ export default function Login() {
             className="icon" />
           <input
             type="text"
-            placeholder="Enter Email"
+            placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
@@ -77,7 +77,7 @@ export default function Login() {
             className="icon" />
           <input
             type={passwordType}
-            placeholder="Enter Password"
+            placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
