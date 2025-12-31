@@ -1,23 +1,24 @@
 import { useState, useEffect } from 'react';
 import '../../../styles/EmployeeLeaveReq.css';
 
+// API call
+import { fetchLeaveBalance } from '../../../api/leave.api.js';
+
 export default function LeaveBalance() {
     const [leaveBalance, setLeaveBalance] = useState([]);
     
-    const fetchLeaveBalance = async () => {
+    const getLeaveBalance = async () => {
         try {
-            const res = await fetch('http://localhost:5000/api/leaves/balance');
-            const data = await res.json();
-            console.log(data);
+            const data = await fetchLeaveBalance();
             setLeaveBalance(data);
         } catch (error) {
-            console.error('Error fetching leave request history:', error);
+            console.error('Error fetching leave balance:', error);
         }
     };
 
     // Fetch leave balance on component mount
     useEffect(() => {
-        fetchLeaveBalance();
+        getLeaveBalance();
     }, []);
 
     const leaveBalance_Rows = leaveBalance.map((row) => ({

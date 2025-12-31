@@ -1,10 +1,14 @@
 import { useState, useEffect } from 'react';
 
+// Components
 import '../../styles/ManagerLeaveReq.css';
 import Header from '../../components/manager/LeaveRequest/Header';
 import LeaveReqStatus from '../../components/manager/LeaveRequest/LeaveReqStatus';
 import LeaveReqHistory from '../../components/manager/LeaveRequest/LeaveReqHistory';
 import ManageRequestModal from '../../components/manager/LeaveRequest/ManageRequestModal';
+
+// API call
+import { fetchHistory } from '../../api/leave.api.js';
 
 export default function ManagerLeaveRequest() {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -34,7 +38,7 @@ export default function ManagerLeaveRequest() {
     };
 
     useEffect(() => {
-        fetchHistory();
+        getHistory();
     }, []);
 
     // For LeaveReqStatus component
@@ -50,13 +54,13 @@ export default function ManagerLeaveRequest() {
 
     }, [leaveRequests]);
 
-    const fetchHistory = async () => {
+    const getHistory = async () => {
         try {
-            const res = await fetch('http://localhost:5000/api/leaves');
-            const data = await res.json();
-            setLeaveRequests(data);
+            const data = await fetchHistory();
+            return setLeaveRequests(data);
+
         } catch (error) {
-            console.error('Error fetching leave request history:', error);
+            console.error('Error fetching leave type name:', error);
         }
     };
 
