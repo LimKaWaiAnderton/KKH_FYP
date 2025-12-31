@@ -7,20 +7,25 @@ import capitalizeFirst from '../../../utils/capitalizeUtils';
 import Chip from '@mui/material/Chip';
 import CloseIcon from '@mui/icons-material/Close';
 
+// API call
+import { updateLeaveRequest } from '../../../api/leave.api.js';
+
 export default function ManageRequestModal({
   isOpen,
-  onClose,
   request,
-  onSubmit
+  onClose,
+  onRefresh
 }) {
   const [error, setError] = useState("");
 
   if (!isOpen || !request) return null;
-  
+
   const handleSubmit = async (status) => {
     try {
       setError("");
-      await onSubmit({ ...request, status });
+      const data = await updateLeaveRequest({ ...request, status });
+      onRefresh(data);
+      onClose();
     } catch (error) {
       setError(error.message || "Failed to update leave request.");
     }
