@@ -1,10 +1,14 @@
 import { useState, useEffect } from 'react';
 
+// Components
 import '../../styles/ManagerLeaveReq.css';
 import Header from '../../components/manager/LeaveRequest/Header';
 import LeaveReqStatus from '../../components/manager/LeaveRequest/LeaveReqStatus';
 import LeaveReqHistory from '../../components/manager/LeaveRequest/LeaveReqHistory';
 import ManageRequestModal from '../../components/manager/LeaveRequest/ManageRequestModal';
+
+// API call
+import { fetchHistory, fetchRequestedHistory } from '../../api/leave.api.js';
 
 export default function ManagerLeaveRequest() {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -24,7 +28,7 @@ export default function ManagerLeaveRequest() {
         : leaveRequests;
 
     const handleOpenModal = async (request) => {
-        await fetchRequestedHistory(request);
+        await getRequestedHistory(request);
         setIsModalOpen(true);
     };
 
@@ -34,7 +38,7 @@ export default function ManagerLeaveRequest() {
     };
 
     useEffect(() => {
-        fetchHistory();
+        getHistory();
     }, []);
 
     // For LeaveReqStatus component
@@ -50,59 +54,34 @@ export default function ManagerLeaveRequest() {
 
     }, [leaveRequests]);
 
-    const fetchHistory = async () => {
+    const getHistory = async () => {
         try {
-            const res = await fetch('http://localhost:5000/api/leaves');
-            const data = await res.json();
-            setLeaveRequests(data);
+            const data = await fetchHistory();
+            return setLeaveRequests(data);
+
+        } catch (error) {
+            console.error('Error fetching leave type name:', error);
+        }
+    };
+
+    const getRequestedHistory = async (leaveReq) => {
+        try {
+            const data = await fetchRequestedHistory(leaveReq);
+            return setSelectedRequest(data);
         } catch (error) {
             console.error('Error fetching leave request history:', error);
         }
     };
 
-    const fetchRequestedHistory = async (leaveReq) => {
-        const { id } = leaveReq;
-        try {
-            const res = await fetch(`http://localhost:5000/api/leaves/${id}`);
-            const data = await res.json();
-            setSelectedRequest(data);
-        } catch (error) {
-            console.error('Error fetching leave request history:', error);
-        }
-    };
-
-    const handleLeaveReq = async (request, status) => {
-        const { id } = request;
-        try {
-            const res = await fetch(`http://localhost:5000/api/leaves/${id}`, {
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(request)
-            });
-
-            const data = await res.json();
-
-            if (!res.ok) {
-                throw new Error(data.msg || 'Failed to approve leave request');
-            }
-
-            // Update the newly approved/rejected leave request in the list
-            setLeaveRequests(previousLeaveRequests =>
-                previousLeaveRequests.map(leaveRequest =>
-                  leaveRequest.id === data.id
-                    ? { ...leaveRequest, ...data }
-                    : leaveRequest
-                )
-              );
-
-            handleCloseModal();
-
-        } catch (error) {
-            throw error;
-        }
-    };
+    const refreshHistory = async (data) => {
+        return setLeaveRequests(previousLeaveRequests =>
+            previousLeaveRequests.map(leaveRequest =>
+              leaveRequest.id === data.id
+                ? { ...leaveRequest, ...data }
+                : leaveRequest
+            )
+          );
+    }
 
     return (
         <>
@@ -118,9 +97,9 @@ export default function ManagerLeaveRequest() {
             />
             <ManageRequestModal
                 isOpen={isModalOpen}
-                onClose={handleCloseModal}
                 request={selectedRequest}
-                onSubmit={handleLeaveReq}
+                onClose={handleCloseModal}
+                onRefresh={refreshHistory}
             />
         </>
     )

@@ -1,10 +1,16 @@
 import pool from '../db/pool.js';
 
+const roleName = {
+    admin: 1,
+    employee: 2,
+  };
+
 export const getLeaveRequests = async (req, res) => {
     const { id, role } = req.user;
     let leaveReqHistory;
+
     try {
-        if (role === 'admin') {
+        if (role === roleName.admin) {
             leaveReqHistory = await pool.query(
                 `SELECT
                     lr.id,

@@ -31,7 +31,8 @@
 
 .input-group .icon {
   margin-right: 8px;
-  font-size: 16px;
+  font-size: 18px !important;
+  color: var(--primary-color-dark);
 }
 
 .input-group input {
@@ -39,6 +40,10 @@
   outline: none;
   width: 100%;
   font-size: 14px;
+}
+
+.input-group:focus-within {
+  border-color: var(--primary-color-dark);
 }
 
 .login-options {
@@ -61,14 +66,18 @@
 }
 
 .login-btn {
-  width: auto;              /* NOT FULL WIDTH */
-  padding: 8px 22px;
+  width: 100%;
+  padding: 12px 0;         
   background-color: #0b5ed7;
   color: white;
   border: none;
   border-radius: 999px;     /* pill */
   font-size: 14px;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 24px;
 }
 
 .login-btn:hover {
@@ -77,6 +86,6 @@
 
 .login-actions {
   display: flex;
-  justify-content: flex-end; /* PUSH BUTTON TO RIGHT */
+  justify-content: center;
 }
 

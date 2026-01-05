@@ -2,10 +2,17 @@ import { useState } from "react";
 import "../../styles/Auth/Login.css";
 import logo from "../../assets/kkh.webp"; // put logo here
 
+import EmailOutlinedIcon from '@mui/icons-material/EmailOutlined';
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
+import VisibilityOffOutlinedIcon from '@mui/icons-material/VisibilityOffOutlined';
+
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [remember, setRemember] = useState(false);
+  const [passwordType, setPasswordType] = useState("password");
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -26,12 +33,23 @@ export default function Login() {
     localStorage.setItem("token", data.token);
 
     if (data.role === "admin") {
-      window.location.href = "/manager/home";
+      window.location.href = "/manager/requests/leave";
     } else {
       window.location.href = "/employee/requests/shift";
     }
   };
 
+  const togglePasswordVisibility = () => {
+    if (passwordType === "password") {
+      console.log("show password");
+      setPasswordType("text");
+      setShowPassword(true);
+    } else {
+      console.log("hide password");
+      setPasswordType("password");
+      setShowPassword(false);
+    }
+  };
 
 
   return (
@@ -43,10 +61,11 @@ export default function Login() {
       <form className="login-card" onSubmit={handleSubmit}>
 
         <div className="input-group">
-          <span className="icon">👤</span>
+          <EmailOutlinedIcon
+            className="icon" />
           <input
             type="text"
-            placeholder="Enter Email"
+            placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
@@ -54,14 +73,23 @@ export default function Login() {
         </div>
 
         <div className="input-group">
-          <span className="icon">🔒</span>
+          <LockOutlinedIcon
+            className="icon" />
           <input
-            type="password"
-            placeholder="Enter Password"
+            type={passwordType}
+            placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
           />
+          {!showPassword ?
+            <VisibilityOffOutlinedIcon
+              className="icon"
+              onClick={togglePasswordVisibility} /> :
+            <VisibilityOutlinedIcon
+              className="icon"
+              onClick={togglePasswordVisibility} />
+          }
         </div>
 
 
