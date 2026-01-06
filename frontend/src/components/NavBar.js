@@ -7,8 +7,10 @@ import {
   FiHome,
   FiCalendar,
   FiFileText,
+  FiUser,
   FiSettings,
-  FiLogOut
+  FiLogOut,
+  FiChevronDown
 } from "react-icons/fi";
 
 const NavBar = () => {
@@ -16,6 +18,7 @@ const NavBar = () => {
   const navigate = useNavigate();
 
   const [isExpanded, setIsExpanded] = useState(false);
+  const [isDocsOpen, setIsDocsOpen] = useState(false);
 
   const isActive = (path) => location.pathname === path;
 
@@ -23,7 +26,10 @@ const NavBar = () => {
     <div
       className={`sidebar ${isExpanded ? 'expanded' : ''}`}
       onMouseEnter={() => setIsExpanded(true)}
-      onMouseLeave={() => setIsExpanded(false)}
+      onMouseLeave={() => {
+        setIsExpanded(false);
+        setIsDocsOpen(false);
+      }}
     >
       {/* Logo */}
       <div className="sidebar-logo">
@@ -31,7 +37,7 @@ const NavBar = () => {
         {isExpanded && <span className="logo-text">KK Hospital</span>}
       </div>
 
-      {/* Nav */}
+      {/* Main Nav */}
       <div className="nav-links">
         <button
           className={`nav-item ${isActive('/manager/home') ? 'active' : ''}`}
@@ -49,33 +55,41 @@ const NavBar = () => {
           {isExpanded && <span>Schedule</span>}
         </button>
 
-        {/* Requests */}
+        {/* Documents */}
         <button
-          className={`nav-item ${isActive('/documents') ? 'active' : ''}`}
-          onClick={() => navigate('/documents')}
+          className="nav-item"
+          onClick={() => setIsDocsOpen(!isDocsOpen)}
         >
           <FiFileText />
-          {isExpanded && <span>Requests</span>}
+          {isExpanded && (
+            <>
+              <span>Requests</span>
+              <FiChevronDown
+                className={`chevron ${isDocsOpen ? 'open' : ''}`}
+              />
+            </>
+          )}
         </button>
 
-        {/* Sub pages (always visible when expanded) */}
-        {isExpanded && (
+        {/* Sub menu */}
+        {isExpanded && isDocsOpen && (
           <div className="sub-menu">
-            <button
-              className={isActive('/documents/leave') ? 'active-sub' : ''}
-              onClick={() => navigate('/documents/leave')}
-            >
+            <button onClick={() => navigate('/documents/leave')}>
               Leave
             </button>
-            <button
-              className={isActive('/documents/shift') ? 'active-sub' : ''}
-              onClick={() => navigate('/documents/shift')}
-            >
+            <button onClick={() => navigate('/documents/shift')}>
               Shift
             </button>
           </div>
         )}
 
+        <button
+          className={`nav-item ${isActive('/manager/team-list') ? 'active' : ''}`}
+          onClick={() => navigate('/manager/team-list')}
+        >
+          <FiUser />
+          {isExpanded && <span>Team</span>}
+        </button>
       </div>
 
       {/* Footer */}
