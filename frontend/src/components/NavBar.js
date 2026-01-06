@@ -9,8 +9,7 @@ import {
   FiFileText,
   FiUser,
   FiSettings,
-  FiLogOut,
-  FiChevronDown
+  FiLogOut
 } from "react-icons/fi";
 
 const NavBar = () => {
@@ -18,7 +17,6 @@ const NavBar = () => {
   const navigate = useNavigate();
 
   const [isExpanded, setIsExpanded] = useState(false);
-  const [isDocsOpen, setIsDocsOpen] = useState(false);
 
   const isActive = (path) => location.pathname === path;
 
@@ -26,10 +24,7 @@ const NavBar = () => {
     <div
       className={`sidebar ${isExpanded ? 'expanded' : ''}`}
       onMouseEnter={() => setIsExpanded(true)}
-      onMouseLeave={() => {
-        setIsExpanded(false);
-        setIsDocsOpen(false);
-      }}
+      onMouseLeave={() => setIsExpanded(false)}
     >
       {/* Logo */}
       <div className="sidebar-logo">
@@ -37,7 +32,7 @@ const NavBar = () => {
         {isExpanded && <span className="logo-text">KK Hospital</span>}
       </div>
 
-      {/* Main Nav */}
+      {/* Nav */}
       <div className="nav-links">
         <button
           className={`nav-item ${isActive('/manager/home') ? 'active' : ''}`}
@@ -55,29 +50,28 @@ const NavBar = () => {
           {isExpanded && <span>Schedule</span>}
         </button>
 
-        {/* Documents */}
+        {/* Requests */}
         <button
-          className="nav-item"
-          onClick={() => setIsDocsOpen(!isDocsOpen)}
+          className={`nav-item ${isActive('/documents') ? 'active' : ''}`}
+          onClick={() => navigate('/documents')}
         >
           <FiFileText />
-          {isExpanded && (
-            <>
-              <span>Requests</span>
-              <FiChevronDown
-                className={`chevron ${isDocsOpen ? 'open' : ''}`}
-              />
-            </>
-          )}
+          {isExpanded && <span>Requests</span>}
         </button>
 
-        {/* Sub menu */}
-        {isExpanded && isDocsOpen && (
+        {/* Sub pages (always visible when expanded) */}
+        {isExpanded && (
           <div className="sub-menu">
-            <button onClick={() => navigate('/documents/leave')}>
+            <button
+              className={isActive('/documents/leave') ? 'active-sub' : ''}
+              onClick={() => navigate('/documents/leave')}
+            >
               Leave
             </button>
-            <button onClick={() => navigate('/documents/shift')}>
+            <button
+              className={isActive('/documents/shift') ? 'active-sub' : ''}
+              onClick={() => navigate('/documents/shift')}
+            >
               Shift
             </button>
           </div>
