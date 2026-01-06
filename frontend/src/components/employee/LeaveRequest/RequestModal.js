@@ -2,7 +2,10 @@ import '../../../styles/EmployeeLeaveReq.css';
 import { formatDate } from '../../../utils/dateUtils';
 import { useState, useEffect } from "react";
 
-export default function RequestModal({ isOpen, onClose, onSubmit }) {
+// API call
+import { fetchLeaveTypeName, addLeaveRequest } from '../../../api/leave.api.js';
+
+export default function RequestModal({ isOpen, onClose, onRefresh }) {
   const [leaveType, setLeaveType] = useState("");
   const [leaveTypeName, setLeaveTypeName] = useState([]);
   const [startDate, setStartDate] = useState("");
@@ -10,11 +13,11 @@ export default function RequestModal({ isOpen, onClose, onSubmit }) {
   const [totalDays, setTotalDays] = useState(0);
   const [error, setError] = useState("");
 
-  const fetchLeaveTypeName = async () => {
+  const getLeaveTypeName = async () => {
     try {
-      const res = await fetch('http://localhost:5000/api/leaves/types');
-      const data = await res.json();
+      const data = await fetchLeaveTypeName();
       setLeaveTypeName(data);
+
     } catch (error) {
       console.error('Error fetching leave type name:', error);
     }
@@ -23,7 +26,7 @@ export default function RequestModal({ isOpen, onClose, onSubmit }) {
   const selectedLeaveType = leaveTypeName.find(type => type.id === leaveType);
 
   useEffect(() => {
-    fetchLeaveTypeName();
+    getLeaveTypeName();
   }, []);
 
   const today = new Date().toISOString().split("T")[0];
@@ -61,12 +64,15 @@ export default function RequestModal({ isOpen, onClose, onSubmit }) {
     setError("");
 
     try {
-      await onSubmit({
+      const data = await addLeaveRequest({
         leave_type_id: Number(leaveType),
         start_date: startDate,
         end_date: endDate,
       });
+
+      onRefresh(data);
       closeModal();
+
     } catch (error) {
       setError(error.message || "Failed to submit leave request.");
     }

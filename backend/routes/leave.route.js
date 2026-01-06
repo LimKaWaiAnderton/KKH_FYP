@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import mockAuth from '../middlewares/mockAuth.js';
+import auth from '../middlewares/auth.middleware.js';
 
 import {
     getLeaveRequests,
@@ -13,16 +13,16 @@ import {
 const leaveRouter = Router();
 
 // User & Admin
-leaveRouter.get('/', mockAuth, getLeaveRequests);
+leaveRouter.get('/', auth, getLeaveRequests);
 
 // User
-leaveRouter.get('/balance', mockAuth, getLeaveBalance);
-leaveRouter.get('/types', mockAuth, getLeaveType);
-leaveRouter.post('/', mockAuth, applyLeave);
+leaveRouter.get('/balance', auth, getLeaveBalance);
+leaveRouter.get('/types', auth, getLeaveType);
+leaveRouter.post('/', auth, applyLeave);
 
 // Admin
-leaveRouter.get('/:id', mockAuth, getLeaveRequestById);
+leaveRouter.get('/:id', auth, getLeaveRequestById);
 
-leaveRouter.patch('/:id', mockAuth, manageLeaveRequest);
+leaveRouter.patch('/:id', auth, manageLeaveRequest);
 
 export default leaveRouter;
