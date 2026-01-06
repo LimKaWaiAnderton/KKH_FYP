@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import '../styles/ManagerScheduleHead.css';
+import '../../../styles/ManagerScheduleHead.css';
 
 export default function ManagerScheduleHead({ startDate, setStartDate, viewOption, setViewOption, weekDays, searchTerm, setSearchTerm }) {
     const [showCalendar, setShowCalendar] = useState(false);

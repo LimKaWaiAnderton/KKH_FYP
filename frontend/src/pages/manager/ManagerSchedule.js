@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import '../../styles/ManagerSchedule.css';
-import ManagerScheduleHead from '../../components/ManagerScheduleHead';
-import ManagerScheduleGrid from '../../components/ManagerScheduleGrid';
+import ManagerScheduleHead from '../../components/manager/Schedule/ManagerScheduleHead';
+import ManagerScheduleGrid from '../../components/manager/Schedule/ManagerScheduleGrid';
 
 export default function ManagerSchedule() {
     const [startDate, setStartDate] = useState(new Date());

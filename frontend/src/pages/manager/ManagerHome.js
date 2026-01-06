@@ -1,6 +1,6 @@
 import React from 'react';
-import ManagerQuickAction from '../../components/ManagerQuickAction';
-import ManagerNotification from '../../components/ManagerNotification';
+import ManagerQuickAction from '../../components/manager/Home/ManagerQuickAction';
+import ManagerNotification from '../../components/manager/Home/ManagerNotification';
 import '../../styles/ManagerHome.css';
 
 export default function ManagerHome() {

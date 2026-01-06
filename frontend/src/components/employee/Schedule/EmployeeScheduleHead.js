@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import '../styles/EmployeeScheduleHead.css';
+import '../../../styles/EmployeeScheduleHead.css';
 
 export default function EmployeeScheduleHead({ startDate, setStartDate, viewOption, setViewOption, weekDays, searchTerm, setSearchTerm }) {
     const [showCalendar, setShowCalendar] = useState(false);

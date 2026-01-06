@@ -1,5 +1,5 @@
 import React from 'react';
-import '../styles/EmployeeQuickAction.css';
+import '../../../styles/EmployeeQuickAction.css';
 
 export default function EmployeeQuickAction() {
     // Handle button clicks

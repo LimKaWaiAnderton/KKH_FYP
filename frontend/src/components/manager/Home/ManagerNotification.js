@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import NotificationData from '../mock/NotificationData';
-import '../styles/ManagerNotification.css';
+import NotificationData from '../../../mock/NotificationData';
+import '../../../styles/ManagerNotification.css';
 
 export default function ManagerNotification() {
     // State to track read notifications

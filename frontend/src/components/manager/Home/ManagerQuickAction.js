@@ -1,5 +1,5 @@
 import React from 'react';
-import '../styles/ManagerQuickAction.css';
+import '../../../styles/ManagerQuickAction.css';
 
 export default function ManagerQuickAction() {
     // Handle button clicks

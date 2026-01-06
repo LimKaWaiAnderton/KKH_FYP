@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import '../../styles/EmployeeSchedule.css';
-import EmployeeScheduleHead from '../../components/EmployeeScheduleHead';
-import EmployeeScheduleGrid from '../../components/EmployeeScheduleGrid';
+import EmployeeScheduleHead from '../../components/employee/Schedule/EmployeeScheduleHead';
+import EmployeeScheduleGrid from '../../components/employee/Schedule/EmployeeScheduleGrid';
 
 export default function EmployeeSchedule() {
     const [startDate, setStartDate] = useState(new Date());

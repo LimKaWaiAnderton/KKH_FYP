@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import '../styles/EmployeeScheduleGrid.css';
-import { scheduleData } from '../mock/ScheduleData';
-import { getShiftColor, getShiftTime } from '../mock/ShiftColorConfig';
+import '../../../styles/EmployeeScheduleGrid.css';
+import { scheduleData } from '../../../mock/ScheduleData';
+import { getShiftColor, getShiftTime } from '../../../mock/ShiftColorConfig';
 
 export default function EmployeeScheduleGrid({ weekDays, viewOption, searchTerm }) {
     const [collapsedDepartments, setCollapsedDepartments] = useState({});

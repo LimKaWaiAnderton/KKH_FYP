@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import "../../styles/EmployeeSideBar/EmployeeSideBar.css";
+import "../../styles/EmployeeSideBar/EmployeeSideBar.css"
 
 
 import {
