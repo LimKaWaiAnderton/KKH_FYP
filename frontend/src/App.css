@@ -36,3 +36,15 @@
     transform: rotate(360deg);
   }
 }
+
+.app-layout {
+  display: flex;
+}
+
+.main-content {
+  margin-left: 80px; /* Must match Sidebar width */
+  width: calc(100% - 80px); /* Fill remaining width */
+  min-height: 100vh;
+  background-color: #f8f9fa; /* Match the grey background of pages */
+}
+
