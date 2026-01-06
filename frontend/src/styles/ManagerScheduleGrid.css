@@ -1,0 +1,431 @@
+/* ==================== SCHEDULE GRID CONTAINER ==================== */
+.schedule-grid {
+  display: flex;                     /* Stack departments vertically */
+  flex-direction: column;            /* Arrange departments in column */
+  gap: 24px;                         /* Gap between departments */
+  margin: 0 32px;                    /* Same horizontal margin as schedule-head padding */
+}
+
+/* ==================== DEPARTMENT SECTION ==================== */
+.department-section {
+  background: white;                 /* White background */
+  border: 1px solid #E6E6E6;         /* Border around each department */
+  border-radius: 12px;               /* Rounded corners */
+  overflow: hidden;                  /* Hide overflow for clean borders */
+}
+
+/* Department Header */
+.department-header {
+  background: #F5F5F5;               /* Light gray background */
+  padding: 16px 24px;                /* Padding around header */
+  display: flex;                     /* Arrange items horizontally */
+  align-items: center;               /* Vertically center items */
+  gap: 12px;                         /* Space between icon and name */
+  cursor: pointer;                   /* Show pointer on hover */
+  font-weight: 600;                  /* Bold text */
+}
+
+.collapse-icon {
+  font-size: 12px;                   /* Small icon size */
+  transition: transform 0.2s;        /* Smooth rotation */
+}
+
+.collapse-icon.collapsed {
+  transform: rotate(-90deg);         /* Rotate when collapsed */
+}
+
+.department-name {
+  font-size: 16px;                   /* Department name size */
+}
+
+/* ==================== STAFFING ROW ==================== */
+.staffing-row {
+  display: grid;                     /* Grid layout */
+  grid-template-columns: 200px repeat(7, 1fr); /* Name column + 7 day columns */
+  border-bottom: 1px solid #E6E6E6;  /* Border below row */
+}
+
+.staffing-cell {
+  padding: 12px;                     /* Cell padding */
+  text-align: center;                /* Center text */
+  display: flex;                     /* Flex for alignment */
+  align-items: center;               /* Vertically center */
+  justify-content: center;           /* Horizontally center */
+  gap: 6px;                          /* Space between elements */
+  border-right: 1px solid #E6E6E6;   /* Border between cells */
+  color: #666;                       /* Gray text */
+}
+
+.staffing-cell:last-child {
+  border-right: none;                /* Remove border on last cell */
+}
+
+.staff-icon {
+  font-size: 16px;                   /* Icon size */
+}
+
+.staff-count {
+  font-size: 14px;                   /* Count text size */
+}
+
+.alert-icon {
+  color: #FF4444;                    /* Red color for alert */
+  font-size: 14px;                   /* Alert icon size */
+}
+
+/* ==================== EMPLOYEE ROW ==================== */
+.employee-row {
+  display: grid;                     /* Grid layout */
+  grid-template-columns: 200px repeat(7, 1fr); /* Name column + 7 day columns */
+  border-bottom: 1px solid #E6E6E6;  /* Border below row */
+}
+
+.employee-row:last-child {
+  border-bottom: none;               /* Remove border on last row */
+}
+
+.employee-name-cell {
+  padding: 16px 12px;                /* Padding for name cell to match search */
+  font-weight: 500;                  /* Medium weight text */
+  border-right: 1px solid #E6E6E6;   /* Border on right */
+  display: flex;                     /* Flex for alignment */
+  align-items: center;               /* Vertically center */
+  box-sizing: border-box;            /* Include border in width calculation */
+}
+
+/* ==================== SHIFT CELL ==================== */
+.shift-cell {
+  padding: 8px;                      /* Cell padding */
+  border-right: 1px solid #E6E6E6;   /* Border between cells */
+  display: flex;                     /* Flex for centering */
+  align-items: center;               /* Vertically center */
+  justify-content: center;           /* Horizontally center */
+  min-height: 66px;                  /* Fixed minimum height for consistency */
+  box-sizing: border-box;            /* Include padding in height calculation */
+}
+
+.shift-cell:last-child {
+  border-right: none;                /* Remove border on last cell */
+}
+
+/* ==================== SHIFT BOX ==================== */
+.shift-box {
+  padding: 8px 12px;                 /* Padding inside shift box */
+  padding-left: 24px;                /* Extra padding on left for spacing */
+  border-radius: 6px;                /* Rounded corners */
+  text-align: left;                  /* Left align text */
+  width: 100%;                       /* Full width of cell */
+  min-height: 50px;                  /* Minimum height */
+  display: flex;                     /* Flex layout */
+  flex-direction: column;            /* Stack items vertically */
+  justify-content: center;           /* Center vertically */
+  position: relative;                /* Position for pseudo-element */
+  overflow: hidden;                  /* Hide overflow */
+}
+
+.shift-box::before {
+  content: '';                       /* Empty content for colored line */
+  position: absolute;                /* Position absolutely */
+  left: 8px;                         /* 8px from left edge */
+  top: 8px;                          /* 8px from top */
+  bottom: 8px;                       /* 8px from bottom */
+  width: 4px;                        /* Line width */
+  border-radius: 2px;                /* Slightly rounded */
+}
+
+.shift-time {
+  font-size: 12px;                   /* Small text for time */
+  font-weight: 500;                  /* Medium weight */
+  margin-bottom: 2px;                /* Space below time */
+}
+
+.shift-type {
+  font-size: 13px;                   /* Shift type text size */
+  font-weight: 600;                  /* Bold text */
+}
+
+/* ==================== SHIFT COLORS ==================== */
+
+/* Green - PM shifts */
+.shift-box.green {
+  background: #D9F2E6;               /* Very light green background */
+  color: #16A574;                    /* Medium green text */
+  border: 1px solid #B8E5D3;         /* Light green border */
+}
+
+.shift-box.green::before {
+  background: #16A574;               /* Medium green line */
+}
+
+/* Gray - AM shifts */
+.shift-box.gray {
+  background: #EBEBEB;               /* Very light gray background */
+  color: #808080;                    /* Medium gray text */
+  border: 1px solid #D8D8D8;         /* Light gray border */
+}
+
+.shift-box.gray::before {
+  background: #808080;               /* Medium gray line */
+}
+
+/* Pink - PAM@HOME */
+.shift-box.pink {
+  background: #F5CDE5;               /* Light pink background */
+  color: #B8458C;                    /* Pink text */
+  border: 1px solid #E8A8D1;         /* Pink border */
+}
+
+.shift-box.pink::before {
+  background: #B8458C;               /* Pink line */
+}
+
+/* Blue - RRT */
+.shift-box.blue {
+  background: #D6E8FF;               /* Light blue background */
+  color: #1565C0;                    /* Dark blue text */
+  border: 1px solid #BBDEFB;         /* Blue border */
+}
+
+.shift-box.blue::before {
+  background: #1565C0;               /* Dark blue line */
+}
+
+/* Orange border - DO, RD */
+.shift-box.orange-border {
+  background: white;                 /* White background */
+  color: #FF9F40;                    /* Bright orange text */
+  border: 1px solid #FF9F40;         /* Bright orange border */
+}
+
+.shift-box.orange-border::before {
+  background: #FF9F40;               /* Bright orange line */
+}
+
+/* Orange filled - NNJ */
+.shift-box.orange-filled {
+  background: #FFE4C9;               /* Light orange background */
+  color: #F59D34;                    /* Orange text */
+  border: 1px solid #FFD4A6;         /* Orange border */
+}
+
+.shift-box.orange-filled::before {
+  background: #F59D34;               /* Orange line */
+}
+
+/* Gray border - AL (Annual Leave) */
+.shift-box.gray-border {
+  background: white;                 /* White background */
+  color: #999;                       /* Light gray text */
+  border: 1px solid #CCCCCC;         /* Light gray border */
+}
+
+.shift-box.gray-border::before {
+  background: #999;                  /* Light gray line */
+}
+
+/* ==================== ADD/REMOVE USERS ==================== */
+.add-remove-users-row {
+  display: grid;                     /* Grid layout */
+  grid-template-columns: 200px repeat(7, 1fr); /* Name column + 7 day columns */
+  border-top: 1px solid #E6E6E6;     /* Top border separator */
+}
+
+.add-remove-users-cell {
+  padding: 16px 12px;                /* Same padding as employee name cell */
+  display: flex;                     /* Flex for alignment */
+  align-items: center;               /* Vertically center */
+}
+
+.add-remove-users-btn {
+  display: flex;                     /* Flex for alignment */
+  align-items: center;               /* Vertically center */
+  gap: 8px;                          /* Space between icon and text */
+  background: none;                  /* No background */
+  border: none;                      /* No border */
+  color: #0066CC;                    /* Blue text color */
+  cursor: pointer;                   /* Show pointer on hover */
+  font-size: 14px;                   /* Text size */
+  padding: 0;                        /* No padding */
+  transition: color 0.2s;            /* Smooth color transition */
+}
+
+.add-remove-users-btn:hover {
+  color: #0052A3;                    /* Darker blue on hover */
+}
+
+.user-icon {
+  font-size: 16px;                   /* Icon size */
+}
+
+/* ==================== MODAL STYLES ==================== */
+.modal-overlay {
+  position: fixed;                   /* Fixed positioning */
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
+  display: flex;                     /* Flex for centering */
+  justify-content: center;           /* Center horizontally */
+  align-items: center;               /* Center vertically */
+  z-index: 1000;                     /* High z-index */
+}
+
+.modal-content {
+  background: white;                 /* White background */
+  border-radius: 8px;                /* Rounded corners */
+  width: 90%;                        /* Responsive width */
+  max-width: 400px;                  /* Max width constraint */
+  max-height: 80vh;                  /* Max height */
+  display: flex;                     /* Flex layout */
+  flex-direction: column;            /* Stack vertically */
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15); /* Shadow */
+}
+
+.modal-header {
+  padding: 20px;                     /* Header padding */
+  border-bottom: 1px solid #E0E0E0;  /* Bottom border */
+  display: flex;                     /* Flex layout */
+  justify-content: space-between;    /* Space between items */
+  align-items: center;               /* Center vertically */
+}
+
+.modal-header h3 {
+  margin: 0;                         /* Remove default margin */
+  font-size: 18px;                   /* Title size */
+  font-weight: 500;                  /* Medium weight */
+  color: #333;                       /* Dark text */
+}
+
+.modal-close-btn {
+  background: none;                  /* No background */
+  border: none;                      /* No border */
+  font-size: 28px;                   /* Large X */
+  color: #666;                       /* Gray color */
+  cursor: pointer;                   /* Pointer cursor */
+  padding: 0;                        /* No padding */
+  width: 32px;                       /* Fixed width */
+  height: 32px;                      /* Fixed height */
+  display: flex;                     /* Flex for centering */
+  align-items: center;               /* Center vertically */
+  justify-content: center;           /* Center horizontally */
+  border-radius: 4px;                /* Rounded corners */
+  transition: background-color 0.2s; /* Smooth transition */
+}
+
+.modal-close-btn:hover {
+  background-color: #F0F0F0;         /* Light gray on hover */
+}
+
+.modal-search {
+  padding: 16px 20px;                /* Search padding */
+  border-bottom: 1px solid #E0E0E0;  /* Bottom border */
+}
+
+.modal-search-input {
+  width: 100%;                       /* Full width */
+  padding: 10px 12px;                /* Input padding */
+  border: 1px solid #DDD;            /* Light border */
+  border-radius: 30px;               /* Rounded corners */
+  font-size: 14px;                   /* Text size */
+  box-sizing: border-box;            /* Include padding in width */
+  outline: none;                     /* Remove default outline */
+  transition: border-color 0.2s;     /* Smooth transition */
+}
+
+.modal-search-input:focus {
+  border-color: #1976D2;             /* Blue border on focus */
+}
+
+.modal-search-input::placeholder {
+  color: #999;                       /* Gray placeholder */
+}
+
+.modal-body {
+  flex: 1;                           /* Take remaining space */
+  overflow-y: auto;                  /* Scroll if needed */
+  padding: 16px 20px;                /* Body padding */
+}
+
+.modal-department-group {
+  margin-bottom: 20px;               /* Space between groups */
+}
+
+.modal-department-group:last-child {
+  margin-bottom: 0;                  /* No margin on last group */
+}
+
+.modal-department-label {
+  font-size: 13px;                   /* Small text */
+  color: #666;                       /* Gray color */
+  font-weight: 500;                  /* Medium weight */
+  margin-bottom: 12px;               /* Space below label */
+}
+
+.modal-employee-item {
+  margin-bottom: 8px;                /* Space between items */
+}
+
+.checkbox-label {
+  display: flex;                     /* Flex layout */
+  align-items: center;               /* Center vertically */
+  cursor: pointer;                   /* Pointer cursor */
+  padding: 8px;                      /* Label padding */
+  border-radius: 4px;                /* Rounded corners */
+  transition: background-color 0.2s; /* Smooth transition */
+}
+
+.checkbox-label:hover {
+  background-color: #F5F5F5;         /* Light gray on hover */
+}
+
+.employee-checkbox {
+  width: 20px;                       /* Checkbox size */
+  height: 20px;                      /* Checkbox size */
+  cursor: pointer;                   /* Pointer cursor */
+  margin-right: 12px;                /* Space to the right */
+  accent-color: #1976D2;             /* Blue checkbox color */
+}
+
+.employee-name-label {
+  font-size: 15px;                   /* Text size */
+  color: #333;                       /* Dark text */
+  user-select: none;                 /* Prevent text selection */
+}
+
+.modal-footer {
+  padding: 16px 20px;                /* Footer padding */
+  border-top: 1px solid #E0E0E0;     /* Top border */
+  display: flex;                     /* Flex layout */
+  justify-content: flex-end;         /* Align right */
+  gap: 12px;                         /* Space between buttons */
+}
+
+.modal-cancel-btn,
+.modal-save-btn {
+  padding: 10px 20px;                /* Button padding */
+  border: none;                      /* No border */
+  border-radius: 6px;                /* Rounded corners */
+  font-size: 14px;                   /* Text size */
+  font-weight: 500;                  /* Medium weight */
+  cursor: pointer;                   /* Pointer cursor */
+  transition: all 0.2s;              /* Smooth transition */
+}
+
+.modal-cancel-btn {
+  background-color: #F5F5F5;         /* Light gray background */
+  color: #333;                       /* Dark text */
+}
+
+.modal-cancel-btn:hover {
+  background-color: #E0E0E0;         /* Darker gray on hover */
+}
+
+.modal-save-btn {
+  background-color: #1976D2;         /* Blue background */
+  color: white;                      /* White text */
+}
+
+.modal-save-btn:hover {
+  background-color: #1565C0;         /* Darker blue on hover */
+}

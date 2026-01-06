@@ -1,0 +1,224 @@
+/* ==================== SCHEDULE GRID CONTAINER ==================== */
+.schedule-grid {
+  display: flex;                     /* Stack departments vertically */
+  flex-direction: column;            /* Arrange departments in column */
+  gap: 24px;                         /* Gap between departments */
+  margin: 0 32px;                    /* Same horizontal margin as schedule-head padding */
+}
+
+/* ==================== DEPARTMENT SECTION ==================== */
+.department-section {
+  background: white;                 /* White background */
+  border: 1px solid #E6E6E6;         /* Border around each department */
+  border-radius: 12px;               /* Rounded corners */
+  overflow: hidden;                  /* Hide overflow for clean borders */
+}
+
+/* Department Header */
+.department-header {
+  background: #F5F5F5;               /* Light gray background */
+  padding: 16px 24px;                /* Padding around header */
+  display: flex;                     /* Arrange items horizontally */
+  align-items: center;               /* Vertically center items */
+  gap: 12px;                         /* Space between icon and name */
+  cursor: pointer;                   /* Show pointer on hover */
+  font-weight: 600;                  /* Bold text */
+}
+
+.collapse-icon {
+  font-size: 12px;                   /* Small icon size */
+  transition: transform 0.2s;        /* Smooth rotation */
+}
+
+.collapse-icon.collapsed {
+  transform: rotate(-90deg);         /* Rotate when collapsed */
+}
+
+.department-name {
+  font-size: 16px;                   /* Department name size */
+}
+
+/* ==================== STAFFING ROW ==================== */
+.staffing-row {
+  display: grid;                     /* Grid layout */
+  grid-template-columns: 200px repeat(7, 1fr); /* Name column + 7 day columns */
+  border-bottom: 1px solid #E6E6E6;  /* Border below row */
+}
+
+.staffing-cell {
+  padding: 12px;                     /* Cell padding */
+  text-align: center;                /* Center text */
+  display: flex;                     /* Flex for alignment */
+  align-items: center;               /* Vertically center */
+  justify-content: center;           /* Horizontally center */
+  gap: 6px;                          /* Space between elements */
+  border-right: 1px solid #E6E6E6;   /* Border between cells */
+  color: #666;                       /* Gray text */
+}
+
+.staffing-cell:last-child {
+  border-right: none;                /* Remove border on last cell */
+}
+
+.staff-icon {
+  font-size: 16px;                   /* Icon size */
+}
+
+.staff-count {
+  font-size: 14px;                   /* Count text size */
+}
+
+.alert-icon {
+  color: #FF4444;                    /* Red color for alert */
+  font-size: 14px;                   /* Alert icon size */
+}
+
+/* ==================== EMPLOYEE ROW ==================== */
+.employee-row {
+  display: grid;                     /* Grid layout */
+  grid-template-columns: 200px repeat(7, 1fr); /* Name column + 7 day columns */
+  border-bottom: 1px solid #E6E6E6;  /* Border below row */
+}
+
+.employee-row:last-child {
+  border-bottom: none;               /* Remove border on last row */
+}
+
+.employee-name-cell {
+  padding: 16px 12px;                /* Padding for name cell to match search */
+  font-weight: 500;                  /* Medium weight text */
+  border-right: 1px solid #E6E6E6;   /* Border on right */
+  display: flex;                     /* Flex for alignment */
+  align-items: center;               /* Vertically center */
+  box-sizing: border-box;            /* Include border in width calculation */
+}
+
+/* ==================== SHIFT CELL ==================== */
+.shift-cell {
+  padding: 8px;                      /* Cell padding */
+  border-right: 1px solid #E6E6E6;   /* Border between cells */
+  display: flex;                     /* Flex for centering */
+  align-items: center;               /* Vertically center */
+  justify-content: center;           /* Horizontally center */
+  min-height: 66px;                  /* Fixed minimum height for consistency */
+  box-sizing: border-box;            /* Include padding in height calculation */
+}
+
+.shift-cell:last-child {
+  border-right: none;                /* Remove border on last cell */
+}
+
+/* ==================== SHIFT BOX ==================== */
+.shift-box {
+  padding: 8px 12px;                 /* Padding inside shift box */
+  padding-left: 24px;                /* Extra padding on left for spacing */
+  border-radius: 6px;                /* Rounded corners */
+  text-align: left;                  /* Left align text */
+  width: 100%;                       /* Full width of cell */
+  min-height: 50px;                  /* Minimum height */
+  display: flex;                     /* Flex layout */
+  flex-direction: column;            /* Stack items vertically */
+  justify-content: center;           /* Center vertically */
+  position: relative;                /* Position for pseudo-element */
+  overflow: hidden;                  /* Hide overflow */
+}
+
+.shift-box::before {
+  content: '';                       /* Empty content for colored line */
+  position: absolute;                /* Position absolutely */
+  left: 8px;                         /* 8px from left edge */
+  top: 8px;                          /* 8px from top */
+  bottom: 8px;                       /* 8px from bottom */
+  width: 4px;                        /* Line width */
+  border-radius: 2px;                /* Slightly rounded */
+}
+
+.shift-time {
+  font-size: 12px;                   /* Small text for time */
+  font-weight: 500;                  /* Medium weight */
+  margin-bottom: 2px;                /* Space below time */
+}
+
+.shift-type {
+  font-size: 13px;                   /* Shift type text size */
+  font-weight: 600;                  /* Bold text */
+}
+
+/* ==================== SHIFT COLORS ==================== */
+
+/* Green - PM shifts */
+.shift-box.green {
+  background: #D9F2E6;               /* Very light green background */
+  color: #16A574;                    /* Medium green text */
+  border: 1px solid #B8E5D3;         /* Light green border */
+}
+
+.shift-box.green::before {
+  background: #16A574;               /* Medium green line */
+}
+
+/* Gray - AM shifts */
+.shift-box.gray {
+  background: #EBEBEB;               /* Very light gray background */
+  color: #808080;                    /* Medium gray text */
+  border: 1px solid #D8D8D8;         /* Light gray border */
+}
+
+.shift-box.gray::before {
+  background: #808080;               /* Medium gray line */
+}
+
+/* Pink - PAM@HOME */
+.shift-box.pink {
+  background: #F5CDE5;               /* Light pink background */
+  color: #B8458C;                    /* Pink text */
+  border: 1px solid #E8A8D1;         /* Pink border */
+}
+
+.shift-box.pink::before {
+  background: #B8458C;               /* Pink line */
+}
+
+/* Blue - RRT */
+.shift-box.blue {
+  background: #D6E8FF;               /* Light blue background */
+  color: #1565C0;                    /* Dark blue text */
+  border: 1px solid #BBDEFB;         /* Blue border */
+}
+
+.shift-box.blue::before {
+  background: #1565C0;               /* Dark blue line */
+}
+
+/* Orange border - DO, RD */
+.shift-box.orange-border {
+  background: white;                 /* White background */
+  color: #FF9F40;                    /* Bright orange text */
+  border: 1px solid #FF9F40;         /* Bright orange border */
+}
+
+.shift-box.orange-border::before {
+  background: #FF9F40;               /* Bright orange line */
+}
+
+/* Orange filled - NNJ */
+.shift-box.orange-filled {
+  background: #FFE4C9;               /* Light orange background */
+  color: #F59D34;                    /* Orange text */
+  border: 1px solid #FFD4A6;         /* Orange border */
+}
+
+.shift-box.orange-filled::before {
+  background: #F59D34;               /* Orange line */
+}
+
+/* Gray border - AL (Annual Leave) */
+.shift-box.gray-border {
+  background: white;                 /* White background */
+  color: #999;                       /* Light gray text */
+  border: 1px solid #CCCCCC;         /* Light gray border */
+}
+
+.shift-box.gray-border::before {
+  background: #999;                  /* Light gray line */
+}

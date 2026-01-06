@@ -1,0 +1,83 @@
+/* Quick Actions Container */
+.quick-actions-container {
+    background-color: white; /* White background */
+    border-radius: 12px; /* Rounded corners */
+    padding: 20px 24px; /* Reduced padding */
+    margin-bottom: 20px; /* Space below container */
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08); /* Subtle shadow */
+    max-width: 100%; /* Don't exceed parent width */
+    box-sizing: border-box; /* Include padding in width calculation */
+}
+
+/* Header Section with Title and Refresh Icon */
+.quick-actions-header {
+    display: flex; /* Flexbox layout */
+    align-items: center; /* Vertically center items */
+    margin-bottom: 12px; /* Reduced space below header */
+    gap: 8px; /* Space between icon and title */
+}
+
+/* Refresh Icon */
+.refresh-icon {
+    font-size: 20px; /* Icon size */
+    color: #666; /* Gray color */
+    cursor: pointer; /* Pointer cursor on hover */
+}
+
+/* Section Title */
+.quick-actions-title {
+    font-size: 18px; /* Title font size */
+    font-weight: 600; /* Semi-bold weight */
+    color: #333; /* Dark gray text */
+    margin: 0; /* Remove default margin */
+}
+
+/* Action Buttons Row */
+.quick-actions-row {
+    display: flex; /* Flexbox layout */
+    gap: 16px; /* Space between buttons */
+    flex-wrap: wrap; /* Wrap to next line if needed */
+}
+
+/* Individual Action Button */
+.action-button {
+    flex: 1; /* Equal width for all buttons */
+    min-width: 150px; /* Minimum button width */
+    background-color: white; /* White background */
+    border: 1px solid #e0e0e0; /* Light gray border */
+    border-radius: 8px; /* Rounded corners */
+    padding: 16px 12px; /* Reduced padding */
+    display: flex; /* Flexbox for icon and text */
+    flex-direction: column; /* Stack icon and text vertically */
+    align-items: center; /* Center content horizontally */
+    gap: 8px; /* Space between icon and text */
+    cursor: pointer; /* Pointer cursor on hover */
+    transition: all 0.2s ease; /* Smooth transition for hover effects */
+}
+
+/* Action Button Hover Effect */
+.action-button:hover {
+    background-color: #f5f5f5; /* Light gray background on hover */
+    border-color: #d0d0d0; /* Darker border on hover */
+    transform: translateY(-2px); /* Slight lift effect */
+}
+
+/* Action Button Active/Pressed State */
+.action-button:active {
+    transform: translateY(0); /* Return to normal position */
+    background-color: #ebebeb; /* Slightly darker background */
+}
+
+/* Icon in Action Button */
+.action-icon {
+    font-size: 32px; /* Large icon size */
+    color: #333; /* Dark gray color */
+}
+
+/* Text in Action Button */
+.action-text {
+    font-size: 14px; /* Text font size */
+    font-weight: 500; /* Medium weight */
+    color: #333; /* Dark gray text */
+    text-align: center; /* Center text */
+}

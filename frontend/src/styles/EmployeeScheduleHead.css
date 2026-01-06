@@ -1,0 +1,272 @@
+/* ==================== SCHEDULE HEAD CONTAINER ==================== */
+.schedule-head {
+    padding: 24px 32px;
+    /* Add padding around the entire header - 24px top/bottom for consistent breathing space */
+}
+
+/* ==================== TOP CONTROLS ROW ==================== */
+.schedule-controls {
+    display: flex;
+    /* Arrange items horizontally */
+    gap: 16px;
+    /* Space between elements */
+    align-items: center;
+    /* Vertically center items */
+    margin-bottom: 24px;
+    /* Space below controls */
+}
+
+/* View Options */
+.view-options {
+    position: relative;
+    /* Position for dropdown */
+}
+
+/* View Options Button */
+.view-options-btn {
+    display: flex;
+    /* Align text and icon horizontally */
+    align-items: center;
+    /* Center items vertically */
+    gap: 8px;
+    /* Space between text and icon */
+    padding: 12px 20px;
+    /* Button padding */
+    background: white;
+    /* White background */
+    border: 1px solid #E6E6E6;
+    /* Light gray border */
+    border-radius: 24px;
+    /* Rounded pill shape */
+    cursor: pointer;
+    /* Show pointer on hover */
+    color: #0066CC;
+    /* Blue text color */
+    height: 48px;
+    /* Fixed height */
+}
+
+.dropdown-icon {
+    font-size: 12px;
+    /* Small icon size */
+}
+
+/* View Options Dropdown */
+.view-options-dropdown {
+    position: absolute;
+    /* Position dropdown */
+    top: 56px;
+    /* Below the button */
+    left: 0;
+    /* Align to left */
+    background: white;
+    /* White background */
+    border: 1px solid #E6E6E6;
+    /* Border */
+    border-radius: 12px;
+    /* Rounded corners */
+    z-index: 1000;
+    /* Above other elements */
+    min-width: 180px;
+    /* Minimum width */
+    overflow: hidden;
+    /* Hide overflow for clean corners */
+}
+
+.view-option-item {
+    padding: 12px 20px;
+    /* Item padding */
+    cursor: pointer;
+    /* Show pointer on hover */
+    transition: background-color 0.2s;
+    /* Smooth hover effect */
+}
+
+.view-option-item:hover {
+    background-color: #F5F5F5;
+    /* Light gray on hover */
+}
+
+/* Date Navigation */
+.date-navigation {
+    display: flex;
+    /* Arrange navigation items horizontally */
+    align-items: center;
+    /* Center items vertically */
+    gap: 0;
+    /* No gap - items are inside same container */
+    background: white;
+    /* White background */
+    border: 1px solid #E6E6E6;
+    /* Light gray border */
+    border-radius: 24px;
+    /* Rounded pill shape */
+    padding: 0 16px;
+    /* Horizontal padding */
+    height: 48px;
+    /* Same height as view options button */
+}
+
+.nav-arrow {
+    background: transparent;
+    /* No background */
+    border: none;
+    /* No border */
+    font-size: 20px;
+    /* Arrow size */
+    cursor: pointer;
+    /* Show pointer on hover */
+    padding: 4px 8px;
+    /* Button padding */
+    color: #666;
+    /* Gray color for arrows */
+}
+
+.date-range {
+    color: #666;
+    /* Gray text color */
+    padding: 0 16px;
+    /* Horizontal padding around date text */
+    white-space: nowrap;
+    /* Prevent text wrapping */
+    min-width: 150px;
+    /* Fixed minimum width to prevent shifting */
+    text-align: center;
+    /* Center the text */
+}
+
+/* Calendar Picker */
+.calendar-picker-wrapper {
+    position: relative;
+    /* Position for dropdown */
+}
+
+.calendar-icon-btn {
+    background: white;
+    /* White background */
+    border: 1px solid #E6E6E6;
+    /* Light gray border */
+    border-radius: 24px;
+    /* Rounded pill shape - same as view options */
+    font-size: 20px;
+    /* Icon size */
+    cursor: pointer;
+    /* Show pointer on hover */
+    padding: 12px;
+    /* Padding around icon */
+    color: #0066CC;
+    /* Blue icon color */
+    height: 48px;
+    /* Same height as other buttons */
+    width: 48px;
+    /* Square button */
+    display: flex;
+    /* Center icon */
+    align-items: center;
+    /* Vertically center */
+    justify-content: center;
+    /* Horizontally center */
+}
+
+.calendar-input {
+    position: absolute;
+    /* Position dropdown */
+    top: 56px;
+    /* Below the button */
+    right: 0;
+    /* Align to right */
+    padding: 8px;
+    /* Input padding */
+    border: 1px solid #E6E6E6;
+    /* Border */
+    border-radius: 8px;
+    /* Rounded corners */
+    background: white;
+    /* White background */
+    z-index: 1000;
+    /* Above other elements */
+}
+
+/* ==================== SEARCH AND DAYS ROW ==================== */
+.schedule-header-row {
+    display: flex;
+    /* Arrange search and days horizontally */
+    gap: 0;
+    /* No gap - connected layout */
+    align-items: stretch;
+    /* Stretch items to same height */
+    border: 1px solid #E6E6E6;
+    /* Border around entire row */
+    border-radius: 12px;
+    /* Rounded corners */
+    overflow: hidden;
+    /* Hide overflow for clean borders */
+    background: white;
+    /* White background */
+}
+
+/* Search Container */
+.search-container {
+    flex-shrink: 0;
+    /* Don't shrink search box */
+    width: 200px;
+    /* Fixed width for search */
+    border-right: 1px solid #E6E6E6;
+    /* Border on right side */
+    display: flex;
+    /* Flex for centering */
+    align-items: center;
+    /* Vertically center input */
+}
+
+.search-input {
+    width: 100%;
+    /* Full width of container */
+    padding: 16px 12px;
+    /* Input padding */
+    border: none;
+    /* Remove border */
+    background-color: transparent;
+    /* Transparent background */
+    outline: none;
+    /* Remove outline on focus */
+}
+
+.search-input::placeholder {
+    color: #999;
+    /* Placeholder text color */
+}
+
+/* Days Row */
+.days-row {
+    display: flex;
+    /* Arrange days horizontally */
+    flex: 1;
+    /* Take remaining space */
+}
+
+.day-item {
+    flex: 1;
+    /* Each day takes equal space */
+    text-align: left;
+    /* Left align text in each day */
+    padding: 16px 8px;
+    /* Padding around each day */
+    border-right: 1px solid #E6E6E6;
+    /* Border between days */
+}
+
+.day-item:last-child {
+    border-right: none;
+    /* Remove border on last day */
+}
+
+.day-number {
+    margin-bottom: 4px;
+    /* Space between number and name */
+}
+
+.day-name {
+    color: #666;
+    /* Gray text for day names */
+}
