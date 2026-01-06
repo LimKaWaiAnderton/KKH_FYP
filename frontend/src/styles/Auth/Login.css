@@ -1,0 +1,91 @@
+.login-page {
+  min-height: 100vh;
+  background: #f5f7fa;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-logo {
+  width: 280px;
+  margin-bottom: 40px;
+}
+
+.login-card {
+  background: #ffffff;
+  padding: 32px;
+  border-radius: 12px;
+  width: 360px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+}
+
+.input-group {
+  display: flex;
+  align-items: center;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-bottom: 16px;
+}
+
+.input-group .icon {
+  margin-right: 8px;
+  font-size: 18px !important;
+  color: var(--primary-color-dark);
+}
+
+.input-group input {
+  border: none;
+  outline: none;
+  width: 100%;
+  font-size: 14px;
+}
+
+.input-group:focus-within {
+  border-color: var(--primary-color-dark);
+}
+
+.login-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  margin-bottom: 20px;
+}
+
+.login-options label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.forgot {
+  color: #6b7280;
+  cursor: pointer;
+}
+
+.login-btn {
+  width: 100%;
+  padding: 12px 0;         
+  background-color: #0b5ed7;
+  color: white;
+  border: none;
+  border-radius: 999px;     /* pill */
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 24px;
+}
+
+.login-btn:hover {
+  background-color: #094db3;
+}
+
+.login-actions {
+  display: flex;
+  justify-content: center;
+}
+

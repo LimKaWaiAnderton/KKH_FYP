@@ -1,0 +1,45 @@
+/* Main pill container */
+.month-selector {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14 px;
+  width: 250px;
+
+  padding: 10px 20px;
+  background: white;
+
+  border: 1px solid var(--border-color);
+  border-radius: 999px; /* gives the small oval look */
+
+  user-select: none;
+  cursor: default;
+  margin-top: 20px;
+}
+
+/* Arrow buttons */
+.ms-arrow {
+  width: 40px;
+  height: 30px;
+  margin-left: 5px;
+  margin-right: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: white;
+  border: none;
+  border-radius: 50%;
+
+  font-size: 25px;
+  color: var(--primary-color-dark);
+  cursor: pointer;
+
+  transition: background 0.2s ease;
+}
+
+/* The month text */
+.ms-label {
+  font-weight: 500;
+  color: var(--primary-color-dark);
+}
