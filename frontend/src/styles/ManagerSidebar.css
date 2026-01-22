@@ -1,0 +1,167 @@
+
+/* =========================== MAIN SIDEBAR CONTAINER =========================== */
+.navbar {
+    /* Collapsed width (only icons visible but centered in their slot) */
+    width: 70px;
+
+    /* Full height of viewport */
+    height: 100vh;
+
+    /* Background + text color */
+    background-color: #ffffff;
+    color: #555;
+
+    /* Stack top + bottom sections vertically */
+    display: flex;
+    flex-direction: column;
+
+    /* Slight border on the right side */
+    border-right: 1px solid #e6e6e6;
+
+    /* Add some padding at the top */
+    padding-top: 16px;
+    box-sizing: border-box;
+
+    /* Smooth expand / collapse animation */
+    transition: width 0.25s ease-in-out;
+
+    /* Hide overflowing content when collapsed */
+    overflow: hidden;
+}
+
+/* Sidebar width when hovered / expanded */
+.navbar.expanded {
+    width: 220px;
+}
+
+
+/* =========================== TOP + BOTTOM SECTIONS =========================== */
+
+/* Top group (Home, Schedule, Requests) */
+.nav-top {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* Bottom group (Settings, Logout), fixed at bottom */
+.nav-bottom {
+    margin-top: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding-top: 12px;
+    border-top: 1px solid #f0f0f0;
+}
+
+/* =========================== NAV ITEMS =========================== */
+
+/* Row container – full width, NO visual styling here */
+.nav-item {
+    margin: 0;
+}
+
+/* Actual pill (icon + label) */
+.nav-pill {
+    display: grid;
+    grid-template-columns: 70px 1fr;
+    align-items: center;
+    padding: 12px 0;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 18px;
+
+    position: relative;      /* for ::before background */
+    width: 100%;
+    box-sizing: border-box;
+    z-index: 1;
+
+    /* colour transitions only – background handled by ::before */
+    transition: color 0.2s ease;
+}
+
+/* Background layer for pill */
+.nav-pill::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;          /* full width by default */
+    right: 0;
+    border-radius: 12px;
+    background: transparent;
+    z-index: -1;      /* sit behind icon + text */
+    transition: background 0.2s ease, left 0.2s ease, right 0.2s ease;
+}
+
+/* When navbar is expanded → add left/right gap to pill background */
+.navbar.expanded .nav-pill::before {
+    left: 8px;
+    right: 8px;
+}
+
+/* =========================== ICONS =========================== */
+
+.icon {
+    font-size: 24px !important; 
+    justify-self: center;    /* centre inside first column */
+}
+
+/* Placeholder used for submenu items so text lines up with main items */
+.icon-placeholder {
+    width: 100%;
+    height: 20px;
+    justify-self: center;
+}
+
+/* =========================== LABELS (TEXT) =========================== */
+
+.label,
+.sub-label {
+    white-space: nowrap;
+}
+
+/* =========================== GROUP / SUBMENU =========================== */
+
+.nav-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.nav-submenu {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+/* =========================== ACTIVE STATES =========================== */
+
+/* Active for main items and submenu items – background on ::before */
+.nav-item.active .nav-pill::before,
+.nav-item.active-sub .nav-pill::before {
+    background: #f7f7f7;
+}
+
+/* Active icon + text colour */
+.nav-item.active .icon,
+.nav-item.active-sub .icon {
+    color: #2f79bb;
+}
+
+.nav-item.active .label,
+.nav-item.active-sub .label,
+.nav-item.active-sub .sub-label {
+    color: #2f79bb;
+}
+
+/* Hover for non-active items */
+.nav-item:not(.active):not(.active-sub):hover .nav-pill::before {
+    background: #f7f7f7;
+}
+
+.nav-item:not(.active):not(.active-sub):hover .icon,
+.nav-item:not(.active):not(.active-sub):hover .label,
+.nav-item:not(.active):not(.active-sub):hover .sub-label {
+    color: #2f79bb;
+}
