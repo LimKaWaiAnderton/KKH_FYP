@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import "../../styles/EmployeeSideBar/EmployeeSideBar.css"
+import "../../../styles/ManagerSidebar.css";
 
 
 import {
@@ -8,10 +8,11 @@ import {
     HiOutlineCalendar,
     HiOutlineClipboardList,
     HiOutlineCog,
+    HiOutlineUser,
 } from "react-icons/hi";
 import { HiOutlineArrowRightStartOnRectangle } from "react-icons/hi2";
 
-export default function EmployeeSidebar({ expanded, onMouseEnter, onMouseLeave }) {
+export default function ManagerSidebar({ expanded, onMouseEnter, onMouseLeave }) {
     const [openRequests, setOpenRequests] = useState(false);
 
     const navigate = useNavigate();
@@ -21,25 +22,24 @@ export default function EmployeeSidebar({ expanded, onMouseEnter, onMouseLeave }
     // Simple "active key" based on current URL
     let activeKey = "";
 
-    if (pathname === "/employee/home") {
+    if (pathname === "/manager/home") {
         activeKey = "home";
-    } else if (pathname === "/employee/schedule") {
+    } else if (pathname === "/manager/schedule") {
         activeKey = "schedule";
-    } else if (pathname === "/employee/settings") {
+    } else if (pathname === "/manager/users") {
+        activeKey = "users"; // Manager-only: Users management
+    } else if (pathname === "/manager/settings") {
         activeKey = "settings";
-    } else if (pathname.startsWith("/employee/requests/leave")) {
+    } else if (pathname.startsWith("/manager/requests/leave")) {
         activeKey = "leave";
-    } else if (pathname.startsWith("/employee/requests/shift")) {
-        activeKey = "shift";
-    } else if (pathname.startsWith("/employee/requests/")) {
+    } else if (pathname.startsWith("/manager/requests/")) {
         activeKey = "requests";
     }
 
     // Requests parent should be active whenever any requests page is active
     const isRequestsParentActive =
         activeKey === "requests" ||
-        activeKey === "leave" ||
-        activeKey === "shift";
+        activeKey === "leave";
 
     // Close submenu when navigating away from requests
     useEffect(() => {
@@ -69,7 +69,7 @@ export default function EmployeeSidebar({ expanded, onMouseEnter, onMouseLeave }
                 <div
                     className={`nav-item ${activeKey === "home" ? "active" : ""}`}
                 >
-                    <div className="nav-pill" onClick={() => go("/employee/home")}>
+                    <div className="nav-pill" onClick={() => go("/manager/home")}>
                         <HiOutlineHome className="icon" />
                         {expanded && <span className="label">Home</span>}
                     </div>
@@ -79,7 +79,7 @@ export default function EmployeeSidebar({ expanded, onMouseEnter, onMouseLeave }
                 <div
                     className={`nav-item ${activeKey === "schedule" ? "active" : ""}`}
                 >
-                    <div className="nav-pill" onClick={() => go("/employee/schedule")}>
+                    <div className="nav-pill" onClick={() => go("/manager/schedule")}>
                         <HiOutlineCalendar className="icon" />
                         {expanded && <span className="label">Schedule</span>}
                     </div>
@@ -100,7 +100,7 @@ export default function EmployeeSidebar({ expanded, onMouseEnter, onMouseLeave }
                         </div>
                     </div>
 
-                    {/* Submenu: Leave + Shift test */}
+                    {/* Submenu: Leave only */}
                     {showRequestsSubmenu && (
                         <div className="nav-submenu">
                             {/* Leave */}
@@ -110,28 +110,24 @@ export default function EmployeeSidebar({ expanded, onMouseEnter, onMouseLeave }
                             >
                                 <div
                                     className="nav-pill"
-                                    onClick={() => go("/employee/requests/leave")}
+                                    onClick={() => go("/manager/requests/leave")}
                                 >
                                     <span className="icon-placeholder" />
                                     {expanded && <span className="sub-label">Leave</span>}
                                 </div>
                             </div>
-
-                            {/* Shift */}
-                            <div
-                                className={`nav-item nav-sub ${activeKey === "shift" ? "active-sub" : ""
-                                    }`}
-                            >
-                                <div
-                                    className="nav-pill"
-                                    onClick={() => go("/employee/requests/shift")}
-                                >
-                                    <span className="icon-placeholder" />
-                                    {expanded && <span className="sub-label">Shift</span>}
-                                </div>
-                            </div>
                         </div>
                     )}
+                </div>
+
+                {/* USERS - Manager only */}
+                <div
+                    className={`nav-item ${activeKey === "users" ? "active" : ""}`}
+                >
+                    <div className="nav-pill" onClick={() => go("/manager/users")}>
+                        <HiOutlineUser className="icon" />
+                        {expanded && <span className="label">Users</span>}
+                    </div>
                 </div>
             </div>
 
@@ -141,7 +137,7 @@ export default function EmployeeSidebar({ expanded, onMouseEnter, onMouseLeave }
                 <div
                     className={`nav-item ${activeKey === "settings" ? "active" : ""}`}
                 >
-                    <div className="nav-pill" onClick={() => go("/employee/settings")}>
+                    <div className="nav-pill" onClick={() => go("/manager/settings")}>
                         <HiOutlineCog className="icon" />
                         {expanded && <span className="label">Settings</span>}
                     </div>

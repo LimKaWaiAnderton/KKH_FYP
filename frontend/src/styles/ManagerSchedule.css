@@ -1,0 +1,28 @@
+/* ==================== SCHEDULE PAGE CONTAINER ==================== */
+.schedule-page {
+  min-height: 100%;          /* Minimum full height of parent container */
+  display: flex;             /* Enable flexbox layout */
+  flex-direction: column;    /* Stack children vertically */
+}
+
+/* ==================== HEADER SECTION ==================== */
+.schedule-header {
+  background-color: white;   /* White background for header */
+  padding: 24px 32px;        /* Vertical padding: 24px, Horizontal padding: 32px */
+  margin-bottom: 24px;       /* Space below the header */
+}
+
+/* ==================== PAGE TITLE ==================== */
+.page-title {
+  font-size: 28px;                      /* Large text size for main heading */
+  margin: 0;                            /* Remove default margin */
+  color: var(--primary-color-dark);     /* Dark text color from CSS variables */
+}
+
+/* ==================== SCHEDULE CONTENT WRAPPER ==================== */
+.schedule-content-wrapper {
+  background-color: white;   /* White background */
+  margin: 0 32px 32px 32px;  /* Same horizontal margin as grid, extra bottom margin */
+  padding: 0 0 24px 0;       /* Bottom padding for breathing space with white background */
+  border-radius: 12px;       /* Reduced rounded corners */
+}
