@@ -1,5 +1,5 @@
 /* Quick Actions Container */
-.quick-actions-container {
+.manager-quick-actions-container {
     background-color: white; /* White background */
     border-radius: 12px; /* Rounded corners */
     padding: 20px 24px; /* Reduced padding */
@@ -10,7 +10,7 @@
 }
 
 /* Header Section with Title and Refresh Icon */
-.quick-actions-header {
+.manager-quick-actions-header {
     display: flex; /* Flexbox layout */
     align-items: center; /* Vertically center items */
     margin-bottom: 12px; /* Reduced space below header */
@@ -18,14 +18,14 @@
 }
 
 /* Refresh Icon */
-.refresh-icon {
+.manager-refresh-icon {
     font-size: 20px; /* Icon size */
     color: #666; /* Gray color */
     cursor: pointer; /* Pointer cursor on hover */
 }
 
 /* Section Title */
-.quick-actions-title {
+.manager-quick-actions-title {
     font-size: 18px; /* Title font size */
     font-weight: 600; /* Semi-bold weight */
     color: #333; /* Dark gray text */
@@ -33,51 +33,56 @@
 }
 
 /* Action Buttons Row */
-.quick-actions-row {
+.manager-quick-actions-row {
     display: flex; /* Flexbox layout */
     gap: 16px; /* Space between buttons */
     flex-wrap: wrap; /* Wrap to next line if needed */
 }
 
 /* Individual Action Button */
-.action-button {
+.manager-action-button {
     flex: 1; /* Equal width for all buttons */
     min-width: 150px; /* Minimum button width */
     background-color: white; /* White background */
     border: 1px solid #e0e0e0; /* Light gray border */
     border-radius: 8px; /* Rounded corners */
-    padding: 16px 12px; /* Reduced padding */
+    padding: 16px 12px; /* Increased padding for taller height */
     display: flex; /* Flexbox for icon and text */
-    flex-direction: column; /* Stack icon and text vertically */
-    align-items: center; /* Center content horizontally */
-    gap: 8px; /* Space between icon and text */
+    flex-direction: row; /* Stack icon and text horizontally */
+    align-items: center; /* Center content vertically */
+    justify-content: center; /* Center content horizontally */
+    gap: 12px; /* Space between icon and text */
     cursor: pointer; /* Pointer cursor on hover */
     transition: all 0.2s ease; /* Smooth transition for hover effects */
 }
 
 /* Action Button Hover Effect */
-.action-button:hover {
+.manager-action-button:hover {
     background-color: #f5f5f5; /* Light gray background on hover */
     border-color: #d0d0d0; /* Darker border on hover */
     transform: translateY(-2px); /* Slight lift effect */
 }
 
 /* Action Button Active/Pressed State */
-.action-button:active {
+.manager-action-button:active {
     transform: translateY(0); /* Return to normal position */
     background-color: #ebebeb; /* Slightly darker background */
 }
 
 /* Icon in Action Button */
-.action-icon {
-    font-size: 32px; /* Large icon size */
+.manager-action-icon {
+    font-size: 20px; /* Icon size to match design */
     color: #333; /* Dark gray color */
+    display: flex; /* Flex for icon alignment */
+    align-items: center; /* Vertically center icon */
 }
 
 /* Text in Action Button */
-.action-text {
+.manager-action-text {
     font-size: 14px; /* Text font size */
     font-weight: 500; /* Medium weight */
     color: #333; /* Dark gray text */
-    text-align: center; /* Center text */
+    white-space: nowrap; /* Prevent text wrapping */
+    display: flex; /* Flex for text alignment */
+    align-items: center; /* Vertically center text */
 }

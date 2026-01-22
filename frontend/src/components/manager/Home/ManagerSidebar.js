@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import "../styles/ManagerSidebar.css";
+import "../../../styles/ManagerSidebar.css";
 
 
 import {
@@ -8,11 +8,11 @@ import {
     HiOutlineCalendar,
     HiOutlineClipboardList,
     HiOutlineCog,
+    HiOutlineUser,
 } from "react-icons/hi";
 import { HiOutlineArrowRightStartOnRectangle } from "react-icons/hi2";
 
-export default function ManagerSidebar() {
-    const [expanded, setExpanded] = useState(false);
+export default function ManagerSidebar({ expanded, onMouseEnter, onMouseLeave }) {
     const [openRequests, setOpenRequests] = useState(false);
 
     const navigate = useNavigate();
@@ -32,8 +32,6 @@ export default function ManagerSidebar() {
         activeKey = "settings";
     } else if (pathname.startsWith("/manager/requests/leave")) {
         activeKey = "leave";
-    } else if (pathname.startsWith("/manager/requests/shift")) {
-        activeKey = "shift";
     } else if (pathname.startsWith("/manager/requests/")) {
         activeKey = "requests";
     }
@@ -41,8 +39,14 @@ export default function ManagerSidebar() {
     // Requests parent should be active whenever any requests page is active
     const isRequestsParentActive =
         activeKey === "requests" ||
-        activeKey === "leave" ||
-        activeKey === "shift";
+        activeKey === "leave";
+
+    // Close submenu when navigating away from requests
+    useEffect(() => {
+        if (!isRequestsParentActive) {
+            setOpenRequests(false);
+        }
+    }, [isRequestsParentActive]);
 
     // Show submenu when sidebar is expanded AND
     // either user opened it OR we are inside a requests route
@@ -56,8 +60,8 @@ export default function ManagerSidebar() {
     return (
         <div
             className={`navbar ${expanded ? "expanded" : ""}`}
-            onMouseEnter={() => setExpanded(true)}
-            onMouseLeave={() => setExpanded(false)}
+            onMouseEnter={onMouseEnter}
+            onMouseLeave={onMouseLeave}
         >
             {/* ---------- TOP SECTION ---------- */}
             <div className="nav-top">
@@ -96,7 +100,7 @@ export default function ManagerSidebar() {
                         </div>
                     </div>
 
-                    {/* Submenu: Leave + Shift */}
+                    {/* Submenu: Leave only */}
                     {showRequestsSubmenu && (
                         <div className="nav-submenu">
                             {/* Leave */}
@@ -112,20 +116,6 @@ export default function ManagerSidebar() {
                                     {expanded && <span className="sub-label">Leave</span>}
                                 </div>
                             </div>
-
-                            {/* Shift */}
-                            <div
-                                className={`nav-item nav-sub ${activeKey === "shift" ? "active-sub" : ""
-                                    }`}
-                            >
-                                <div
-                                    className="nav-pill"
-                                    onClick={() => go("/manager/requests/shift")}
-                                >
-                                    <span className="icon-placeholder" />
-                                    {expanded && <span className="sub-label">Shift</span>}
-                                </div>
-                            </div>
                         </div>
                     )}
                 </div>
@@ -135,7 +125,7 @@ export default function ManagerSidebar() {
                     className={`nav-item ${activeKey === "users" ? "active" : ""}`}
                 >
                     <div className="nav-pill" onClick={() => go("/manager/users")}>
-                        <HiOutlineClipboardList className="icon" />
+                        <HiOutlineUser className="icon" />
                         {expanded && <span className="label">Users</span>}
                     </div>
                 </div>

@@ -51,9 +51,14 @@
   display: flex;                     /* Flex for alignment */
   align-items: center;               /* Vertically center */
   justify-content: center;           /* Horizontally center */
-  gap: 6px;                          /* Space between elements */
   border-right: 1px solid #E6E6E6;   /* Border between cells */
   color: #666;                       /* Gray text */
+}
+
+.staffing-content {
+  display: flex;                     /* Flex for content alignment */
+  align-items: center;               /* Vertically center content */
+  gap: 6px;                          /* Space between elements */
 }
 
 .staffing-cell:last-child {
@@ -62,15 +67,21 @@
 
 .staff-icon {
   font-size: 16px;                   /* Icon size */
+  display: flex;                     /* Flex for icon alignment */
+  align-items: center;               /* Vertically center icon */
 }
 
 .staff-count {
   font-size: 14px;                   /* Count text size */
+  display: flex;                     /* Flex for text alignment */
+  align-items: center;               /* Vertically center text */
 }
 
 .alert-icon {
   color: #FF4444;                    /* Red color for alert */
-  font-size: 14px;                   /* Alert icon size */
+  font-size: 16px;                   /* Alert icon size - matches staff-icon */
+  display: flex;                     /* Flex for icon alignment */
+  align-items: center;               /* Vertically center icon */
 }
 
 /* ==================== EMPLOYEE ROW ==================== */

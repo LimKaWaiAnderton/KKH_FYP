@@ -1,14 +1,20 @@
 import React, { useState } from 'react';
+import { HiOutlineUser, HiOutlinePencil, HiOutlineExclamation, HiOutlineCog } from 'react-icons/hi';
 import '../../../styles/ManagerScheduleGrid.css';
 import { scheduleData } from '../../../mock/ScheduleData';
 import { getShiftColor, getShiftTime } from '../../../mock/ShiftColorConfig';
+import ScheduleGroupsModal from './ScheduleGroupsModal';
+import AddRemoveUsersModal from './AddRemoveUsersModal';
 
-export default function ManagerScheduleGrid({ weekDays, viewOption, searchTerm }) {
+export default function ManagerScheduleGrid({ weekDays, viewOption, searchTerm, onAddShift }) {
     const [collapsedDepartments, setCollapsedDepartments] = useState({});
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedDepartment, setSelectedDepartment] = useState(null);
-    const [modalSearchTerm, setModalSearchTerm] = useState('');
-    const [selectedEmployees, setSelectedEmployees] = useState({});
+    const [isGroupsModalOpen, setIsGroupsModalOpen] = useState(false);
+    const [scheduleGroups, setScheduleGroups] = useState([
+        { id: 1, name: 'CE', userCount: 4 },
+        { id: 2, name: '56', userCount: 2 }
+    ]);
 
     // Transform schedule data to match the component's expected format
     const transformScheduleData = () => {
@@ -82,50 +88,31 @@ export default function ManagerScheduleGrid({ weekDays, viewOption, searchTerm }
     const openModal = (dept) => {
         setSelectedDepartment(dept);
         setIsModalOpen(true);
-        setModalSearchTerm('');
-        
-        // Initialize selected employees based on current department
-        const selected = {};
-        employees.forEach(emp => {
-            selected[emp.name] = emp.department === dept;
-        });
-        setSelectedEmployees(selected);
     };
 
     const closeModal = () => {
         setIsModalOpen(false);
         setSelectedDepartment(null);
-        setModalSearchTerm('');
     };
 
-    const toggleEmployeeSelection = (employeeName) => {
-        setSelectedEmployees(prev => ({
-            ...prev,
-            [employeeName]: !prev[employeeName]
-        }));
+    const openGroupsModal = (dept) => {
+        setSelectedDepartment(dept);
+        setIsGroupsModalOpen(true);
     };
 
-    const handleSaveChanges = () => {
+    const closeGroupsModal = () => {
+        setIsGroupsModalOpen(false);
+        setSelectedDepartment(null);
+    };
+
+    const handleSaveGroups = (groups) => {
+        setScheduleGroups(groups);
+        console.log('Saved groups:', groups);
+    };
+
+    const handleSaveEmployees = (selectedEmployees) => {
         // TODO: Implement save logic to update employee assignments
         console.log('Selected employees:', selectedEmployees);
-        closeModal();
-    };
-
-    // Group employees for the modal by department
-    const getEmployeesByDepartment = () => {
-        const filteredBySearch = employees.filter(emp => 
-            emp.name.toLowerCase().includes(modalSearchTerm.toLowerCase())
-        );
-        
-        const grouped = {};
-        filteredBySearch.forEach(emp => {
-            if (!grouped[emp.department]) {
-                grouped[emp.department] = [];
-            }
-            grouped[emp.department].push(emp);
-        });
-        
-        return grouped;
     };
 
     return (
@@ -138,12 +125,23 @@ export default function ManagerScheduleGrid({ weekDays, viewOption, searchTerm }
                 return (
                     <div key={dept} className="department-section">
                         {/* Department Header */}
-                        <div
-                            className="department-header"
-                            onClick={() => toggleDepartment(dept)}
-                        >
-                            <span className={`collapse-icon ${isCollapsed ? 'collapsed' : ''}`}>▼</span>
-                            <span className="department-name">{dept}</span>
+                        <div className="department-header">
+                            <div 
+                                className="department-header-left"
+                                onClick={() => toggleDepartment(dept)}
+                            >
+                                <span className={`collapse-icon ${isCollapsed ? 'collapsed' : ''}`}>▼</span>
+                                <span className="department-name">{dept}</span>
+                            </div>
+                            <button 
+                                className="department-settings-btn"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    openGroupsModal(dept);
+                                }}
+                            >
+                                <HiOutlineCog />
+                            </button>
                         </div>
 
                         {!isCollapsed && (
@@ -153,9 +151,11 @@ export default function ManagerScheduleGrid({ weekDays, viewOption, searchTerm }
                                     <div className="employee-name-cell"></div>
                                     {weekDays.map((day, index) => (
                                         <div key={index} className="staffing-cell">
-                                            <span className="staff-icon">👤</span>
-                                            <span className="staff-count">{getStaffingCount(dept, day.dateString)}</span>
-                                            {index === 0 && <span className="alert-icon">⚠️</span>}
+                                            <div className="staffing-content">
+                                                <span className="staff-icon"><HiOutlineUser /></span>
+                                                <span className="staff-count">{getStaffingCount(dept, day.dateString)}</span>
+                                                {index === 0 && <span className="alert-icon"><HiOutlineExclamation /></span>}
+                                            </div>
                                         </div>
                                     ))}
                                 </div>
@@ -166,10 +166,11 @@ export default function ManagerScheduleGrid({ weekDays, viewOption, searchTerm }
                                         <div className="employee-name-cell">{employee.name}</div>
                                         {weekDays.map((day, dayIndex) => {
                                             const shift = getShiftForDate(employee, day.dateString);
+                                            const isEmpty = !shift || shift.type === null;
 
                                             return (
                                                 <div key={dayIndex} className="shift-cell">
-                                                    {shift && (
+                                                    {shift && shift.type ? (
                                                         <div className={`shift-box ${shift.color}`}>
                                                             {shift.time && (
                                                                 <div className="shift-time">{shift.time}</div>
@@ -178,6 +179,13 @@ export default function ManagerScheduleGrid({ weekDays, viewOption, searchTerm }
                                                                 {shift.subtitle || shift.type}
                                                             </div>
                                                         </div>
+                                                    ) : isEmpty && (
+                                                        <button 
+                                                            className="add-shift-btn"
+                                                            onClick={() => onAddShift(day.dateString, employee)}
+                                                        >
+                                                            +
+                                                        </button>
                                                     )}
                                                 </div>
                                             );
@@ -189,7 +197,7 @@ export default function ManagerScheduleGrid({ weekDays, viewOption, searchTerm }
                                 <div className="add-remove-users-row">
                                     <div className="add-remove-users-cell">
                                         <button className="add-remove-users-btn" onClick={() => openModal(dept)}>
-                                            <span className="user-icon">👤</span>
+                                            <span className="user-icon"><HiOutlinePencil /></span>
                                             Add/remove users
                                         </button>
                                     </div>
@@ -202,52 +210,21 @@ export default function ManagerScheduleGrid({ weekDays, viewOption, searchTerm }
             </div>
 
             {/* Add/Remove Users Modal */}
-            {isModalOpen && (
-                <div className="modal-overlay" onClick={closeModal}>
-                    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-                        <div className="modal-header">
-                            <h3>Add/Remove Users - {selectedDepartment}</h3>
-                            <button className="modal-close-btn" onClick={closeModal}>×</button>
-                        </div>
-                        
-                        <div className="modal-search">
-                            <input
-                                type="text"
-                                placeholder="Search by name.."
-                                value={modalSearchTerm}
-                                onChange={(e) => setModalSearchTerm(e.target.value)}
-                                className="modal-search-input"
-                            />
-                        </div>
+            <AddRemoveUsersModal
+                isOpen={isModalOpen}
+                onClose={closeModal}
+                onSave={handleSaveEmployees}
+                department={selectedDepartment}
+                employees={employees}
+            />
 
-                        <div className="modal-body">
-                            {Object.entries(getEmployeesByDepartment()).map(([dept, deptEmployees]) => (
-                                <div key={dept} className="modal-department-group">
-                                    <div className="modal-department-label">{dept}</div>
-                                    {deptEmployees.map(employee => (
-                                        <div key={employee.name} className="modal-employee-item">
-                                            <label className="checkbox-label">
-                                                <input
-                                                    type="checkbox"
-                                                    checked={selectedEmployees[employee.name] || false}
-                                                    onChange={() => toggleEmployeeSelection(employee.name)}
-                                                    className="employee-checkbox"
-                                                />
-                                                <span className="employee-name-label">{employee.name}</span>
-                                            </label>
-                                        </div>
-                                    ))}
-                                </div>
-                            ))}
-                        </div>
-
-                        <div className="modal-footer">
-                            <button className="modal-cancel-btn" onClick={closeModal}>Cancel</button>
-                            <button className="modal-save-btn" onClick={handleSaveChanges}>Save Changes</button>
-                        </div>
-                    </div>
-                </div>
-            )}
+            {/* Schedule Groups Modal */}
+            <ScheduleGroupsModal
+                isOpen={isGroupsModalOpen}
+                onClose={closeGroupsModal}
+                onSave={handleSaveGroups}
+                initialGroups={scheduleGroups}
+            />
         </>
     );
 }

@@ -1,9 +1,9 @@
 import { useState, useRef, useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import EmployeeSidebar from "../components/EmployeeSideBar/EmployeeSideBar";
-import "../styles/EmployeeLayout/EmployeeLayout.css";
+import ManagerSidebar from "../components/manager/Home/ManagerSidebar";
+import "../styles/ManagerLayout.css";
 
-export default function EmployeeLayout({ children }) {
+export default function ManagerLayout({ children }) {
   const [expanded, setExpanded] = useState(false);
   const collapseTimeoutRef = useRef(null);
   const location = useLocation();
@@ -34,13 +34,13 @@ export default function EmployeeLayout({ children }) {
   };
 
   return (
-    <div className="employee-layout">
-      <EmployeeSidebar 
+    <div className="manager-layout">
+      <ManagerSidebar 
         expanded={expanded}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       />
-      <main className="employee-content">
+      <main className="manager-content">
         {children}
       </main>
     </div>

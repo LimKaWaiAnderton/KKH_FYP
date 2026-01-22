@@ -17,12 +17,17 @@
 /* Department Header */
 .department-header {
   background: #F5F5F5;               /* Light gray background */
-  padding: 16px 24px;                /* Padding around header */
+  padding: 16px 24px;                /* Padding to match employee view */
+  display: flex;                     /* Arrange items horizontally */
+  align-items: center;               /* Vertically center items */
+  font-weight: 600;                  /* Bold text */
+}
+
+.department-header-left {
   display: flex;                     /* Arrange items horizontally */
   align-items: center;               /* Vertically center items */
   gap: 12px;                         /* Space between icon and name */
   cursor: pointer;                   /* Show pointer on hover */
-  font-weight: 600;                  /* Bold text */
 }
 
 .collapse-icon {
@@ -38,6 +43,23 @@
   font-size: 16px;                   /* Department name size */
 }
 
+.department-settings-btn {
+  background: transparent;           /* Transparent background */
+  border: none;                      /* No border */
+  font-size: 16px;                   /* Reduced icon size */
+  cursor: pointer;                   /* Show pointer on hover */
+  padding: 2px 6px;                  /* Reduced padding */
+  margin-left: 8px;                  /* Small gap from department name */
+  color: #666;                       /* Gray color */
+  transition: color 0.2s;            /* Smooth color transition */
+  display: flex;                     /* Flex for centering */
+  align-items: center;               /* Center icon */
+}
+
+.department-settings-btn:hover {
+  color: #333;                       /* Darker color on hover */
+}
+
 /* ==================== STAFFING ROW ==================== */
 .staffing-row {
   display: grid;                     /* Grid layout */
@@ -51,9 +73,14 @@
   display: flex;                     /* Flex for alignment */
   align-items: center;               /* Vertically center */
   justify-content: center;           /* Horizontally center */
-  gap: 6px;                          /* Space between elements */
   border-right: 1px solid #E6E6E6;   /* Border between cells */
   color: #666;                       /* Gray text */
+}
+
+.staffing-content {
+  display: flex;                     /* Flex for content alignment */
+  align-items: center;               /* Vertically center content */
+  gap: 6px;                          /* Space between elements */
 }
 
 .staffing-cell:last-child {
@@ -62,15 +89,21 @@
 
 .staff-icon {
   font-size: 16px;                   /* Icon size */
+  display: flex;                     /* Flex for icon alignment */
+  align-items: center;               /* Vertically center icon */
 }
 
 .staff-count {
   font-size: 14px;                   /* Count text size */
+  display: flex;                     /* Flex for text alignment */
+  align-items: center;               /* Vertically center text */
 }
 
 .alert-icon {
   color: #FF4444;                    /* Red color for alert */
-  font-size: 14px;                   /* Alert icon size */
+  font-size: 16px;                   /* Alert icon size - matches staff-icon */
+  display: flex;                     /* Flex for icon alignment */
+  align-items: center;               /* Vertically center icon */
 }
 
 /* ==================== EMPLOYEE ROW ==================== */
@@ -223,6 +256,33 @@
   background: #999;                  /* Light gray line */
 }
 
+/* ==================== ADD SHIFT BUTTON ==================== */
+.add-shift-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 2px dashed #ccc;
+  background: none;
+  color: #999;
+  font-size: 24px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  opacity: 0;
+}
+
+.shift-cell:hover .add-shift-btn {
+  opacity: 1;
+}
+
+.add-shift-btn:hover {
+  border-color: #1976D2;
+  color: #1976D2;
+  background-color: rgba(25, 118, 210, 0.05);
+}
+
 /* ==================== ADD/REMOVE USERS ==================== */
 .add-remove-users-row {
   display: grid;                     /* Grid layout */
@@ -255,6 +315,8 @@
 
 .user-icon {
   font-size: 16px;                   /* Icon size */
+  display: flex;                     /* Flex for icon alignment */
+  align-items: center;               /* Vertically center icon */
 }
 
 /* ==================== MODAL STYLES ==================== */

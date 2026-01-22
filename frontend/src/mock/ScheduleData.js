@@ -68,6 +68,14 @@ export const scheduleData = [
         department_id: "CE",
         leave_type: null,
     },
+    {
+        id: 8,
+        name: "Clara Lim",
+        date: "2026-01-06",
+        shift_type: "PM",
+        department_id: "CE",
+        leave_type: null,
+    },
 
     // Department CE - Nurul Huda
     {
@@ -131,6 +139,14 @@ export const scheduleData = [
         id: 15,
         name: "Nurul Huda",
         date: "2025-12-31",
+        shift_type: "AM",
+        department_id: "CE",
+        leave_type: null,
+    },
+    {
+        id: 15,
+        name: "Nurul Huda",
+        date: "2026-01-06",
         shift_type: "AM",
         department_id: "CE",
         leave_type: null,

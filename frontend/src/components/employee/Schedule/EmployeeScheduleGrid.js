@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { HiOutlineUser, HiOutlineExclamation } from 'react-icons/hi';
 import '../../../styles/EmployeeScheduleGrid.css';
 import { scheduleData } from '../../../mock/ScheduleData';
 import { getShiftColor, getShiftTime } from '../../../mock/ShiftColorConfig';
@@ -99,9 +100,11 @@ export default function EmployeeScheduleGrid({ weekDays, viewOption, searchTerm 
                                     <div className="employee-name-cell"></div>
                                     {weekDays.map((day, index) => (
                                         <div key={index} className="staffing-cell">
-                                            <span className="staff-icon">👤</span>
-                                            <span className="staff-count">{getStaffingCount(dept, day.dateString)}</span>
-                                            {index === 0 && <span className="alert-icon">⚠️</span>}
+                                            <div className="staffing-content">
+                                                <span className="staff-icon"><HiOutlineUser /></span>
+                                                <span className="staff-count">{getStaffingCount(dept, day.dateString)}</span>
+                                                {index === 0 && <span className="alert-icon"><HiOutlineExclamation /></span>}
+                                            </div>
                                         </div>
                                     ))}
                                 </div>

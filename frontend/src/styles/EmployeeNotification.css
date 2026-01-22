@@ -1,5 +1,5 @@
 /* Notifications Container */
-.notifications-container {
+.employee-notifications-container {
     background-color: white; /* White background */
     border-radius: 12px; /* Rounded corners */
     padding: 20px 24px; /* Reduced padding */
@@ -10,12 +10,27 @@
 }
 
 /* Header Section */
-.notifications-header {
+.employee-notifications-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
     margin-bottom: 12px; /* Reduced space below header */
 }
 
+.employee-notifications-icon {
+    font-size: 24px;
+    color: #333;
+}
+
+.employee-notifications-count {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+    margin-left: 2px;
+}
+
 /* Section Title */
-.notifications-title {
+.employee-notifications-title {
     font-size: 18px; /* Title font size */
     font-weight: 600; /* Semi-bold weight */
     color: #333; /* Dark gray text */
@@ -23,16 +38,17 @@
 }
 
 /* Notifications List Container */
-.notifications-list {
+.employee-notifications-list {
     display: flex; /* Flexbox layout */
     flex-direction: column; /* Stack notifications vertically */
     gap: 12px; /* Space between notification items */
+    margin-bottom: 200px; /* Large white space below the list */
 }
 
 /* Individual Notification Item */
-.notification-item {
+.employee-notification-item {
     display: flex; /* Flexbox layout */
-    align-items: flex-start; /* Align items to top */
+    align-items: flex-start; /* Align items to start */
     gap: 12px; /* Space between icon and content */
     padding: 12px 16px; /* Reduced padding */
     border-radius: 8px; /* Rounded corners */
@@ -43,47 +59,45 @@
 }
 
 /* Notification Item Hover Effect */
-.notification-item:hover {
+.employee-notification-item:hover {
     background-color: #f0f0f0; /* Slightly darker on hover */
 }
 
 /* Read Notification (Grey Background) */
-.notification-item.read {
+.employee-notification-item.read {
     background-color: #e8e8e8; /* Grey background for read notifications */
     opacity: 0.7; /* Slightly transparent */
 }
 
 /* Read Notification Hover */
-.notification-item.read:hover {
+.employee-notification-item.read:hover {
     background-color: #e0e0e0; /* Darker grey on hover */
 }
 
 /* Notification Icon Container */
-.notification-icon {
-    width: 32px; /* Icon container width */
-    height: 32px; /* Icon container height */
-    border-radius: 50%; /* Make it circular */
+.employee-notification-icon {
+    width: 24px; /* Icon container width */
+    height: 24px; /* Icon container height */
     display: flex; /* Flexbox for centering icon */
     align-items: center; /* Center icon vertically */
     justify-content: center; /* Center icon horizontally */
     flex-shrink: 0; /* Don't shrink icon */
-    font-size: 16px; /* Icon size */
+    align-self: center; /* Center vertically in parent */
+    font-size: 24px; /* Icon size */
 }
 
-/* Info Type Icon (Blue Background) */
-.notification-info {
-    background-color: #e3f2fd; /* Light blue background */
+/* Info Type Icon (Blue) */
+.employee-notification-info {
     color: #1976d2; /* Blue icon color */
 }
 
-/* Warning Type Icon (Orange/Yellow Background) */
-.notification-warning {
-    background-color: #fff3e0; /* Light orange background */
+/* Warning Type Icon (Orange) */
+.employee-notification-warning {
     color: #f57c00; /* Orange icon color */
 }
 
 /* Notification Content (Message and Time) */
-.notification-content {
+.employee-notification-content {
     flex: 1; /* Take up remaining space */
     display: flex; /* Flexbox layout */
     flex-direction: column; /* Stack message and time */
@@ -91,7 +105,7 @@
 }
 
 /* Notification Message Text */
-.notification-message {
+.employee-notification-message {
     font-size: 14px; /* Message font size */
     color: #333; /* Dark gray text */
     margin: 0; /* Remove default margin */
@@ -99,27 +113,25 @@
 }
 
 /* Notification Time Text */
-.notification-time {
+.employee-notification-time {
     font-size: 12px; /* Smaller font for time */
     color: #999; /* Light gray text */
 }
 
 /* "New" Badge */
-.notification-badge {
+.employee-notification-badge {
     position: absolute; /* Position relative to notification item */
-    top: 12px; /* Distance from top */
+    top: 50%; /* Center vertically */
+    transform: translateY(-50%); /* Perfect vertical centering */
     right: 12px; /* Distance from right */
-    background-color: #4caf50; /* Green background */
-    color: white; /* White text */
-    font-size: 11px; /* Small font size */
+    color: #1976d2; /* Blue text color */
+    font-size: 12px; /* Font size */
     font-weight: 600; /* Semi-bold weight */
-    padding: 2px 8px; /* Vertical and horizontal padding */
-    border-radius: 12px; /* Pill-shaped */
-    text-transform: uppercase; /* Uppercase text */
+    text-transform: capitalize; /* Capitalize text */
 }
 
 /* Footer Section with View More Link */
-.notifications-footer {
+.employee-notifications-footer {
     margin-top: 12px; /* Reduced space above footer */
     text-align: center; /* Center the link */
     padding-top: 12px; /* Reduced space inside footer */
@@ -127,7 +139,7 @@
 }
 
 /* View More Link */
-.view-more-link {
+.employee-view-more-link {
     font-size: 14px; /* Link font size */
     color: #1976d2; /* Blue link color */
     text-decoration: none; /* Remove underline */
@@ -139,7 +151,7 @@
 }
 
 /* View More Link Hover Effect */
-.view-more-link:hover {
+.employee-view-more-link:hover {
     text-decoration: underline; /* Underline on hover */
     color: #1565c0; /* Darker blue on hover */
 }

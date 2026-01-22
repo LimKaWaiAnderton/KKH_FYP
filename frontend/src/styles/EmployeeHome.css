@@ -25,3 +25,17 @@
     margin: 0 32px 24px 32px; /* Same horizontal margin as schedule grid, bottom margin for spacing */
     overflow-x: hidden; /* Prevent horizontal overflow */
 }
+
+/* Two Column Layout for Notifications and Shift Overview */
+.home-two-column {
+    display: grid;
+    grid-template-columns: 350px 1fr; /* Shift overview fixed width, notifications take remaining space */
+    gap: 20px; /* Space between columns */
+}
+
+/* Responsive: Stack on smaller screens */
+@media (max-width: 1024px) {
+    .home-two-column {
+        grid-template-columns: 1fr; /* Single column on smaller screens */
+    }
+}

@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { HiOutlineCalendar, HiOutlineCog } from 'react-icons/hi';
+import CustomCalendar from './CustomCalendar';
 import '../../../styles/ManagerScheduleHead.css';
 
 export default function ManagerScheduleHead({ startDate, setStartDate, viewOption, setViewOption, weekDays, searchTerm, setSearchTerm }) {
@@ -28,9 +30,8 @@ export default function ManagerScheduleHead({ startDate, setStartDate, viewOptio
     };
 
     // Handle calendar date selection
-    const handleDateSelect = (e) => {
-        const selectedDate = new Date(e.target.value);
-        setStartDate(selectedDate);
+    const handleDateSelect = (date) => {
+        setStartDate(date);
         setShowCalendar(false);
     };
 
@@ -91,15 +92,16 @@ export default function ManagerScheduleHead({ startDate, setStartDate, viewOptio
                         className="calendar-icon-btn" 
                         onClick={() => setShowCalendar(!showCalendar)}
                     >
-                        📅
+                        <HiOutlineCalendar />
                     </button>
                     {showCalendar && (
-                        <input
-                            type="date"
-                            className="calendar-input"
-                            onChange={handleDateSelect}
-                            value={`${startDate.getFullYear()}-${String(startDate.getMonth() + 1).padStart(2, '0')}-${String(startDate.getDate()).padStart(2, '0')}`}
-                        />
+                        <div className="calendar-popup">
+                            <CustomCalendar
+                                selectedDate={startDate}
+                                onDateSelect={handleDateSelect}
+                                onClose={() => setShowCalendar(false)}
+                            />
+                        </div>
                     )}
                 </div>
 
@@ -108,7 +110,7 @@ export default function ManagerScheduleHead({ startDate, setStartDate, viewOptio
 
                 {/* Settings Button */}
                 <button className="settings-btn">
-                    ⚙️ Settings
+                    <HiOutlineCog /> Settings
                 </button>
 
                 {/* Add Dropdown */}

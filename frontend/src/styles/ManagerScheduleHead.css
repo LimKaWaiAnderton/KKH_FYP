@@ -187,6 +187,18 @@
     /* Above other elements */
 }
 
+.calendar-popup {
+    position: absolute;
+    top: 56px;
+    right: 0;
+    z-index: 1000;
+}
+
+.custom-calendar {
+    border: none !important;
+    font-family: inherit;
+}
+
 /* Settings Button */
 .settings-btn {
     display: flex;
@@ -205,8 +217,8 @@
     /* Rounded pill shape */
     cursor: pointer;
     /* Show pointer on hover */
-    color: #333;
-    /* Dark text color */
+    color: #1976D2;
+    /* Blue text color */
     height: 48px;
     /* Fixed height */
     font-size: 14px;

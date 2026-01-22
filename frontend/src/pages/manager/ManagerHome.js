@@ -18,8 +18,6 @@ export default function ManagerHome() {
 
                 {/* Notifications Section */}
                 <ManagerNotification />
-                <ManagerNotification />
-                <ManagerNotification />
             </div>
         </div>
     );

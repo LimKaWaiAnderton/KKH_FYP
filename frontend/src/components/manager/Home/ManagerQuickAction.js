@@ -1,46 +1,47 @@
 import React from 'react';
+import { HiOutlineUserAdd, HiOutlineCalendar, HiOutlineClipboardCheck } from 'react-icons/hi';
 import '../../../styles/ManagerQuickAction.css';
 
 export default function ManagerQuickAction() {
     // Handle button clicks
-    const handleRequestLeave = () => {
-        console.log('Request leave clicked');
+    const handleAddUser = () => {
+        console.log('Add user clicked');
     };
 
-    const handleRequestShift = () => {
-        console.log('Request shift clicked');
+    const handleManageSchedule = () => {
+        console.log('Manage schedule clicked');
     };
 
-    const handleViewShifts = () => {
-        console.log('View shifts clicked');
+    const handleViewRequest = () => {
+        console.log('View request clicked');
     };
 
     return (
-        <div className="quick-actions-container">
+        <div className="manager-quick-actions-container">
             {/* Section Title */}
-            <div className="quick-actions-header">
-                <span className="refresh-icon">↻</span>
-                <h2 className="quick-actions-title">Quick Actions</h2>
+            <div className="manager-quick-actions-header">
+                <span className="manager-refresh-icon">↻</span>
+                <h2 className="manager-quick-actions-title">Quick Actions</h2>
             </div>
 
             {/* Action Buttons Row */}
-            <div className="quick-actions-row">
-                {/* Request Leave Button */}
-                <button className="action-button" onClick={handleRequestLeave}>
-                    <span className="action-icon">📄</span>
-                    <span className="action-text">Request leave</span>
+            <div className="manager-quick-actions-row">
+                {/* Add User Button */}
+                <button className="manager-action-button" onClick={handleAddUser}>
+                    <span className="manager-action-icon"><HiOutlineUserAdd /></span>
+                    <span className="manager-action-text">Add User</span>
                 </button>
 
-                {/* Request Shift Button */}
-                <button className="action-button" onClick={handleRequestShift}>
-                    <span className="action-icon">📅</span>
-                    <span className="action-text">Request shift</span>
+                {/* Manage Schedule Button */}
+                <button className="manager-action-button" onClick={handleManageSchedule}>
+                    <span className="manager-action-icon"><HiOutlineCalendar /></span>
+                    <span className="manager-action-text">Manage Schedule</span>
                 </button>
 
-                {/* View My Shifts Button */}
-                <button className="action-button" onClick={handleViewShifts}>
-                    <span className="action-icon">📋</span>
-                    <span className="action-text">View my shifts</span>
+                {/* View Request Button */}
+                <button className="manager-action-button" onClick={handleViewRequest}>
+                    <span className="manager-action-icon"><HiOutlineClipboardCheck /></span>
+                    <span className="manager-action-text">View Request</span>
                 </button>
             </div>
         </div>

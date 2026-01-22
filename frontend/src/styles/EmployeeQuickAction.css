@@ -46,11 +46,12 @@
     background-color: white; /* White background */
     border: 1px solid #e0e0e0; /* Light gray border */
     border-radius: 8px; /* Rounded corners */
-    padding: 16px 12px; /* Reduced padding */
+    padding: 16px 12px; /* Increased padding for taller height */
     display: flex; /* Flexbox for icon and text */
-    flex-direction: column; /* Stack icon and text vertically */
-    align-items: center; /* Center content horizontally */
-    gap: 8px; /* Space between icon and text */
+    flex-direction: row; /* Stack icon and text horizontally */
+    align-items: center; /* Center content vertically */
+    justify-content: center; /* Center content horizontally */
+    gap: 12px; /* Space between icon and text */
     cursor: pointer; /* Pointer cursor on hover */
     transition: all 0.2s ease; /* Smooth transition for hover effects */
 }
@@ -70,8 +71,10 @@
 
 /* Icon in Action Button */
 .action-icon {
-    font-size: 32px; /* Large icon size */
+    font-size: 20px; /* Icon size to match design */
     color: #333; /* Dark gray color */
+    display: flex; /* Flex for icon alignment */
+    align-items: center; /* Vertically center icon */
 }
 
 /* Text in Action Button */
@@ -79,5 +82,7 @@
     font-size: 14px; /* Text font size */
     font-weight: 500; /* Medium weight */
     color: #333; /* Dark gray text */
-    text-align: center; /* Center text */
+    white-space: nowrap; /* Prevent text wrapping */
+    display: flex; /* Flex for text alignment */
+    align-items: center; /* Vertically center text */
 }

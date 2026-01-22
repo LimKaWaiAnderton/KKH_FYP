@@ -2,11 +2,15 @@ import React, { useState } from 'react';
 import '../../styles/ManagerSchedule.css';
 import ManagerScheduleHead from '../../components/manager/Schedule/ManagerScheduleHead';
 import ManagerScheduleGrid from '../../components/manager/Schedule/ManagerScheduleGrid';
+import ShiftCreationDrawer from '../../components/manager/Schedule/ShiftCreationDrawer';
 
 export default function ManagerSchedule() {
     const [startDate, setStartDate] = useState(new Date());
     const [viewOption, setViewOption] = useState('View everyone');
     const [searchTerm, setSearchTerm] = useState('');
+    const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+    const [selectedDate, setSelectedDate] = useState(null);
+    const [selectedEmployee, setSelectedEmployee] = useState(null);
 
     // Generate array of 7 days starting from startDate
     const generateWeekDays = (date) => {
@@ -37,6 +41,18 @@ export default function ManagerSchedule() {
 
     const weekDays = generateWeekDays(startDate);
 
+    const handleAddShift = (dateString, employee) => {
+        setSelectedDate(dateString);
+        setSelectedEmployee(employee);
+        setIsDrawerOpen(true);
+    };
+
+    const handleCloseDrawer = () => {
+        setIsDrawerOpen(false);
+        setSelectedDate(null);
+        setSelectedEmployee(null);
+    };
+
     return (
         <div className="schedule-page">
             <div className="schedule-header">
@@ -56,8 +72,15 @@ export default function ManagerSchedule() {
                     weekDays={weekDays}
                     viewOption={viewOption}
                     searchTerm={searchTerm}
+                    onAddShift={handleAddShift}
                 />
             </div>
+            <ShiftCreationDrawer 
+                isOpen={isDrawerOpen}
+                onClose={handleCloseDrawer}
+                selectedDate={selectedDate}
+                selectedEmployee={selectedEmployee}
+            />
         </div>
     );
 }

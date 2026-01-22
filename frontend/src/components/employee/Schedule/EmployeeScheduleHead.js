@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { HiOutlineCalendar } from 'react-icons/hi';
+import CustomCalendar from './CustomCalendar';
 import '../../../styles/EmployeeScheduleHead.css';
 
 export default function EmployeeScheduleHead({ startDate, setStartDate, viewOption, setViewOption, weekDays, searchTerm, setSearchTerm }) {
@@ -27,9 +29,8 @@ export default function EmployeeScheduleHead({ startDate, setStartDate, viewOpti
     };
 
     // Handle calendar date selection
-    const handleDateSelect = (e) => {
-        const selectedDate = new Date(e.target.value);
-        setStartDate(selectedDate);
+    const handleDateSelect = (date) => {
+        setStartDate(date);
         setShowCalendar(false);
     };
 
@@ -83,15 +84,16 @@ export default function EmployeeScheduleHead({ startDate, setStartDate, viewOpti
                         className="calendar-icon-btn" 
                         onClick={() => setShowCalendar(!showCalendar)}
                     >
-                        📅
+                        <HiOutlineCalendar />
                     </button>
                     {showCalendar && (
-                        <input
-                            type="date"
-                            className="calendar-input"
-                            onChange={handleDateSelect}
-                            value={`${startDate.getFullYear()}-${String(startDate.getMonth() + 1).padStart(2, '0')}-${String(startDate.getDate()).padStart(2, '0')}`}
-                        />
+                        <div className="calendar-popup">
+                            <CustomCalendar
+                                selectedDate={startDate}
+                                onDateSelect={handleDateSelect}
+                                onClose={() => setShowCalendar(false)}
+                            />
+                        </div>
                     )}
                 </div>
             </div>
