@@ -1,36 +1,81 @@
-import React, { useState } from 'react';
-import TeamListEmployee from '../../components/TeamListEmployee';
-import TeamListAdmin from '../../components/TeamListAdmin';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import TeamListEmployee from '../../components/TeamListComponents/TeamListEmployee';
+import TeamListAdmin from '../../components/TeamListComponents/TeamListAdmin';
 import '../../styles/TeamList.css';
 import { FiPlusCircle } from "react-icons/fi";
+import { authFetch } from '../../utils/authFetch';
 
 const TeamList = () => {
-  const [activeTab, setActiveTab] = useState('members'); // 'members' or 'admins'
+  const navigate = useNavigate();
+  const location = useLocation(); // Check if we're returning from AddUser
+
+  const [activeTab, setActiveTab] = useState('members');
+  const [allUsers, setAllUsers] = useState([]); // Store all users from backend
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
   
-  const [currentPage, setCurrentPage] = useState(1); // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
 
-  // fake data for design demo
-  const allMembers = [
-    { id: 1, name: 'Clara Lim', email: 'clara@kkh.com.sg', mobile: '91234111', dept: 'CE' },
-    { id: 2, name: 'Nurul Huda', email: 'nurul@kkh.com.sg', mobile: '91234222', dept: 'CE' },
-    { id: 3, name: 'Ravi Kumar', email: 'ravi@kkh.com.sg', mobile: '91234333', dept: 'CE' },
-    { id: 4, name: 'Michelle De', email: 'michelle@kkh.com.sg', mobile: '91234444', dept: 'CE' },
-    { id: 5, name: 'Charlotte Chia', email: 'charlotte@kkh.com.sg', mobile: '91234555', dept: '56' },
-    { id: 6, name: 'Nur Insyirah', email: 'insyirah@kkh.com.sg', mobile: '91234666', dept: '56' },
-    { id: 7, name: 'John Doe', email: 'john@kkh.com.sg', mobile: '91234777', dept: 'CE' },
-    { id: 8, name: 'Jane Smith', email: 'jane@kkh.com.sg', mobile: '91234888', dept: '56' },
-    { id: 9, name: 'Alice Tan', email: 'alice@kkh.com.sg', mobile: '91234999', dept: 'CE' },
-    { id: 10, name: 'Bob Lee', email: 'bob@kkh.com.sg', mobile: '91234000', dept: '56' },
-  ];
+  // Fetch users from backend
+  const fetchUsers = async () => {
+    try {
+      setLoading(true);
+      setError('');
+      console.log('Fetching users from backend...');
+      // Ensure the path matches the backend route exactly
+      const res = await authFetch('http://localhost:5000/auth/users');
+      
+      if (!res.ok) throw new Error("Failed to fetch users");
+      
+      const data = await res.json();
+      console.log('Users fetched successfully:', data.length, 'users');
+      const activeUsers = data.filter(u => u.is_active !== false);
 
-  // Calculation of the slice of data to show on website
-  const indexOfLastItem = currentPage * itemsPerPage; // last index of current page
+      setAllUsers(activeUsers);
+    } catch (err) {
+      console.error("Error fetching users:", err);
+      setError('Failed to load team list. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Fetch users on component mount and when returning from AddUser
+  useEffect(() => {
+    console.log('TeamList mounted or refresh triggered');
+    fetchUsers();
+    
+    // Clear the refresh flag from navigation state to prevent unnecessary re-fetches
+    if (location.state?.refresh) {
+      window.history.replaceState({}, document.title);
+    }
+  }, [location.state?.refresh]);
+
+  // Separate users by role
+  const members = allUsers.filter(u => u.role_id === 2 || u.role_id === '2');
+  const admins = allUsers.filter(u => u.role_id === 1 || u.role_id === '1');
+
+  console.log('All users:', allUsers.length);
+  console.log('Members:', members.length);
+  console.log('Admins:', admins.length);
+
+  // Get current tab data
+  const currentTabData = activeTab === 'members' ? members : admins;
+  const totalPages = Math.ceil(currentTabData.length / itemsPerPage);
+  const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentMembers = allMembers.slice(indexOfFirstItem, indexOfLastItem); //get current members for the page
-  const totalPages = Math.ceil(allMembers.length / itemsPerPage); //rounding up to nearest whole number
+  const currentItems = currentTabData.slice(indexOfFirstItem, indexOfLastItem);
 
-  // Handlers
+  console.log('Current tab:', activeTab, '| Current items:', currentItems.length);
+
+  // Reset pagination when switching tabs
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [activeTab]);
+
+  // Pagination handlers
   const handleNext = () => {
     if (currentPage < totalPages) setCurrentPage(currentPage + 1);
   };
@@ -39,30 +84,57 @@ const TeamList = () => {
     if (currentPage > 1) setCurrentPage(currentPage - 1);
   };
 
+  // Handler for Add New User button - navigates to add-user page
+  const handleAddUserClick = () => {
+    navigate('/manager/add-user');
+  };
+
+  if (loading) {
+    return (
+      <div className="team-list-container">
+        <div style={{ padding: '20px', textAlign: 'center' }}>
+          Loading team list...
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="team-list-container">
       <div className="page-header">
         <h1 className="page-title">Users</h1>
-        <button className="btn-add-new">
-        <FiPlusCircle size={20} /> 
-        Add New
+        <button className="btn-add-new" onClick={handleAddUserClick}>
+          <FiPlusCircle size={20} /> 
+          Add New
         </button>
       </div>
+
+      {error && (
+        <div style={{ 
+          padding: '15px', 
+          margin: '10px 0', 
+          backgroundColor: '#fee',
+          color: '#c33',
+          borderRadius: '4px',
+          border: '1px solid #fcc'
+        }}>
+          {error}
+        </div>
+      )}
 
       <div className="content-card">
         <div className="tabs-header">
           <button 
-            className={`tab-btn ${activeTab === 'members' ? 'active' : ''}`}  // Highlight Active Tab
-            onClick={() => setActiveTab('members')} // Switch to Members Tab
+            className={`tab-btn ${activeTab === 'members' ? 'active' : ''}`}
+            onClick={() => setActiveTab('members')}
           >
-            Members
+            Members ({members.length})
           </button>
           <button 
-            className={`tab-btn ${activeTab === 'admins' ? 'active' : ''}`}  
+            className={`tab-btn ${activeTab === 'admins' ? 'active' : ''}`}
             onClick={() => setActiveTab('admins')}
           >
-            Admins
+            Admins ({admins.length})
           </button>
         </div>
 
@@ -70,41 +142,51 @@ const TeamList = () => {
           <input type="text" placeholder="Search.." className="search-input"/>
         </div>
 
-        {/* passing calculated data to the component */}
-        {activeTab === 'members' ? (
-          <TeamListEmployee data={currentMembers} />
+        {/* Display current tab data or empty message */}
+        {currentTabData.length === 0 ? (
+          <div style={{ padding: '20px', textAlign: 'center', color: '#666' }}>
+            No {activeTab === 'members' ? 'members' : 'admins'} found.
+          </div>
         ) : (
-          <TeamListAdmin />
+          <>
+            {activeTab === 'members' ? (
+              <TeamListEmployee data={currentItems} />
+            ) : (
+              <TeamListAdmin data={currentItems} />
+            )}
+
+            {/* Pagination controls - only show if there are multiple pages */}
+            {totalPages > 1 && (
+              <div className="pagination">
+                <button 
+                  className="page-btn" 
+                  onClick={handlePrev} 
+                  disabled={currentPage === 1}
+                >
+                  &lt;
+                </button>
+                
+                {Array.from({ length: totalPages }, (_, index) => (
+                  <button
+                    key={index + 1}
+                    className={`page-btn ${currentPage === index + 1 ? 'active' : ''}`}
+                    onClick={() => setCurrentPage(index + 1)}
+                  >
+                    {index + 1}
+                  </button>
+                ))}
+
+                <button 
+                  className="page-btn" 
+                  onClick={handleNext} 
+                  disabled={currentPage === totalPages}
+                >
+                  &gt;
+                </button>
+              </div>
+            )}
+          </>
         )}
-
-        {/* page number and symbol controls */}
-        <div className="pagination">
-          <button 
-            className="page-btn" 
-            onClick={handlePrev} 
-            disabled={currentPage === 1}
-          >
-            &lt; {/* '<' shows the previous page with this symbol */}
-          </button>
-          
-          {Array.from({ length: totalPages }, (_, index) => ( // Create an array with length of total pages
-            <button
-              key={index + 1} // Page numbers start from 1
-              className={`page-btn ${currentPage === index + 1 ? 'active' : ''}`}
-              onClick={() => setCurrentPage(index + 1)} // Set current page on click
-            >
-              {index + 1}
-            </button>
-          ))}
-
-          <button 
-            className="page-btn" 
-            onClick={handleNext} 
-            disabled={currentPage === totalPages}
-          >
-            &gt;
-          </button>
-        </div>
       </div>
     </div>
   );
