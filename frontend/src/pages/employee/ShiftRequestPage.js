@@ -5,7 +5,6 @@ import MonthSelector from "../../components/ShiftRequestComponents/MonthSelector
 import Header from "../../components/ShiftRequestComponents/Header";
 import { authFetch } from "../../utils/authFetch";
 import "../../styles/ShiftRequest/ShiftRequestPage.css";
-import EmployeeLayout from "../../layouts/EmployeeLayout.js";
 
 const monthNames = [
   "January", "February", "March", "April", "May", "June",
@@ -195,9 +194,7 @@ export default function ShiftRequestPage() {
      ========================= */
   if (loading) {
     return (
-      <EmployeeLayout>
-        <div style={{ padding: 40 }}>Loading shifts…</div>
-      </EmployeeLayout>
+      <div style={{ padding: 40 }}>Loading shifts…</div>
     );
   }
 
@@ -205,37 +202,35 @@ export default function ShiftRequestPage() {
      RENDER
      ========================= */
   return (
-    <EmployeeLayout>
-      <div className="sr-page">
-        <Header onAddShift={() => setModalOpen(true)} />
+    <div className="sr-page">
+      <Header onAddShift={() => setModalOpen(true)} />
 
-        <div className="sr-container">
-          <MonthSelector
-            month={month}
-            year={year}
-            setMonth={setMonth}
-            setYear={setYear}
-            monthNames={monthNames}
-          />
-
-          <div className="weekly-container">
-            {weeks.map((w) => (
-              <WeeklyGrid key={w.weekNumber} week={w} />
-            ))}
-          </div>
-        </div>
-
-        <AddShiftModal
-          open={modalOpen}
-          onClose={() => setModalOpen(false)}
-          onSave={handleAddShift}
-          checkDuplicate={(d) =>
-            shifts.some(
-              (s) => new Date(s.date).toISOString().split("T")[0] === d
-            )
-          }
+      <div className="sr-container">
+        <MonthSelector
+          month={month}
+          year={year}
+          setMonth={setMonth}
+          setYear={setYear}
+          monthNames={monthNames}
         />
+
+        <div className="weekly-container">
+          {weeks.map((w) => (
+            <WeeklyGrid key={w.weekNumber} week={w} />
+          ))}
+        </div>
       </div>
-    </EmployeeLayout>
+
+      <AddShiftModal
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        onSave={handleAddShift}
+        checkDuplicate={(d) =>
+          shifts.some(
+            (s) => new Date(s.date).toISOString().split("T")[0] === d
+          )
+        }
+      />
+    </div>
   );
 }

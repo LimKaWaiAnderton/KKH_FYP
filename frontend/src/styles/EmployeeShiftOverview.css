@@ -1,0 +1,153 @@
+/* Shift Overview Container */
+.employee-shift-overview-container {
+    background-color: white;
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+/* Section Header */
+.shift-overview-section {
+    margin-bottom: 20px;
+}
+
+.shift-overview-section:last-child {
+    margin-bottom: 0;
+}
+
+.shift-overview-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.shift-overview-icon {
+    font-size: 24px;
+    color: #333;
+}
+
+.shift-overview-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+}
+
+/* Upcoming Shifts List */
+.upcoming-shifts-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* Shift Item */
+.shift-overview-item {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    border-radius: 8px;
+    background-color: #f5f5f5;
+    gap: 12px;
+}
+
+.shift-overview-item.today {
+    background-color: #f5f5f5;
+    border: 1px solid #e0e0e0;
+}
+
+/* Color-coded backgrounds for upcoming shifts */
+.shift-overview-item.green {
+    background-color: #D9F2E6;
+    border: 1px solid #B8E5D3;
+}
+
+.shift-overview-item.gray {
+    background-color: #EBEBEB;
+    border: 1px solid #D8D8D8;
+}
+
+.shift-overview-item.pink {
+    background-color: #F5CDE5;
+    border: 1px solid #E8A8D1;
+}
+
+.shift-overview-item.blue {
+    background-color: #D6E8FF;
+    border: 1px solid #BBDEFB;
+}
+
+.shift-overview-item.orange {
+    background-color: #FFE0CC;
+    border: 1px solid #FFCCAA;
+}
+
+.shift-overview-item.purple {
+    background-color: #E8D6FF;
+    border: 1px solid #D6BBFF;
+}
+
+.shift-overview-item.yellow {
+    background-color: #FFF5CC;
+    border: 1px solid #FFE599;
+}
+
+/* Date Box */
+.shift-date-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 40px;
+}
+
+.shift-day-number {
+    font-size: 22px;
+    font-weight: 600;
+    color: #333;
+    line-height: 1;
+}
+
+.shift-day-name {
+    font-size: 12px;
+    color: #666;
+    margin-top: 2px;
+}
+
+/* Divider */
+.shift-divider {
+    width: 2px;
+    height: 35px;
+    background-color: #d0d0d0;
+}
+
+/* Time Info */
+.shift-time-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.shift-time {
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+}
+
+.shift-type-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+}
+
+/* No Shift Message */
+.no-shift-message {
+    padding: 12px;
+    text-align: center;
+    color: #999;
+    font-size: 14px;
+    font-style: italic;
+}

@@ -5,7 +5,6 @@ import LeaveBalance from '../../components/employee/LeaveRequest/LeaveBalance';
 import LeaveReqHistory from '../../components/employee/LeaveRequest/LeaveReqHistory';
 import Header from '../../components/employee/LeaveRequest/Header';
 import RequestModal from '../../components/employee/LeaveRequest/RequestModal';
-import EmployeeLayout from "../../layouts/EmployeeLayout.js";
 
 // API calls
 import { fetchHistory } from '../../api/leave.api.js';
@@ -33,19 +32,17 @@ export default function EmployeeLeaveRequest() {
     };
 
     return (
-        <div>
-            <EmployeeLayout>
-                <Header onOpenModal={() => setIsModalOpen(true)} />
-                <LeaveBalance />
-                <LeaveReqHistory
-                    leaveReqHistoryData={history}
-                />
-                <RequestModal
-                    isOpen={isModalOpen}
-                    onClose={() => setIsModalOpen(false)}
-                    onRefresh={refreshHistory}
-                />
-            </EmployeeLayout>
+        <div className="employee-leave-request-page">
+            <Header onOpenModal={() => setIsModalOpen(true)} />
+            <LeaveBalance />
+            <LeaveReqHistory
+                leaveReqHistoryData={history}
+            />
+            <RequestModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                onRefresh={refreshHistory}
+            />
         </div>
     )
 }

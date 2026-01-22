@@ -26,6 +26,7 @@ create table public.users (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   is_active BOOLEAN NOT NULL DEFAULT true,
 
+
   CONSTRAINT fk_users_department
     FOREIGN KEY (department_id)
     REFERENCES public.departments(id),
