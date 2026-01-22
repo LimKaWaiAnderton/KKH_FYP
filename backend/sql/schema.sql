@@ -25,6 +25,7 @@ create table public.users (
   password_hash TEXT NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
+
   CONSTRAINT fk_users_department
     FOREIGN KEY (department_id)
     REFERENCES public.departments(id),
