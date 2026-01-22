@@ -24,6 +24,7 @@ create table public.users (
   role_id BIGINT NOT NULL,
   password_hash TEXT NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  is_active BOOLEAN NOT NULL DEFAULT true,
 
 
   CONSTRAINT fk_users_department
