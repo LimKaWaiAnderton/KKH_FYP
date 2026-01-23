@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { HiOutlineBell } from 'react-icons/hi';
 import '../../styles/ManagerSchedule.css';
 import ManagerScheduleHead from '../../components/manager/Schedule/ManagerScheduleHead';
 import ManagerScheduleGrid from '../../components/manager/Schedule/ManagerScheduleGrid';
