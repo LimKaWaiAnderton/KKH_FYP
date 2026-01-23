@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { HiOutlineBell } from 'react-icons/hi';
 import '../../styles/ManagerSchedule.css';
 import ManagerScheduleHead from '../../components/manager/Schedule/ManagerScheduleHead';
 import ManagerScheduleGrid from '../../components/manager/Schedule/ManagerScheduleGrid';
@@ -53,10 +54,28 @@ export default function ManagerSchedule() {
         setSelectedEmployee(null);
     };
 
+    const handlePublish = () => {
+        // TODO: Implement publish functionality
+        console.log('Publish schedule');
+    };
+
+    const handleNotifications = () => {
+        // TODO: Implement notifications
+        console.log('Show notifications');
+    };
+
     return (
         <div className="schedule-page">
             <div className="schedule-header">
                 <h1 className="page-title">Schedule</h1>
+                <div className="schedule-header-actions">
+                    <button className="publish-btn" onClick={handlePublish}>
+                        Publish
+                    </button>
+                    <button className="notification-btn" onClick={handleNotifications}>
+                        <HiOutlineBell />
+                    </button>
+                </div>
             </div>
             <div className="schedule-content-wrapper">
                 <ManagerScheduleHead 

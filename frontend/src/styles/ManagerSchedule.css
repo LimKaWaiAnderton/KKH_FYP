@@ -10,6 +10,51 @@
   background-color: white;   /* White background for header */
   padding: 24px 32px;        /* Vertical padding: 24px, Horizontal padding: 32px */
   margin-bottom: 24px;       /* Space below the header */
+  display: flex;             /* Flex layout */
+  justify-content: space-between;  /* Space between title and actions */
+  align-items: center;       /* Vertically center items */
+}
+
+/* ==================== HEADER ACTIONS ==================== */
+.schedule-header-actions {
+  display: flex;             /* Flex layout */
+  gap: 4px;                  /* Very small space between buttons */
+  align-items: center;       /* Vertically center items */
+}
+
+.publish-btn {
+  background-color: #1976D2;  /* Blue background */
+  color: white;              /* White text */
+  border: none;              /* No border */
+  border-radius: 6px;        /* Rounded corners */
+  padding: 10px 24px;        /* Button padding */
+  font-size: 14px;           /* Text size */
+  font-weight: 500;          /* Medium weight */
+  cursor: pointer;           /* Pointer cursor */
+  transition: background-color 0.2s;  /* Smooth transition */
+}
+
+.publish-btn:hover {
+  background-color: #1565C0;  /* Darker blue on hover */
+}
+
+.notification-btn {
+  background-color: #1976D2;  /* Blue background */
+  color: white;              /* White text */
+  border: none;              /* No border */
+  border-radius: 50%;        /* Circular button */
+  width: 40px;               /* Fixed width */
+  height: 40px;              /* Fixed height */
+  display: flex;             /* Flex layout */
+  align-items: center;       /* Center icon */
+  justify-content: center;   /* Center icon */
+  font-size: 20px;           /* Icon size */
+  cursor: pointer;           /* Pointer cursor */
+  transition: background-color 0.2s;  /* Smooth transition */
+}
+
+.notification-btn:hover {
+  background-color: #1565C0;  /* Darker blue on hover */
 }
 
 /* ==================== PAGE TITLE ==================== */
