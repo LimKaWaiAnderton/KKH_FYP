@@ -17,7 +17,7 @@ export default function EmployeeQuickAction() {
     };
 
     return (
-        <div className="quick-actions-container">
+        <div className="container">
             {/* Section Title */}
             <div className="quick-actions-header">
                 <span className="refresh-icon">↻</span>

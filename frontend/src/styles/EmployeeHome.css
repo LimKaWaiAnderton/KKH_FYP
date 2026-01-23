@@ -1,36 +1,15 @@
-/* Employee Home Page Container */
-.employee-home-page {
-    min-height: 100%; /* Minimum full height of parent container */
-    display: flex; /* Enable flexbox layout */
-    flex-direction: column; /* Stack children vertically */
-    background-color: #f5f5f5; /* Light gray background */
-}
-
-/* Page Header Section */
-.home-header {
-    background-color: white; /* White background for header */
-    padding: 24px 32px; /* Vertical padding: 24px, Horizontal padding: 32px */
-    margin-bottom: 24px; /* Space below header */
-}
-
-/* Page Title */
-.home-title {
-    font-size: 28px; /* Large title font size */
-    margin: 0; /* Remove default margin */
-    color: var(--primary-color-dark); /* Dark text color from CSS variables */
-}
-
-/* Main Content Area */
-.home-content {
-    margin: 0 32px 24px 32px; /* Same horizontal margin as schedule grid, bottom margin for spacing */
-    overflow-x: hidden; /* Prevent horizontal overflow */
-}
-
 /* Two Column Layout for Notifications and Shift Overview */
 .home-two-column {
     display: grid;
     grid-template-columns: 350px 1fr; /* Shift overview fixed width, notifications take remaining space */
-    gap: 20px; /* Space between columns */
+    margin: 32px;
+    gap: 32px;
+}
+
+.employee-shift-overview-container,
+.employee-notifications-container {
+    border: 1px solid var(--border-color);
+    background-color: var(--secondary-bg-color);
 }
 
 /* Responsive: Stack on smaller screens */
@@ -39,3 +18,4 @@
         grid-template-columns: 1fr; /* Single column on smaller screens */
     }
 }
+

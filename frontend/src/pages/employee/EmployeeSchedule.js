@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import '../../styles/EmployeeSchedule.css';
 import EmployeeScheduleHead from '../../components/employee/Schedule/EmployeeScheduleHead';
 import EmployeeScheduleGrid from '../../components/employee/Schedule/EmployeeScheduleGrid';
+import Header from '../../components/Header/Header';
 
 export default function EmployeeSchedule() {
     const [startDate, setStartDate] = useState(new Date());
@@ -39,10 +40,8 @@ export default function EmployeeSchedule() {
 
     return (
         <div className="schedule-page">
-            <div className="schedule-header">
-                <h1 className="page-title">Schedule</h1>
-            </div>
-            <div className="schedule-content-wrapper">
+            <Header title="Schedule" />
+            <div className="container">
                 <EmployeeScheduleHead 
                     startDate={startDate}
                     setStartDate={setStartDate}

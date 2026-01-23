@@ -41,7 +41,7 @@ export default function EmployeeScheduleHead({ startDate, setStartDate, viewOpti
     };
 
     return (
-        <div className="schedule-head">
+        <div>
             {/* Top Controls Row */}
             <div className="schedule-controls">
                 {/* View Options Dropdown */}
