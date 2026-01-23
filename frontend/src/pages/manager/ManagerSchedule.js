@@ -87,6 +87,14 @@ export default function ManagerSchedule() {
         <div className="schedule-page">
             <div className="schedule-header">
                 <h1 className="page-title">Schedule</h1>
+                <div className="schedule-header-actions">
+                    <button className="publish-btn" onClick={handlePublish}>
+                        Publish
+                    </button>
+                    <button className="notification-btn" onClick={handleNotifications}>
+                        <HiOutlineBell />
+                    </button>
+                </div>
             </div>
             <div className="schedule-content-wrapper">
                 <ManagerScheduleHead 
