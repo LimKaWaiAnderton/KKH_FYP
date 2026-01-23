@@ -49,7 +49,7 @@ export default function ManagerScheduleHead({ startDate, setStartDate, viewOptio
     };
 
     return (
-        <div className="schedule-head">
+        <div>
             {/* Top Controls Row */}
             <div className="schedule-controls">
                 {/* View Options Dropdown */}

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 
 // Components
 import '../../styles/ManagerLeaveReq.css';
-import Header from '../../components/manager/LeaveRequest/Header';
+import Header from '../../components/Header/Header';
 import LeaveReqStatus from '../../components/manager/LeaveRequest/LeaveReqStatus';
 import LeaveReqHistory from '../../components/manager/LeaveRequest/LeaveReqHistory';
 import ManageRequestModal from '../../components/manager/LeaveRequest/ManageRequestModal';
@@ -85,7 +85,7 @@ export default function ManagerLeaveRequest() {
 
     return (
         <>
-            <Header />
+            <Header title="Requests"/>
             <LeaveReqStatus
                 leaveReqStatusCounts={counts}
                 onStatusClick={setFilterStatus}

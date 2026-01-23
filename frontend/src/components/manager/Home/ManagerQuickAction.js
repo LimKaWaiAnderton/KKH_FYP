@@ -17,7 +17,7 @@ export default function ManagerQuickAction() {
     };
 
     return (
-        <div className="manager-quick-actions-container">
+        <div className="container">
             {/* Section Title */}
             <div className="manager-quick-actions-header">
                 <span className="manager-refresh-icon">↻</span>

@@ -22,6 +22,5 @@
 
 /* Main Content Area */
 .home-content {
-    margin: 0 32px 24px 32px; /* Same horizontal margin as schedule grid, bottom margin for spacing */
     overflow-x: hidden; /* Prevent horizontal overflow */
 }

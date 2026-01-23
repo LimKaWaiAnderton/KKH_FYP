@@ -3,6 +3,7 @@ import '../../styles/ManagerSchedule.css';
 import ManagerScheduleHead from '../../components/manager/Schedule/ManagerScheduleHead';
 import ManagerScheduleGrid from '../../components/manager/Schedule/ManagerScheduleGrid';
 import ShiftCreationDrawer from '../../components/manager/Schedule/ShiftCreationDrawer';
+import Header from '../../components/Header/Header';
 
 export default function ManagerSchedule() {
     const [startDate, setStartDate] = useState(new Date());
@@ -55,10 +56,8 @@ export default function ManagerSchedule() {
 
     return (
         <div className="schedule-page">
-            <div className="schedule-header">
-                <h1 className="page-title">Schedule</h1>
-            </div>
-            <div className="schedule-content-wrapper">
+            <Header title="Schedule" />
+            <div className="container">
                 <ManagerScheduleHead 
                     startDate={startDate}
                     setStartDate={setStartDate}
