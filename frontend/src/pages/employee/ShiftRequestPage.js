@@ -161,6 +161,7 @@ export default function ShiftRequestPage() {
     const arr = [];
     let weekNumber = 1;
     let start = 1;
+    const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
     while (start <= daysInMonth) {
       const end = Math.min(start + 6, daysInMonth);
@@ -174,9 +175,14 @@ export default function ShiftRequestPage() {
           const st = shiftTypes.find((t) => t.id === s.shift_type_id);
           const bg = st ? `${st.color_hex}20` : "#DFF7DF";
           const border = st ? st.color_hex : "#249D46";
+          
+          // Get day name
+          const date = new Date(year, month, d);
+          const dayName = dayNames[date.getDay()];
 
           w.shifts.push({
             day: d,
+            dayName: dayName,
             label: s.preferred_shift,
             time: s.time,
             bgColor: bg,
