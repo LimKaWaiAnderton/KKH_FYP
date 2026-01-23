@@ -1,12 +1,10 @@
 import React, { useState } from 'react';
 import { HiOutlineUser, HiOutlinePencil, HiOutlineExclamation, HiOutlineCog } from 'react-icons/hi';
 import '../../../styles/ManagerScheduleGrid.css';
-import { scheduleData } from '../../../mock/ScheduleData';
-import { getShiftColor, getShiftTime } from '../../../mock/ShiftColorConfig';
 import ScheduleGroupsModal from './ScheduleGroupsModal';
 import AddRemoveUsersModal from './AddRemoveUsersModal';
 
-export default function ManagerScheduleGrid({ weekDays, viewOption, searchTerm, onAddShift }) {
+export default function ManagerScheduleGrid({ weekDays, viewOption, searchTerm, onAddShift, usersWithShifts }) {
     const [collapsedDepartments, setCollapsedDepartments] = useState({});
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedDepartment, setSelectedDepartment] = useState(null);
@@ -16,43 +14,43 @@ export default function ManagerScheduleGrid({ weekDays, viewOption, searchTerm, 
         { id: 2, name: '56', userCount: 2 }
     ]);
 
-    // Transform schedule data to match the component's expected format
-    const transformScheduleData = () => {
+    // Transform database data to match the component's expected format
+    const transformDatabaseData = () => {
         const employeeMap = new Map();
 
-        scheduleData.forEach(entry => {
-            if (!employeeMap.has(entry.name)) {
-                employeeMap.set(entry.name, {
-                    name: entry.name,
-                    department: entry.department_id,
+        usersWithShifts.forEach(entry => {
+            const userName = `${entry.first_name} ${entry.last_name}`;
+            
+            if (!employeeMap.has(entry.user_id)) {
+                employeeMap.set(entry.user_id, {
+                    id: entry.user_id,
+                    name: userName,
+                    department: entry.department_name || 'Unknown',
                     shifts: []
                 });
             }
 
-            const employee = employeeMap.get(entry.name);
+            const employee = employeeMap.get(entry.user_id);
 
-            // Determine shift display based on data
-            let shiftInfo = {
-                date: entry.date,
-                type: entry.leave_type || entry.shift_type,
-                color: getShiftColor(entry.shift_type, entry.leave_type)
-            };
+            // Only add shifts if there's a pending shift request
+            if (entry.shift_request_id) {
+                let shiftInfo = {
+                    date: entry.date,
+                    type: entry.preferred_shift,
+                    color: entry.color_hex ? `${entry.color_hex}30` : '#DFF7DF',
+                    borderColor: entry.color_hex || '#249D46',
+                    time: entry.time || '',
+                    status: entry.status
+                };
 
-            // Add time for shifts (not for leave)
-            if (entry.shift_type && !entry.leave_type) {
-                const time = getShiftTime(entry.shift_type);
-                if (time) {
-                    shiftInfo.time = time;
-                }
+                employee.shifts.push(shiftInfo);
             }
-
-            employee.shifts.push(shiftInfo);
         });
 
         return Array.from(employeeMap.values());
     };
 
-    const employees = transformScheduleData();
+    const employees = transformDatabaseData();
 
     // Filter employees based on search term (case insensitive)
     const filteredEmployees = employees.filter(emp => {
@@ -171,13 +169,22 @@ export default function ManagerScheduleGrid({ weekDays, viewOption, searchTerm, 
                                             return (
                                                 <div key={dayIndex} className="shift-cell">
                                                     {shift && shift.type ? (
-                                                        <div className={`shift-box ${shift.color}`}>
+                                                        <div 
+                                                            className="shift-box"
+                                                            style={{
+                                                                backgroundColor: shift.color,
+                                                                borderLeft: `4px solid ${shift.borderColor}`
+                                                            }}
+                                                        >
                                                             {shift.time && (
                                                                 <div className="shift-time">{shift.time}</div>
                                                             )}
                                                             <div className="shift-type">
-                                                                {shift.subtitle || shift.type}
+                                                                {shift.type}
                                                             </div>
+                                                            {shift.status === 'pending' && (
+                                                                <div className="shift-status-badge">Pending</div>
+                                                            )}
                                                         </div>
                                                     ) : isEmpty && (
                                                         <button 
