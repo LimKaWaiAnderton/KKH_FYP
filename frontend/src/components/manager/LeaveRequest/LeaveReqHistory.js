@@ -123,6 +123,7 @@ export default function LeaveReqHistory({ leaveReqHistoryData, onSelectRequest }
                                 </TableCell>
                                 <TableCell sx={{ width: 48 }}>
                                     <MoreHorizIcon
+                                        className="action-icon"
                                         onClick={() => onSelectRequest(row)} />
                                 </TableCell>
                             </TableRow>

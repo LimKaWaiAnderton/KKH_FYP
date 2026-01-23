@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import toast from 'react-hot-toast';
 
 import '../../../styles/ManagerLeaveReq.css';
 import { formatDate } from '../../../utils/dateUtils';
@@ -6,6 +7,8 @@ import capitalizeFirst from '../../../utils/capitalizeUtils';
 
 import Chip from '@mui/material/Chip';
 import CloseIcon from '@mui/icons-material/Close';
+import ThumbUpOffAltIcon from '@mui/icons-material/ThumbUpOffAlt';
+import ThumbDownOffAltIcon from '@mui/icons-material/ThumbDownOffAlt';
 
 // API call
 import { updateLeaveRequest } from '../../../api/leave.api.js';
@@ -25,9 +28,16 @@ export default function ManageRequestModal({
       setError("");
       const data = await updateLeaveRequest({ ...request, status });
       onRefresh(data);
+      toast.success(
+        status === 'approved'
+          ? 'Leave request approved successfully'
+          : 'Leave request rejected'
+      );
+
       onClose();
     } catch (error) {
       setError(error.message || "Failed to update leave request.");
+      toast.error('Failed to update leave request');
     }
   }
 
@@ -39,13 +49,11 @@ export default function ManageRequestModal({
       {/* Modal */}
       <div className="modal-container">
         <div className="modal-box">
-          <div className="modal-header">
             <div className="modal-header-group">
-              <h2>Leave Request</h2>
+              <h2 className="modal-title">Leave Request</h2>
               <CloseIcon onClick={onClose} />
             </div>
             <p className="modal-description">Requested on {formatDate(request.applied_date)}</p>
-          </div>
           <div className="review-container">
             <div className="review-box">
               <div className="review-detail">
@@ -100,19 +108,25 @@ export default function ManageRequestModal({
                 />
               </div>
             </div>
+            {error && <p className="error-message">{error}</p>}
           </div>
           <div className="modal-actions">
             {request.status === 'pending' && (
               <>
                 <button
-                  className="btn-approve"
-                  onClick={() => handleSubmit('approved')}>Approve</button>
-                <button
                   className="btn-reject"
-                  onClick={() => handleSubmit('rejected')}>Reject</button>
+                  onClick={() => handleSubmit('rejected')}>
+                    Reject
+                    <ThumbDownOffAltIcon fontSize='20px'/>
+                    </button>
+                <button
+                  className="btn-approve"
+                  onClick={() => handleSubmit('approved')}>
+                    Approve
+                    <ThumbUpOffAltIcon fontSize='20px' />
+                    </button>
               </>
             )}
-            {error && <p className="error-message">{error}</p>}
           </div>
         </div>
       </div>

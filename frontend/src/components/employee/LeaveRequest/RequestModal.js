@@ -1,6 +1,11 @@
+import { useState, useEffect } from "react";
+import toast from 'react-hot-toast';
+
 import '../../../styles/EmployeeLeaveReq.css';
 import { formatDate } from '../../../utils/dateUtils';
-import { useState, useEffect } from "react";
+
+import CloseIcon from '@mui/icons-material/Close';
+
 
 // API call
 import { fetchLeaveTypeName, addLeaveRequest } from '../../../api/leave.api.js';
@@ -71,10 +76,14 @@ export default function RequestModal({ isOpen, onClose, onRefresh }) {
       });
 
       onRefresh(data);
+
+      toast.success("Leave request submitted successfully.");
+      
       closeModal();
 
     } catch (error) {
       setError(error.message || "Failed to submit leave request.");
+      toast.error("Failed to submit leave request.");
     }
   }
 
@@ -88,7 +97,10 @@ export default function RequestModal({ isOpen, onClose, onRefresh }) {
       {/* Modal */}
       <div className="modal-container">
         <div className="modal-box">
-          <h2 className="modal-title">Request Leave</h2>
+        <div className="modal-header-group">
+              <h2 className="modal-title">Request Leave</h2>
+              <CloseIcon onClick={onClose} />
+            </div>
           <p className="modal-description">Please fill in your details.</p>
 
           <form className="leave-request-form">
