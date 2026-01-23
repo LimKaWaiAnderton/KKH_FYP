@@ -3,7 +3,6 @@
   display: flex;                     /* Stack departments vertically */
   flex-direction: column;            /* Arrange departments in column */
   gap: 24px;                         /* Gap between departments */
-  margin: 0 32px;                    /* Same horizontal margin as schedule-head padding */
 }
 
 /* ==================== DEPARTMENT SECTION ==================== */

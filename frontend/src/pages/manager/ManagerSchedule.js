@@ -3,6 +3,7 @@ import '../../styles/ManagerSchedule.css';
 import ManagerScheduleHead from '../../components/manager/Schedule/ManagerScheduleHead';
 import ManagerScheduleGrid from '../../components/manager/Schedule/ManagerScheduleGrid';
 import ShiftCreationDrawer from '../../components/manager/Schedule/ShiftCreationDrawer';
+import Header from '../../components/Header/Header';
 import { authFetch } from '../../utils/authFetch';
 
 export default function ManagerSchedule() {
@@ -85,6 +86,8 @@ export default function ManagerSchedule() {
 
     return (
         <div className="schedule-page">
+            <Header title="Schedule" />
+            <div className="container">
             <div className="schedule-header">
                 <h1 className="page-title">Schedule</h1>
                 <div className="schedule-header-actions">

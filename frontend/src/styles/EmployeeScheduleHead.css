@@ -1,9 +1,3 @@
-/* ==================== SCHEDULE HEAD CONTAINER ==================== */
-.schedule-head {
-    padding: 24px 32px;
-    /* Add padding around the entire header - 24px top/bottom for consistent breathing space */
-}
-
 /* ==================== TOP CONTROLS ROW ==================== */
 .schedule-controls {
     display: flex;
