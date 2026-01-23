@@ -1,6 +1,9 @@
+import { useState, useEffect } from "react";
+import toast from 'react-hot-toast';
+
 import '../../../styles/EmployeeLeaveReq.css';
 import { formatDate } from '../../../utils/dateUtils';
-import { useState, useEffect } from "react";
+
 
 // API call
 import { fetchLeaveTypeName, addLeaveRequest } from '../../../api/leave.api.js';
@@ -71,10 +74,14 @@ export default function RequestModal({ isOpen, onClose, onRefresh }) {
       });
 
       onRefresh(data);
+
+      toast.success("Leave request submitted successfully.");
+      
       closeModal();
 
     } catch (error) {
       setError(error.message || "Failed to submit leave request.");
+      toast.error("Failed to submit leave request.");
     }
   }
 
