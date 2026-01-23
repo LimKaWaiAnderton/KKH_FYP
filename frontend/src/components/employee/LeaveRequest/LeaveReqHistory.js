@@ -43,7 +43,7 @@ export default function LeaveReqHistory({ leaveReqHistoryData }) {
                                 "& .MuiTableCell-root": {
                                     fontFamily: "var(--font-family)",
                                     fontWeight: "bold",
-                                    backgroundColor: "var(--primary-bg-color)",
+                                    backgroundColor: "#f6f8fa",
                                 }
                             }}
                         >
