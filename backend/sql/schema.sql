@@ -26,7 +26,6 @@ create table public.users (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   is_active BOOLEAN NOT NULL DEFAULT true,
 
-
   CONSTRAINT fk_users_department
     FOREIGN KEY (department_id)
     REFERENCES public.departments(id),
@@ -36,15 +35,21 @@ create table public.users (
     REFERENCES public.roles(id)
 );
 
-create table public.leave_types (
-  id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  name VARCHAR(50) NOT NULL UNIQUE
-);
-
 create table public.shift_types (
   id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   name VARCHAR(20) NOT NULL,
   color_hex VARCHAR(7) NOT NULL
+);
+
+create table public.leave_types (
+  id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  shift_type_id BIGINT NOT NULL,
+
+  name VARCHAR(50) NOT NULL UNIQUE,
+
+  CONSTRAINT fk_leave_types_shift_type
+    FOREIGN KEY (shift_type_id)
+    REFERENCES public.shift_types(id)
 );
 
 create table public.leave_requests (
