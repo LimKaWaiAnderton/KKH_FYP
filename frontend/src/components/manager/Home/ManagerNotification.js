@@ -31,7 +31,7 @@ export default function ManagerNotification() {
     };
 
     return (
-        <div className="manager-notifications-container">
+        <div className="container">
             {/* Header Section */}
             <div className="manager-notifications-header">
                 <HiOutlineBell className="manager-notifications-icon" />

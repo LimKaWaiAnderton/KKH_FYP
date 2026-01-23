@@ -5,13 +5,6 @@
   flex-direction: column;    /* Stack children vertically */
 }
 
-/* ==================== HEADER SECTION ==================== */
-.schedule-header {
-  background-color: white;   /* White background for header */
-  padding: 24px 32px;        /* Vertical padding: 24px, Horizontal padding: 32px */
-  margin-bottom: 24px;       /* Space below the header */
-}
-
 /* ==================== PAGE TITLE ==================== */
 .page-title {
   font-size: 28px;                      /* Large text size for main heading */

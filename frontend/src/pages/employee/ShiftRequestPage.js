@@ -2,7 +2,7 @@ import React, { useState, useMemo, useEffect } from "react";
 import WeeklyGrid from "../../components/ShiftRequestComponents/WeeklyGrid";
 import AddShiftModal from "../../components/ShiftRequestComponents/AddShiftModal";
 import MonthSelector from "../../components/ShiftRequestComponents/MonthSelector";
-import Header from "../../components/ShiftRequestComponents/Header";
+import HeaderWithAddBtn from "../../components/Header/HeaderWithAddBtn";
 import { authFetch } from "../../utils/authFetch";
 import "../../styles/ShiftRequest/ShiftRequestPage.css";
 
@@ -213,10 +213,14 @@ export default function ShiftRequestPage() {
      RENDER
      ========================= */
   return (
-    <div className="sr-page">
-      <Header onAddShift={() => setModalOpen(true)} />
+    <div>
+      <HeaderWithAddBtn
+        onOpenModal={() => setModalOpen(true)}
+        title="Shift Request"
+        btnText="Request"
+      />
 
-      <div className="sr-container">
+      <div className="container">
         <MonthSelector
           month={month}
           year={year}

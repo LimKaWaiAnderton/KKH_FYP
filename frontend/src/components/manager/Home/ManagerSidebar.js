@@ -13,8 +13,6 @@ import {
 import { HiOutlineArrowRightStartOnRectangle } from "react-icons/hi2";
 
 export default function ManagerSidebar({ expanded, onMouseEnter, onMouseLeave }) {
-    const [openRequests, setOpenRequests] = useState(false);
-
     const navigate = useNavigate();
     const location = useLocation();
     const pathname = location.pathname;
@@ -32,26 +30,7 @@ export default function ManagerSidebar({ expanded, onMouseEnter, onMouseLeave })
         activeKey = "settings";
     } else if (pathname.startsWith("/manager/requests/leave")) {
         activeKey = "leave";
-    } else if (pathname.startsWith("/manager/requests/")) {
-        activeKey = "requests";
     }
-
-    // Requests parent should be active whenever any requests page is active
-    const isRequestsParentActive =
-        activeKey === "requests" ||
-        activeKey === "leave";
-
-    // Close submenu when navigating away from requests
-    useEffect(() => {
-        if (!isRequestsParentActive) {
-            setOpenRequests(false);
-        }
-    }, [isRequestsParentActive]);
-
-    // Show submenu when sidebar is expanded AND
-    // either user opened it OR we are inside a requests route
-    const showRequestsSubmenu =
-        expanded && (openRequests || isRequestsParentActive);
 
     function go(path) {
         navigate(path);
@@ -85,39 +64,17 @@ export default function ManagerSidebar({ expanded, onMouseEnter, onMouseLeave })
                     </div>
                 </div>
 
-                {/* REQUESTS + SUBMENU */}
-                <div className="nav-group">
-                    {/* Requests parent (no direct route) */}
+                {/* REQUESTS */}
+                <div
+                    className={`nav-item ${activeKey === "leave" ? "active" : ""}`}
+                >
                     <div
-                        className={`nav-item ${isRequestsParentActive ? "active" : ""}`}
+                        className="nav-pill"
+                        onClick={() => go("/manager/requests/leave")}
                     >
-                        <div
-                            className="nav-pill"
-                            onClick={() => setOpenRequests(prev => !prev)}
-                        >
-                            <HiOutlineClipboardList className="icon" />
-                            {expanded && <span className="label">Requests</span>}
-                        </div>
+                        <HiOutlineClipboardList className="icon" />
+                        {expanded && <span className="label">Requests</span>}
                     </div>
-
-                    {/* Submenu: Leave only */}
-                    {showRequestsSubmenu && (
-                        <div className="nav-submenu">
-                            {/* Leave */}
-                            <div
-                                className={`nav-item nav-sub ${activeKey === "leave" ? "active-sub" : ""
-                                    }`}
-                            >
-                                <div
-                                    className="nav-pill"
-                                    onClick={() => go("/manager/requests/leave")}
-                                >
-                                    <span className="icon-placeholder" />
-                                    {expanded && <span className="sub-label">Leave</span>}
-                                </div>
-                            </div>
-                        </div>
-                    )}
                 </div>
 
                 {/* USERS - Manager only */}

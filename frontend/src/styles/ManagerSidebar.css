@@ -153,6 +153,7 @@
 .nav-item.active-sub .label,
 .nav-item.active-sub .sub-label {
     color: #2f79bb;
+    font-weight: 600;
 }
 
 /* Hover for non-active items */
