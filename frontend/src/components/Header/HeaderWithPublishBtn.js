@@ -1,6 +1,6 @@
 import { HiOutlineBell } from 'react-icons/hi';
 
-export default function Header({ title, onPublish, onNotifications }) {
+export default function HeaderWithPublishBtn({ title, onPublish, onNotifications }) {
   return (
     <header>
       <div className="header-content">
@@ -10,7 +10,7 @@ export default function Header({ title, onPublish, onNotifications }) {
             Publish
           </button>
           <button className="notification-btn" onClick={onNotifications}>
-            <HiOutlineBell />
+            <HiOutlineBell/>
           </button>
         </div>
       </div>
