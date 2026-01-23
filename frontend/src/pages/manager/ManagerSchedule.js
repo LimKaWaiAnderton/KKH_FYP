@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { HiOutlineBell } from 'react-icons/hi';
 import '../../styles/ManagerSchedule.css';
 import ManagerScheduleHead from '../../components/manager/Schedule/ManagerScheduleHead';
 import ManagerScheduleGrid from '../../components/manager/Schedule/ManagerScheduleGrid';
@@ -77,6 +78,16 @@ export default function ManagerSchedule() {
         setIsDrawerOpen(false);
         setSelectedDate(null);
         setSelectedEmployee(null);
+    };
+
+    const handlePublish = () => {
+        // TODO: Implement publish functionality
+        console.log('Publish schedule');
+    };
+
+    const handleNotifications = () => {
+        // TODO: Implement notifications functionality
+        console.log('Open notifications');
     };
 
     if (loading) {
