@@ -1,5 +1,7 @@
 import { useState, useRef } from 'react';
+import { Toaster } from 'react-hot-toast';
 import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
+
 import EmployeeLeaveRequest from "./pages/employee/LeaveRequest";
 import ManagerLeaveRequest from "./pages/manager/LeaveRequest";
 import ShiftRequestPage from "./pages/employee/ShiftRequestPage";
@@ -15,6 +17,7 @@ import './App.css';
 import TeamList from "./pages/manager/TeamList";
 import AddUser from "./pages/manager/AddUser";
 import MainLayout from "./layouts/MainLayout";
+
 
 function AppContent() {
   const location = useLocation();
@@ -42,17 +45,17 @@ function AppContent() {
   return (
     <div style={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
       {!isLoginPage && isEmployeePage && (
-        <EmployeeSidebar 
-          expanded={expanded} 
-          onMouseEnter={handleMouseEnter} 
-          onMouseLeave={handleMouseLeave} 
+        <EmployeeSidebar
+          expanded={expanded}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
         />
       )}
       {!isLoginPage && isManagerPage && (
-        <ManagerSidebar 
-          expanded={expanded} 
-          onMouseEnter={handleMouseEnter} 
-          onMouseLeave={handleMouseLeave} 
+        <ManagerSidebar
+          expanded={expanded}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
         />
       )}
       <main style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', background: '#f5f5f5' }}>
@@ -77,6 +80,30 @@ function AppContent() {
 export default function App() {
   return (
     <Router>
+      <Toaster
+        position="bottom-right"
+        toastOptions={{
+          duration: 3000,
+          style: {
+            borderRadius: '8px',
+            fontSize: '14px',
+          },
+          success: {
+            style: {
+              background: 'var(--status-approved-bg)',
+              color: 'var(--status-approved)',
+              border: '1px solid var(--status-approved)',
+            },
+          },
+          error: {
+            style: {
+              background: '#fdecea',
+              color: '#d32f2f',
+              border: '1px solid #f44336',
+            },
+          },
+        }}
+      />
       <AppContent />
       <Routes>
         <Route path="/manager/team-list" element={<ProtectedRoute><MainLayout><TeamList /></MainLayout></ProtectedRoute>} />
