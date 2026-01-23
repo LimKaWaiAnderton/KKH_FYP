@@ -82,8 +82,10 @@ export default function ShiftRequestPage() {
     const map = new Map();
 
     shifts.forEach((s) => {
-      // ✅ FIX: convert Postgres timestamp → YYYY-MM-DD
-      const dateKey = new Date(s.date).toISOString().split("T")[0];
+      // ✅ FIX: Extract date string and convert to local date
+      if (!s.date) return;
+      const dateStr = s.date.split('T')[0]; // Extract YYYY-MM-DD
+      const dateKey = dateStr;
 
       if (!map.has(dateKey)) map.set(dateKey, []);
       map.get(dateKey).push(s);
@@ -96,7 +98,8 @@ export default function ShiftRequestPage() {
      WEEK HELPERS
      ========================= */
   const getWeekRange = (dateStr) => {
-    const d = new Date(dateStr);
+    const [year, month, day] = dateStr.split('-').map(Number);
+    const d = new Date(year, month - 1, day);
     const dow = (d.getDay() + 6) % 7;
     const monday = new Date(d);
     monday.setDate(d.getDate() - dow);
@@ -108,7 +111,9 @@ export default function ShiftRequestPage() {
   const countShiftsInWeek = (dateStr) => {
     const { monday, sunday } = getWeekRange(dateStr);
     return shifts.filter((s) => {
-      const sd = new Date(s.date);
+      const dateOnly = s.date.split('T')[0];
+      const [year, month, day] = dateOnly.split('-').map(Number);
+      const sd = new Date(year, month - 1, day);
       return sd >= monday && sd <= sunday;
     }).length;
   };
@@ -122,7 +127,7 @@ export default function ShiftRequestPage() {
     if (countShiftsInWeek(newShift.date) >= 5)
       return { error: "week-limit" };
 
-    if (shifts.some((s) => new Date(s.date).toISOString().split("T")[0] === newShift.date))
+    if (shifts.some((s) => s.date.split('T')[0] === newShift.date))
       return { error: "duplicate" };
 
     const type = shiftTypes.find((t) => t.name === newShift.label);
@@ -227,7 +232,7 @@ export default function ShiftRequestPage() {
         onSave={handleAddShift}
         checkDuplicate={(d) =>
           shifts.some(
-            (s) => new Date(s.date).toISOString().split("T")[0] === d
+            (s) => s.date.split('T')[0] === d
           )
         }
       />

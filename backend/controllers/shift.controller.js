@@ -9,7 +9,15 @@ export const getMyShiftRequests = async (req, res) => {
 
     const result = await pool.query(
       `
-      SELECT *
+      SELECT 
+        id,
+        user_id,
+        TO_CHAR(date, 'YYYY-MM-DD') as date,
+        preferred_shift,
+        status,
+        shift_type_id,
+        time,
+        created_at
       FROM shift_requests
       WHERE user_id = $1
       ORDER BY date ASC
