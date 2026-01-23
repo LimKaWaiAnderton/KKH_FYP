@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import '../../styles/ManagerSchedule.css';
 import ManagerScheduleHead from '../../components/manager/Schedule/ManagerScheduleHead';
 import ManagerScheduleGrid from '../../components/manager/Schedule/ManagerScheduleGrid';
 import ShiftCreationDrawer from '../../components/manager/Schedule/ShiftCreationDrawer';
+import { authFetch } from '../../utils/authFetch';
 
 export default function ManagerSchedule() {
     const [startDate, setStartDate] = useState(new Date());
@@ -11,6 +12,31 @@ export default function ManagerSchedule() {
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
     const [selectedDate, setSelectedDate] = useState(null);
     const [selectedEmployee, setSelectedEmployee] = useState(null);
+    const [usersWithShifts, setUsersWithShifts] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    // Fetch users with pending shift requests
+    useEffect(() => {
+        async function loadUsersWithPendingShifts() {
+            try {
+                const res = await authFetch("http://localhost:5000/api/shifts/users-with-pending");
+                if (!res || !res.ok) {
+                    console.error("Failed to fetch users with pending shifts");
+                    setLoading(false);
+                    return;
+                }
+
+                const data = await res.json();
+                setUsersWithShifts(data);
+                setLoading(false);
+            } catch (err) {
+                console.error("Error loading users with pending shifts:", err);
+                setLoading(false);
+            }
+        }
+
+        loadUsersWithPendingShifts();
+    }, []);
 
     // Generate array of 7 days starting from startDate
     const generateWeekDays = (date) => {
@@ -53,6 +79,10 @@ export default function ManagerSchedule() {
         setSelectedEmployee(null);
     };
 
+    if (loading) {
+        return <div className="schedule-page"><p>Loading...</p></div>;
+    }
+
     return (
         <div className="schedule-page">
             <div className="schedule-header">
@@ -73,6 +103,7 @@ export default function ManagerSchedule() {
                     viewOption={viewOption}
                     searchTerm={searchTerm}
                     onAddShift={handleAddShift}
+                    usersWithShifts={usersWithShifts}
                 />
             </div>
             <ShiftCreationDrawer 
