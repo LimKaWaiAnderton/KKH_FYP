@@ -501,3 +501,48 @@
 .modal-save-btn:hover {
   background-color: #1565C0;         /* Darker blue on hover */
 }
+
+/* ==================== SHIFT ACTIONS (APPROVE/REJECT) ==================== */
+.shift-actions {
+  display: flex;                     /* Flex layout for buttons */
+  gap: 6px;                          /* Space between buttons */
+  margin-top: 6px;                   /* Space from status badge */
+}
+
+.shift-approve-btn,
+.shift-reject-btn {
+  border: none;                      /* No border */
+  border-radius: 4px;                /* Rounded corners */
+  padding: 4px 8px;                  /* Small padding */
+  cursor: pointer;                   /* Pointer cursor */
+  display: flex;                     /* Flex for centering icon */
+  align-items: center;               /* Center vertically */
+  justify-content: center;           /* Center horizontally */
+  font-size: 14px;                   /* Icon size */
+  transition: all 0.2s;              /* Smooth transition */
+}
+
+.shift-approve-btn {
+  background-color: #4CAF50;         /* Green background */
+  color: white;                      /* White icon */
+}
+
+.shift-approve-btn:hover {
+  background-color: #45a049;         /* Darker green on hover */
+  transform: scale(1.05);            /* Slightly larger on hover */
+}
+
+.shift-reject-btn {
+  background-color: #f44336;         /* Red background */
+  color: white;                      /* White icon */
+}
+
+.shift-reject-btn:hover {
+  background-color: #da190b;         /* Darker red on hover */
+  transform: scale(1.05);            /* Slightly larger on hover */
+}
+
+.shift-status-badge.approved {
+  color: #4CAF50;                    /* Green color for approved */
+  background: #E8F5E9;               /* Light green background */
+}
