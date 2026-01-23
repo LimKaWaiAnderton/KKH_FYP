@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import "../../styles/EmployeeSideBar/EmployeeSideBar.css";
+import "../../styles/EmployeeSideBar/EmployeeSideBar.css"
 
 
 import {
@@ -11,8 +11,7 @@ import {
 } from "react-icons/hi";
 import { HiOutlineArrowRightStartOnRectangle } from "react-icons/hi2";
 
-export default function EmployeeSidebar() {
-    const [expanded, setExpanded] = useState(false);
+export default function EmployeeSidebar({ expanded, onMouseEnter, onMouseLeave }) {
     const [openRequests, setOpenRequests] = useState(false);
 
     const navigate = useNavigate();
@@ -42,6 +41,13 @@ export default function EmployeeSidebar() {
         activeKey === "leave" ||
         activeKey === "shift";
 
+    // Close submenu when navigating away from requests
+    useEffect(() => {
+        if (!isRequestsParentActive) {
+            setOpenRequests(false);
+        }
+    }, [isRequestsParentActive]);
+
     // Show submenu when sidebar is expanded AND
     // either user opened it OR we are inside a requests route
     const showRequestsSubmenu =
@@ -54,8 +60,8 @@ export default function EmployeeSidebar() {
     return (
         <div
             className={`navbar ${expanded ? "expanded" : ""}`}
-            onMouseEnter={() => setExpanded(true)}
-            onMouseLeave={() => setExpanded(false)}
+            onMouseEnter={onMouseEnter}
+            onMouseLeave={onMouseLeave}
         >
             {/* ---------- TOP SECTION ---------- */}
             <div className="nav-top">

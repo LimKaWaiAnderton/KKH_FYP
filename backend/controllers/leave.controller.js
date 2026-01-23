@@ -3,7 +3,7 @@ import pool from '../db/pool.js';
 const roleName = {
     admin: 1,
     employee: 2,
-  };
+};
 
 export const getLeaveRequests = async (req, res) => {
     const { id, role } = req.user;
@@ -150,6 +150,31 @@ export const applyLeave = async (req, res) => {
                 ($1, $2, $3, $4, $5)
             RETURNING *`,
             [id, leave_type_id, start_date, end_date, total_days]
+        );
+
+        // Fetch user's name for the notification message
+        const userRes = await pool.query(
+            `SELECT first_name, last_name FROM users WHERE id = $1`,
+            [id]
+        );
+
+        const userName = `${userRes.rows[0].first_name} ${userRes.rows[0].last_name}`;
+
+        // Notify admins
+        await pool.query(
+            `
+            INSERT INTO notifications (user_id, title, message, type)
+            SELECT
+                u.id,
+                'Leave Application',
+                $1,
+                'info'
+            FROM users u
+            JOIN roles r
+            ON u.role_id = r.id
+            WHERE r.name = 'admin'
+            `,
+            [`${userName} applied for leave from ${start_date} to ${end_date}.`]
         );
 
         const leaveId = insertRes.rows[0].id;
@@ -305,6 +330,19 @@ export const manageLeaveRequest = async (req, res) => {
         ON lr.user_id = u.id
         WHERE lr.id = $1`,
             [id]
+        );
+
+        const message =
+            status === 'approved'
+                ? `Your leave request has been approved.`
+                : `Your leave request has been rejected.`;
+
+        await client.query(
+            `
+            INSERT INTO notifications (user_id, title, message, type)
+            VALUES ($1, $2, $3, $4)
+            `,
+            [leave.user_id, 'Leave Request Update', message, 'info']
         );
 
         await client.query('COMMIT');
