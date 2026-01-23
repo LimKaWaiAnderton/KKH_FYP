@@ -3,7 +3,7 @@ import '../../styles/ManagerSchedule.css';
 import ManagerScheduleHead from '../../components/manager/Schedule/ManagerScheduleHead';
 import ManagerScheduleGrid from '../../components/manager/Schedule/ManagerScheduleGrid';
 import ShiftCreationDrawer from '../../components/manager/Schedule/ShiftCreationDrawer';
-import Header from '../../components/Header/Header';
+import HeaderWithPublishBtn from '../../components/Header/HeaderWithPublishBtn';
 import { authFetch } from '../../utils/authFetch';
 
 export default function ManagerSchedule() {
@@ -44,17 +44,17 @@ export default function ManagerSchedule() {
         const days = [];
         const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thur', 'Fri', 'Sat'];
         const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-        
+
         for (let i = 0; i < 7; i++) {
             const currentDate = new Date(date);
             currentDate.setDate(date.getDate() + i);
-            
+
             // Format date as YYYY-MM-DD in local timezone (not UTC)
             const year = currentDate.getFullYear();
             const month = String(currentDate.getMonth() + 1).padStart(2, '0');
             const day = String(currentDate.getDate()).padStart(2, '0');
             const dateString = `${year}-${month}-${day}`;
-            
+
             days.push({
                 date: currentDate.getDate(),
                 day: dayNames[currentDate.getDay()],
@@ -80,49 +80,50 @@ export default function ManagerSchedule() {
         setSelectedEmployee(null);
     };
 
+    const handlePublish = () => {
+        // TODO: Implement publish functionality
+        console.log('Publish schedule');
+    };
+
+    const handleNotifications = () => {
+        // TODO: Implement notifications
+        console.log('Show notifications');
+    };
+
     if (loading) {
         return <div className="schedule-page"><p>Loading...</p></div>;
     }
 
     return (
         <div className="schedule-page">
-            <Header title="Schedule" />
+            <HeaderWithPublishBtn
+            title="Schedule"
+            onPublish={handlePublish}
+            onNotifications={handleNotifications}/>
             <div className="container">
-            <div className="schedule-header">
-                <h1 className="page-title">Schedule</h1>
-                <div className="schedule-header-actions">
-                    <button className="publish-btn" onClick={handlePublish}>
-                        Publish
-                    </button>
-                    <button className="notification-btn" onClick={handleNotifications}>
-                        <HiOutlineBell />
-                    </button>
+                    <ManagerScheduleHead
+                        startDate={startDate}
+                        setStartDate={setStartDate}
+                        viewOption={viewOption}
+                        setViewOption={setViewOption}
+                        weekDays={weekDays}
+                        searchTerm={searchTerm}
+                        setSearchTerm={setSearchTerm}
+                    />
+                    <ManagerScheduleGrid
+                        weekDays={weekDays}
+                        viewOption={viewOption}
+                        searchTerm={searchTerm}
+                        onAddShift={handleAddShift}
+                        usersWithShifts={usersWithShifts}
+                    />
                 </div>
-            </div>
-            <div className="schedule-content-wrapper">
-                <ManagerScheduleHead 
-                    startDate={startDate}
-                    setStartDate={setStartDate}
-                    viewOption={viewOption}
-                    setViewOption={setViewOption}
-                    weekDays={weekDays}
-                    searchTerm={searchTerm}
-                    setSearchTerm={setSearchTerm}
-                />
-                <ManagerScheduleGrid 
-                    weekDays={weekDays}
-                    viewOption={viewOption}
-                    searchTerm={searchTerm}
-                    onAddShift={handleAddShift}
-                    usersWithShifts={usersWithShifts}
+                <ShiftCreationDrawer
+                    isOpen={isDrawerOpen}
+                    onClose={handleCloseDrawer}
+                    selectedDate={selectedDate}
+                    selectedEmployee={selectedEmployee}
                 />
             </div>
-            <ShiftCreationDrawer 
-                isOpen={isDrawerOpen}
-                onClose={handleCloseDrawer}
-                selectedDate={selectedDate}
-                selectedEmployee={selectedEmployee}
-            />
-        </div>
     );
 }
