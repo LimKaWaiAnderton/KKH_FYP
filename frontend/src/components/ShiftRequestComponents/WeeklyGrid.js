@@ -25,13 +25,18 @@ export default function WeeklyGrid({ week }) {
                 <div
                   className="shift-card"
                   style={{
-                    background: shift.bgColor,
-                    borderLeft: `4px solid ${shift.borderColor}`,
+                    backgroundColor: shift.bgColor,
                   }}
                 >
-                  <span className="day">{shift.day}</span>
-                  <span className="label">{shift.label}</span>
-                  {shift.time && <span className="time">{shift.time}</span>}
+                  <div className="shift-left">
+                    <span className="shift-date">{shift.day}</span>
+                    <span className="shift-day">{shift.dayName}</span>
+                  </div>
+                  <div className="shift-divider" style={{ backgroundColor: shift.borderColor }}></div>
+                  <div className="shift-right">
+                    {shift.time && <span className="shift-time">{shift.time}</span>}
+                    <span className="shift-label" style={{ color: shift.borderColor }}>{shift.label}</span>
+                  </div>
                 </div>
               )}
             </div>

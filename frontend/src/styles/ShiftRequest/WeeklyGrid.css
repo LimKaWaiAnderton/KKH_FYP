@@ -60,26 +60,62 @@
 .shift-card {
   position: absolute;
   inset: 6px;
-  padding: 8px 10px;
+  padding: 12px 16px;
   border-radius: 8px;
 
   display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Left side - Date and Day */
+.shift-left {
+  display: flex;
   flex-direction: column;
-  justify-content: center;
-  gap: 4px;
+  align-items: center;
+  min-width: 40px;
 }
 
-.shift-card .day {
-  font-size: 14px;
+.shift-date {
+  font-size: 20px;
   font-weight: 700;
+  line-height: 1;
+  color: #2C3E50;
 }
 
-.shift-card .label {
+.shift-day {
+  font-size: 11px;
+  font-weight: 500;
+  color: #2C3E50;
+  margin-top: 2px;
+}
+
+/* Vertical Divider */
+.shift-divider {
+  width: 3px;
+  height: 40px;
+  border-radius: 2px;
+  opacity: 0.8;
+}
+
+/* Right side - Time and Label */
+.shift-right {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
+
+.shift-time {
   font-size: 13px;
   font-weight: 600;
+  color: #2C3E50;
+  line-height: 1.2;
 }
 
-.shift-card .time {
-  font-size: 12px;
-  opacity: 0.8;
+.shift-label {
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.2;
 }
