@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 // Components
 import LeaveBalance from '../../components/employee/LeaveRequest/LeaveBalance';
 import LeaveReqHistory from '../../components/employee/LeaveRequest/LeaveReqHistory';
-import Header from '../../components/employee/LeaveRequest/Header';
+import HeaderWithAddBtn from '../../components/Header/HeaderWithAddBtn';
 import RequestModal from '../../components/employee/LeaveRequest/RequestModal';
 
 // API calls
@@ -33,7 +33,11 @@ export default function EmployeeLeaveRequest() {
 
     return (
         <div className="employee-leave-request-page">
-            <Header onOpenModal={() => setIsModalOpen(true)} />
+            <HeaderWithAddBtn
+                onOpenModal={() => setIsModalOpen(true)}
+                title="Leave Request Management"
+                btnText="Request"
+            />
             <LeaveBalance />
             <LeaveReqHistory
                 leaveReqHistoryData={history}
