@@ -19,7 +19,7 @@ hr {
 }
 
 .leaveBalanceCard h4 {
-  color: var(--primary-color-darkpink);
+  color: var(--primary-color-darkblue);
 }
 
 .leaveBalanceCard p {
@@ -30,7 +30,7 @@ hr {
 
 
 .requestBtn {
-  background-color: var(--primary-color-pink);
+  background-color: var(--primary-color-blue);
   color: white;
   border: none;
   border-radius: 8px;
@@ -38,7 +38,7 @@ hr {
 }
 
 .requestBtn:hover {
-  background-color: var(--primary-color-darkpink);
+  background-color: var(--primary-color-darkblue);
 }
 
 /* Modal */
@@ -164,7 +164,7 @@ select option[value=""] {
 
 .btn-primary {
   padding: 8px 16px;
-  background: var(--primary-color-pink);
+  background: var(--primary-color-blue);
   color: white;
   border: none;
   border-radius: 6px;
@@ -172,7 +172,7 @@ select option[value=""] {
 }
 
 .btn-primary:hover {
-  background: var(--primary-color-darkpink);
+  background: var(--primary-color-darkblue);
 }
 
 .error-message {
