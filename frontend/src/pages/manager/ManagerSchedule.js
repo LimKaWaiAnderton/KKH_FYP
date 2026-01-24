@@ -40,6 +40,19 @@ export default function ManagerSchedule() {
         loadUsersWithPendingShifts();
     }, []);
 
+    // Function to refresh shifts after approve/reject
+    const refreshShifts = async () => {
+        try {
+            const res = await authFetch("http://localhost:5000/api/shifts/users-with-pending");
+            if (res && res.ok) {
+                const data = await res.json();
+                setUsersWithShifts(data);
+            }
+        } catch (err) {
+            console.error("Error refreshing shifts:", err);
+        }
+    };
+
     // Generate array of 7 days starting from startDate
     const generateWeekDays = (date) => {
         const days = [];
@@ -117,6 +130,7 @@ export default function ManagerSchedule() {
                         searchTerm={searchTerm}
                         onAddShift={handleAddShift}
                         usersWithShifts={usersWithShifts}
+                        onShiftUpdate={refreshShifts}
                     />
                 </div>
                 <ShiftCreationDrawer

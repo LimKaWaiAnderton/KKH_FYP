@@ -97,7 +97,7 @@ export const getAllUsersWithPendingShifts = async (req, res) => {
         st.color_hex
       FROM users u
       LEFT JOIN departments d ON u.department_id = d.id
-      LEFT JOIN shift_requests sr ON u.id = sr.user_id AND sr.status = 'pending'
+      LEFT JOIN shift_requests sr ON u.id = sr.user_id AND sr.status IN ('pending', 'approved')
       LEFT JOIN shift_types st ON sr.shift_type_id = st.id
       WHERE u.role_id = 2
       ORDER BY d.name, u.last_name, u.first_name, sr.date
@@ -108,5 +108,61 @@ export const getAllUsersWithPendingShifts = async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Failed to fetch users with pending shifts" });
+  }
+};
+
+/* =========================
+   APPROVE SHIFT REQUEST
+   ========================= */
+export const approveShiftRequest = async (req, res) => {
+  try {
+    const { requestId } = req.params;
+
+    const result = await pool.query(
+      `
+      UPDATE shift_requests
+      SET status = 'approved'
+      WHERE id = $1
+      RETURNING *
+      `,
+      [requestId]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: "Shift request not found" });
+    }
+
+    res.json({ message: "Shift request approved", data: result.rows[0] });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Failed to approve shift request" });
+  }
+};
+
+/* =========================
+   REJECT SHIFT REQUEST
+   ========================= */
+export const rejectShiftRequest = async (req, res) => {
+  try {
+    const { requestId } = req.params;
+
+    const result = await pool.query(
+      `
+      UPDATE shift_requests
+      SET status = 'rejected'
+      WHERE id = $1
+      RETURNING *
+      `,
+      [requestId]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: "Shift request not found" });
+    }
+
+    res.json({ message: "Shift request rejected", data: result.rows[0] });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Failed to reject shift request" });
   }
 };

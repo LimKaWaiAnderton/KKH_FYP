@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { HiOutlineUser, HiOutlinePencil, HiOutlineExclamation, HiOutlineCog } from 'react-icons/hi';
+import { HiOutlineUser, HiOutlinePencil, HiOutlineExclamation, HiOutlineCog, HiOutlineCheck, HiOutlineX } from 'react-icons/hi';
 import '../../../styles/ManagerScheduleGrid.css';
 import ScheduleGroupsModal from './ScheduleGroupsModal';
 import AddRemoveUsersModal from './AddRemoveUsersModal';
+import { authFetch } from '../../../utils/authFetch';
 
-export default function ManagerScheduleGrid({ weekDays, viewOption, searchTerm, onAddShift, usersWithShifts }) {
+export default function ManagerScheduleGrid({ weekDays, viewOption, searchTerm, onAddShift, usersWithShifts, onShiftUpdate }) {
     const [collapsedDepartments, setCollapsedDepartments] = useState({});
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedDepartment, setSelectedDepartment] = useState(null);
@@ -40,7 +41,8 @@ export default function ManagerScheduleGrid({ weekDays, viewOption, searchTerm, 
                     color: entry.color_hex ? `${entry.color_hex}30` : '#DFF7DF',
                     borderColor: entry.color_hex || '#249D46',
                     time: entry.time || '',
-                    status: entry.status
+                    status: entry.status,
+                    shiftRequestId: entry.shift_request_id
                 };
 
                 employee.shifts.push(shiftInfo);
@@ -113,6 +115,46 @@ export default function ManagerScheduleGrid({ weekDays, viewOption, searchTerm, 
         console.log('Selected employees:', selectedEmployees);
     };
 
+    const handleApproveShift = async (shiftRequestId) => {
+        try {
+            const res = await authFetch(`http://localhost:5000/api/shifts/${shiftRequestId}/approve`, {
+                method: 'PATCH'
+            });
+
+            if (res.ok) {
+                console.log('Shift approved successfully');
+                // Trigger parent refresh
+                if (onShiftUpdate) {
+                    onShiftUpdate();
+                }
+            } else {
+                console.error('Failed to approve shift');
+            }
+        } catch (err) {
+            console.error('Error approving shift:', err);
+        }
+    };
+
+    const handleRejectShift = async (shiftRequestId) => {
+        try {
+            const res = await authFetch(`http://localhost:5000/api/shifts/${shiftRequestId}/reject`, {
+                method: 'PATCH'
+            });
+
+            if (res.ok) {
+                console.log('Shift rejected successfully');
+                // Trigger parent refresh
+                if (onShiftUpdate) {
+                    onShiftUpdate();
+                }
+            } else {
+                console.error('Failed to reject shift');
+            }
+        } catch (err) {
+            console.error('Error rejecting shift:', err);
+        }
+    };
+
     return (
         <>
             <div className="schedule-grid">
@@ -183,7 +225,34 @@ export default function ManagerScheduleGrid({ weekDays, viewOption, searchTerm, 
                                                                 {shift.type}
                                                             </div>
                                                             {shift.status === 'pending' && (
-                                                                <div className="shift-status-badge">Pending</div>
+                                                                <>
+                                                                    <div className="shift-status-badge">Pending</div>
+                                                                    <div className="shift-actions">
+                                                                        <button 
+                                                                            className="shift-approve-btn"
+                                                                            onClick={(e) => {
+                                                                                e.stopPropagation();
+                                                                                handleApproveShift(shift.shiftRequestId);
+                                                                            }}
+                                                                            title="Approve"
+                                                                        >
+                                                                            <HiOutlineCheck />
+                                                                        </button>
+                                                                        <button 
+                                                                            className="shift-reject-btn"
+                                                                            onClick={(e) => {
+                                                                                e.stopPropagation();
+                                                                                handleRejectShift(shift.shiftRequestId);
+                                                                            }}
+                                                                            title="Reject"
+                                                                        >
+                                                                            <HiOutlineX />
+                                                                        </button>
+                                                                    </div>
+                                                                </>
+                                                            )}
+                                                            {shift.status === 'approved' && (
+                                                                <div className="shift-status-badge approved">Approved</div>
                                                             )}
                                                         </div>
                                                     ) : isEmpty && (
