@@ -3,7 +3,7 @@ import '../../../styles/ShiftCreationDrawer.css';
 import ShiftDetailsForm from './ShiftDetailsForm';
 import ShiftTemplates from './ShiftTeamplates';
 
-export default function ShiftCreationDrawer({ isOpen, onClose, selectedDate, selectedEmployee }) {
+export default function ShiftCreationDrawer({ isOpen, onClose, selectedDate, selectedEmployee, onShiftUpdate }) {
     const [activeTab, setActiveTab] = useState('details'); // 'details' or 'templates'
     const [formData, setFormData] = useState(null);
     const [isClosing, setIsClosing] = useState(false);
@@ -32,10 +32,13 @@ export default function ShiftCreationDrawer({ isOpen, onClose, selectedDate, sel
         return `${day} ${month} ${year}, ${dayName}`;
     };
 
-    const handleSave = (shiftData) => {
+    const handleSave = async (shiftData) => {
         console.log('Saving shift:', shiftData);
-        // TODO: Implement actual save logic (update ScheduleData)
-        onClose();
+        handleClose();
+        // Refresh the shifts after saving
+        if (onShiftUpdate) {
+            await onShiftUpdate();
+        }
     };
 
     const handleTemplateSelect = (template) => {

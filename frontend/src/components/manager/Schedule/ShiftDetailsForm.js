@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { HiOutlineBell } from 'react-icons/hi';
 import PublishNotificationModal from './PublishNotificationModal';
+import { authFetch } from '../../../utils/authFetch';
+import toast from 'react-hot-toast';
 
 export default function ShiftDetailsForm({ selectedDate, selectedEmployee, onClose, onSave, initialData }) {
     const [shiftTitle, setShiftTitle] = useState('');
@@ -11,6 +13,7 @@ export default function ShiftDetailsForm({ selectedDate, selectedEmployee, onClo
     const [selectedUsers, setSelectedUsers] = useState([]);
     const [isPublishModalOpen, setIsPublishModalOpen] = useState(false);
     const [isColorDropdownOpen, setIsColorDropdownOpen] = useState(false);
+    const [isSaving, setIsSaving] = useState(false);
 
     const colorOptions = [
         { value: '#4CAF50', label: 'Green' },
@@ -74,18 +77,68 @@ export default function ShiftDetailsForm({ selectedDate, selectedEmployee, onClo
         }
     }, [initialData]);
 
-    const handleSaveDraft = () => {
-        const shiftData = {
-            title: shiftTitle,
-            color: shiftColor,
-            date,
-            startTime,
-            endTime,
-            users: selectedUsers,
-            status: 'draft',
-            employee: selectedEmployee
-        };
-        onSave(shiftData);
+    // Convert 12-hour time format (7:00 am) to 24-hour format (07:00:00)
+    const convertTo24Hour = (time12h) => {
+        const [time, period] = time12h.split(' ');
+        let [hours, minutes] = time.split(':');
+        
+        hours = parseInt(hours);
+        
+        if (period.toLowerCase() === 'pm' && hours !== 12) {
+            hours += 12;
+        } else if (period.toLowerCase() === 'am' && hours === 12) {
+            hours = 0;
+        }
+        
+        return `${hours.toString().padStart(2, '0')}:${minutes}:00`;
+    };
+
+    // Convert DD/MM/YYYY to YYYY-MM-DD
+    const convertDateFormat = (dateStr) => {
+        const [day, month, year] = dateStr.split('/');
+        return `${year}-${month}-${day}`;
+    };
+
+    const handleSaveDraft = async () => {
+        if (!shiftTitle.trim()) {
+            toast.error('Please enter a shift title');
+            return;
+        }
+
+        if (!selectedEmployee) {
+            toast.error('No employee selected');
+            return;
+        }
+
+        setIsSaving(true);
+        try {
+            const shiftData = {
+                user_id: selectedEmployee.id,
+                date: convertDateFormat(date),
+                title: shiftTitle,
+                start_time: convertTo24Hour(startTime),
+                end_time: convertTo24Hour(endTime),
+                shift_type_id: null,
+                color_hex: shiftColor
+            };
+
+            const response = await authFetch('http://localhost:5000/api/shifts/create-for-employee', {
+                method: 'POST',
+                body: JSON.stringify(shiftData)
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to save shift');
+            }
+
+            toast.success('Shift saved as draft successfully');
+            onSave(shiftData);
+        } catch (error) {
+            console.error('Error saving shift:', error);
+            toast.error('Failed to save shift');
+        } finally {
+            setIsSaving(false);
+        }
     };
 
     const handlePublish = () => {
@@ -238,8 +291,8 @@ export default function ShiftDetailsForm({ selectedDate, selectedEmployee, onClo
                         <HiOutlineBell />
                     </button>
                 </div>
-                <button className="save-draft-btn" onClick={handleSaveDraft}>
-                    Save Draft
+                <button className="save-draft-btn" onClick={handleSaveDraft} disabled={isSaving}>
+                    {isSaving ? 'Saving...' : 'Save Draft'}
                 </button>
                 <button className="delete-btn">
                     🗑️

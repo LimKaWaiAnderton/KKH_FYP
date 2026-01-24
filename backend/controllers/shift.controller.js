@@ -60,6 +60,31 @@ export const createShiftRequest = async (req, res) => {
 };
 
 /* =========================
+   CREATE SHIFT FOR EMPLOYEE (MANAGER)
+   ========================= */
+export const createShiftForEmployee = async (req, res) => {
+  try {
+    const { user_id, date, title, start_time, end_time, shift_type_id, color_hex } = req.body;
+
+    // Manager creates an approved shift for an employee
+    const result = await pool.query(
+      `
+      INSERT INTO shift_requests
+      (user_id, date, title, start_time, end_time, shift_type_id, status, published)
+      VALUES ($1, $2, $3, $4, $5, $6, 'approved', false)
+      RETURNING *
+      `,
+      [user_id, date, title ?? null, start_time ?? null, end_time ?? null, shift_type_id ?? null]
+    );
+
+    res.status(201).json(result.rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Failed to create shift for employee" });
+  }
+};
+
+/* =========================
    GET SHIFT TYPES
    ========================= */
 export const getShiftTypes = async (req, res) => {

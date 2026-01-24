@@ -6,7 +6,7 @@ import AddRemoveUsersModal from './AddRemoveUsersModal';
 import { authFetch } from '../../../utils/authFetch';
 import { formatTimeRange } from '../../../utils/dateUtils';
 
-export default function ManagerScheduleGrid({ weekDays, viewOption, searchTerm, onAddShift, usersWithShifts, onShiftUpdate }) {
+export default function ManagerScheduleGrid({ weekDays, searchTerm, onAddShift, usersWithShifts, onShiftUpdate }) {
     const [collapsedDepartments, setCollapsedDepartments] = useState({});
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedDepartment, setSelectedDepartment] = useState(null);

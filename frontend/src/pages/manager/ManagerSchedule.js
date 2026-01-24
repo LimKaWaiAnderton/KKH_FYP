@@ -11,7 +11,6 @@ import toast from 'react-hot-toast';
 
 export default function ManagerSchedule() {
     const [startDate, setStartDate] = useState(new Date());
-    const [viewOption, setViewOption] = useState('View everyone');
     const [searchTerm, setSearchTerm] = useState('');
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
     const [selectedDate, setSelectedDate] = useState(null);
@@ -190,15 +189,12 @@ export default function ManagerSchedule() {
                     <ManagerScheduleHead
                         startDate={startDate}
                         setStartDate={setStartDate}
-                        viewOption={viewOption}
-                        setViewOption={setViewOption}
                         weekDays={weekDays}
                         searchTerm={searchTerm}
                         setSearchTerm={setSearchTerm}
                     />
                     <ManagerScheduleGrid
                         weekDays={weekDays}
-                        viewOption={viewOption}
                         searchTerm={searchTerm}
                         onAddShift={handleAddShift}
                         usersWithShifts={usersWithShifts}
@@ -210,6 +206,7 @@ export default function ManagerSchedule() {
                     onClose={handleCloseDrawer}
                     selectedDate={selectedDate}
                     selectedEmployee={selectedEmployee}
+                    onShiftUpdate={refreshShifts}
                 />
                 <PublishNotificationModal
                     isOpen={isPublishModalOpen}
