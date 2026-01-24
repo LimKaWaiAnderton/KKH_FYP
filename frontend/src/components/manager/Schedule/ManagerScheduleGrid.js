@@ -4,8 +4,9 @@ import '../../../styles/ManagerScheduleGrid.css';
 import ScheduleGroupsModal from './ScheduleGroupsModal';
 import AddRemoveUsersModal from './AddRemoveUsersModal';
 import { authFetch } from '../../../utils/authFetch';
+import { formatTimeRange } from '../../../utils/dateUtils';
 
-export default function ManagerScheduleGrid({ weekDays, viewOption, searchTerm, onAddShift, usersWithShifts, onShiftUpdate }) {
+export default function ManagerScheduleGrid({ weekDays, searchTerm, onAddShift, usersWithShifts, onShiftUpdate }) {
     const [collapsedDepartments, setCollapsedDepartments] = useState({});
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedDepartment, setSelectedDepartment] = useState(null);
@@ -33,16 +34,37 @@ export default function ManagerScheduleGrid({ weekDays, viewOption, searchTerm, 
 
             const employee = employeeMap.get(entry.user_id);
 
-            // Only add shifts if there's a pending shift request
+            // Add manager-assigned shifts (from shifts table)
+            if (entry.shift_id) {
+                let shiftInfo = {
+                    date: entry.date,
+                    type: entry.title || entry.shift_type_name,
+                    // Custom shifts (no shift_type_id) get white background
+                    color: entry.shift_type_id ? `${entry.color_hex}30` : '#FFFFFF',
+                    borderColor: entry.color_hex || '#000000',
+                    textColor: entry.shift_type_id ? undefined : '#000000', // Black text for custom shifts
+                    time: entry.start_time && entry.end_time ? formatTimeRange(entry.start_time, entry.end_time) : '',
+                    published: entry.published,
+                    shiftId: entry.shift_id,
+                    isCustom: !entry.shift_type_id  // Flag for custom styling
+                };
+
+                employee.shifts.push(shiftInfo);
+            }
+            
+            // Add employee shift requests (from shift_requests table)
             if (entry.shift_request_id) {
                 let shiftInfo = {
                     date: entry.date,
-                    type: entry.preferred_shift,
-                    color: entry.color_hex ? `${entry.color_hex}30` : '#DFF7DF',
-                    borderColor: entry.color_hex || '#249D46',
-                    time: entry.time || '',
-                    status: entry.status,
-                    shiftRequestId: entry.shift_request_id
+                    type: entry.title || entry.shift_type_name,
+                    color: entry.shift_type_id ? `${entry.color_hex}30` : '#FFFFFF',
+                    borderColor: entry.color_hex || '#000000',
+                    textColor: entry.shift_type_id ? undefined : '#000000',
+                    time: entry.start_time && entry.end_time ? formatTimeRange(entry.start_time, entry.end_time) : '',
+                    published: false,
+                    shiftRequestId: entry.shift_request_id,
+                    status: entry.request_status, // pending, approved, rejected
+                    isRequest: true // Flag to identify shift requests
                 };
 
                 employee.shifts.push(shiftInfo);
@@ -215,7 +237,8 @@ export default function ManagerScheduleGrid({ weekDays, viewOption, searchTerm, 
                                                             className="shift-box"
                                                             style={{
                                                                 backgroundColor: shift.color,
-                                                                borderLeft: `4px solid ${shift.borderColor}`
+                                                                borderLeft: `4px solid ${shift.borderColor}`,
+                                                                color: shift.textColor // Apply black text for custom shifts
                                                             }}
                                                         >
                                                             {shift.time && (

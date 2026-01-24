@@ -102,6 +102,22 @@
 /* Right side - Time and Label */
 .shift-right {
   display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+}
+
+.shift-info-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+
+.shift-details {
+  display: flex;
   flex-direction: column;
   gap: 2px;
   flex: 1;
@@ -118,4 +134,34 @@
   font-size: 14px;
   font-weight: 700;
   line-height: 1.2;
+}
+
+/* Status Badge */
+.shift-status-badge {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 4px;
+  display: inline-block;
+  text-transform: capitalize;
+  white-space: nowrap;
+  margin-left: auto;
+}
+
+.shift-status-badge.pending {
+  background-color: #FFF4E6;
+  color: #E69A00;
+  border: 1px solid #E69A00;
+}
+
+.shift-status-badge.approved {
+  background-color: #E6F7ED;
+  color: #1E8A3C;
+  border: 1px solid #1E8A3C;
+}
+
+.shift-status-badge.rejected {
+  background-color: #FFE6E6;
+  color: #D32F2F;
+  border: 1px solid #D32F2F;
 }

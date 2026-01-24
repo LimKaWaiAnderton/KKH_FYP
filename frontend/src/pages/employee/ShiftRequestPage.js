@@ -4,6 +4,7 @@ import AddShiftModal from "../../components/ShiftRequestComponents/AddShiftModal
 import MonthSelector from "../../components/ShiftRequestComponents/MonthSelector";
 import HeaderWithAddBtn from "../../components/Header/HeaderWithAddBtn";
 import { authFetch } from "../../utils/authFetch";
+import { formatTimeRange } from "../../utils/dateUtils";
 import "../../styles/ShiftRequest/ShiftRequestPage.css";
 
 const monthNames = [
@@ -97,24 +98,24 @@ export default function ShiftRequestPage() {
   /* =========================
      WEEK HELPERS
      ========================= */
-  const getWeekRange = (dateStr) => {
-    const [year, month, day] = dateStr.split('-').map(Number);
-    const d = new Date(year, month - 1, day);
-    const dow = (d.getDay() + 6) % 7;
-    const monday = new Date(d);
-    monday.setDate(d.getDate() - dow);
-    const sunday = new Date(monday);
-    sunday.setDate(monday.getDate() + 6);
-    return { monday, sunday };
+  const getDisplayWeekRange = (dateStr) => {
+    const [yearVal, monthVal, day] = dateStr.split('-').map(Number);
+    // Calculate which display week this date belongs to (based on day 1-7, 8-14, 15-21, etc.)
+    const weekStart = Math.floor((day - 1) / 7) * 7 + 1;
+    const weekEnd = Math.min(weekStart + 6, new Date(yearVal, monthVal, 0).getDate());
+    return { weekStart, weekEnd, month: monthVal, year: yearVal };
   };
 
   const countShiftsInWeek = (dateStr) => {
-    const { monday, sunday } = getWeekRange(dateStr);
+    const { weekStart, weekEnd, month: targetMonth, year: targetYear } = getDisplayWeekRange(dateStr);
     return shifts.filter((s) => {
       const dateOnly = s.date.split('T')[0];
-      const [year, month, day] = dateOnly.split('-').map(Number);
-      const sd = new Date(year, month - 1, day);
-      return sd >= monday && sd <= sunday;
+      const [shiftYear, shiftMonth, shiftDay] = dateOnly.split('-').map(Number);
+      // Check if shift is in the same month/year and within the week range
+      return shiftYear === targetYear && 
+             shiftMonth === targetMonth && 
+             shiftDay >= weekStart && 
+             shiftDay <= weekEnd;
     }).length;
   };
 
@@ -136,8 +137,9 @@ export default function ShiftRequestPage() {
       method: "POST",
       body: JSON.stringify({
         date: newShift.date,
-        preferred_shift: newShift.label,
-        time: newShift.time || "",
+        title: type ? null : newShift.label, // title only for custom shifts
+        start_time: newShift.start || null,
+        end_time: newShift.end || null,
         shift_type_id: type?.id ?? null,
       }),
     });
@@ -183,11 +185,12 @@ export default function ShiftRequestPage() {
           w.shifts.push({
             day: d,
             dayName: dayName,
-            label: s.preferred_shift,
-            time: s.time,
+            label: s.title || st?.name || "",
+            time: s.start_time && s.end_time ? formatTimeRange(s.start_time, s.end_time) : "",
             bgColor: bg,
             borderColor: border,
             rowIndex: w.shifts.length,
+            status: s.status || 'pending',
           });
         });
       }

@@ -3,9 +3,8 @@ import { HiOutlineCalendar, HiOutlineCog } from 'react-icons/hi';
 import CustomCalendar from './CustomCalendar';
 import '../../../styles/ManagerScheduleHead.css';
 
-export default function ManagerScheduleHead({ startDate, setStartDate, viewOption, setViewOption, weekDays, searchTerm, setSearchTerm }) {
+export default function ManagerScheduleHead({ startDate, setStartDate, weekDays, searchTerm, setSearchTerm }) {
     const [showCalendar, setShowCalendar] = useState(false);
-    const [showViewOptions, setShowViewOptions] = useState(false);
     const [showAddDropdown, setShowAddDropdown] = useState(false);
 
     // Format date range string
@@ -35,12 +34,6 @@ export default function ManagerScheduleHead({ startDate, setStartDate, viewOptio
         setShowCalendar(false);
     };
 
-    // Handle view option selection
-    const handleViewOptionSelect = (option) => {
-        setViewOption(option);
-        setShowViewOptions(false);
-    };
-
     // Handle add shift option selection
     const handleAddShiftOption = (option) => {
         console.log(`Selected: ${option}`);
@@ -52,33 +45,6 @@ export default function ManagerScheduleHead({ startDate, setStartDate, viewOptio
         <div>
             {/* Top Controls Row */}
             <div className="schedule-controls">
-                {/* View Options Dropdown */}
-                <div className="view-options">
-                    <button 
-                        className="view-options-btn"
-                        onClick={() => setShowViewOptions(!showViewOptions)}
-                    >
-                        View Options
-                        <span className="dropdown-icon">▼</span>
-                    </button>
-                    {showViewOptions && (
-                        <div className="view-options-dropdown">
-                            <div 
-                                className="view-option-item"
-                                onClick={() => handleViewOptionSelect('View only me')}
-                            >
-                                View only me
-                            </div>
-                            <div 
-                                className="view-option-item"
-                                onClick={() => handleViewOptionSelect('View everyone')}
-                            >
-                                View everyone
-                            </div>
-                        </div>
-                    )}
-                </div>
-
                 {/* Date Navigation */}
                 <div className="date-navigation">
                     <button className="nav-arrow" onClick={goToPreviousWeek}>‹</button>
