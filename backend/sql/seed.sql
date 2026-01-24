@@ -1,6 +1,6 @@
-begin; 
+BEGIN;
 
-insert into public.departments (name) VALUES
+INSERT INTO public.departments (name) VALUES
 ('CE'),
 ('Ward 65'),
 ('CICU'),
@@ -16,54 +16,71 @@ insert into public.departments (name) VALUES
 ('Surg/85'),
 ('Surg/55');
 
-insert into public.roles (name) VALUES
+INSERT INTO public.roles (name) VALUES
 ('admin'),
 ('user');
 
-insert into public.users
-(id, first_name, last_name, email, department_id, role_id, password_hash)
-VALUES
--- Clara = regular user
--- Anderton = admin user
-(
-  '43f7e8dc-365b-4aa1-ace6-44b790687780',
-  'Clara',
-  'Lim',
-  'clara@kkh.com.sg',
-  1,
-  2,
-  '$2b$10$1vbz4yLy.5F7hlkX.9xbAeHoJ/rLsGi.TSQGzUDtoGKdB/mRPLWOW'
-),
-(
-  'a1b2c3d4-e5f6-7890-1234-abcdef987654',
-  'Anderton',
-  'Lim',
-  'anderton@kkh.com.sg',
-  1,
-  1,
-  '$2b$10$benyyj6c0edbcqGbHEMQ7uunkKGy7UPDZaHyZK.8mE.dQPMNdmm9y'
-);
+INSERT INTO public.users (id, first_name, last_name, email, department_id, role_id, password_hash) VALUES
+-- Password for all users: mypassword
+(gen_random_uuid(), 'Anderton', 'Lim', 'anderton@kkh.com.sg', 1, 1, '$2b$10$0xXkA7/kUrmDJa.B5vVO2.Ik/DrQcf6/Zm/Vtf9ME6fQnI8TCIcoa'),
+(gen_random_uuid(), 'Clara', 'Lim', 'clara@kkh.com.sg', 1, 2, '$2b$10$0xXkA7/kUrmDJa.B5vVO2.Ik/DrQcf6/Zm/Vtf9ME6fQnI8TCIcoa'),
+(gen_random_uuid(), 'Sonia', 'Yeong', 'sonia@kkh.com.sg', 1, 2, '$2b$10$0xXkA7/kUrmDJa.B5vVO2.Ik/DrQcf6/Zm/Vtf9ME6fQnI8TCIcoa'),
+(gen_random_uuid(), 'Nico', 'Sim', 'nico@kkh.com.sg', 1, 2, '$2b$10$0xXkA7/kUrmDJa.B5vVO2.Ik/DrQcf6/Zm/Vtf9ME6fQnI8TCIcoa'),
+(gen_random_uuid(), 'Likai', 'Tan', 'likai@kkh.com.sg', 1, 2, '$2b$10$0xXkA7/kUrmDJa.B5vVO2.Ik/DrQcf6/Zm/Vtf9ME6fQnI8TCIcoa'),
+(gen_random_uuid(), 'Charlotte', 'Chia', 'charlotte@kkh.com.sg', 7, 2, '$2b$10$0xXkA7/kUrmDJa.B5vVO2.Ik/DrQcf6/Zm/Vtf9ME6fQnI8TCIcoa'),
+(gen_random_uuid(), 'Insyirah', 'Nur', 'insyirah@kkh.com.sg', 7, 2, '$2b$10$0xXkA7/kUrmDJa.B5vVO2.Ik/DrQcf6/Zm/Vtf9ME6fQnI8TCIcoa'),
+(gen_random_uuid(), 'Angelica', 'Torres', 'angelica@kkh.com.sg', 8, 2, '$2b$10$0xXkA7/kUrmDJa.B5vVO2.Ik/DrQcf6/Zm/Vtf9ME6fQnI8TCIcoa'),
+(gen_random_uuid(), 'John', 'Doe', 'john@kkh.com.sg', 8, 2, '$2b$10$0xXkA7/kUrmDJa.B5vVO2.Ik/DrQcf6/Zm/Vtf9ME6fQnI8TCIcoa');
 
-insert into public.shift_types (name, color_hex) VALUES
+INSERT INTO public.shift_types (name, color_hex) VALUES
 ('AM', '#000000'),
 ('PM', '#1E8A3C'),
 ('RRT', '#005983'),
 ('DO', '#E69A00'),
-('RD', '#E69A00'),
-('AL', '#009999'),
-('SL', '#009999'),
-('CCL', '#009999');
+('RD', '#E69A00');
 
-insert into public.leave_types (shift_type_id, name) VALUES
-(6, 'Annual Leave'),
-(7, 'Sick Leave'),
-(8, 'Childcare Leave');
+INSERT INTO public.shifts (shift_type_id, title, color_hex, start_time, end_time)
+SELECT
+  st.id,
+  st.name,
+  st.color_hex,
+  CASE st.name
+    WHEN 'AM' THEN TIME '07:00'
+    WHEN 'PM' THEN TIME '15:00'
+    WHEN 'RRT' THEN TIME '19:00'
+    ELSE NULL
+  END,
+  CASE st.name
+    WHEN 'AM' THEN TIME '15:00'
+    WHEN 'PM' THEN TIME '23:00'
+    WHEN 'RRT' THEN TIME '07:00'
+    ELSE NULL
+  END
+FROM public.shift_types st
+WHERE st.name IN ('AM', 'PM', 'RRT', 'RD', 'DO');
 
-insert into public.user_leave_balance
-(user_id, leave_type_id, used_days, remaining_days, total_quota)
-VALUES
-('43f7e8dc-365b-4aa1-ace6-44b790687780', 1, 0, 7, 7),
-('43f7e8dc-365b-4aa1-ace6-44b790687780', 2, 0, 14, 14),
-('43f7e8dc-365b-4aa1-ace6-44b790687780', 3, 0, 7, 7);
+INSERT INTO public.leave_types (name) VALUES
+('Annual Leave'),
+('Sick Leave'),
+('Childcare Leave');
 
-commit;
+INSERT INTO public.user_leave_balance (user_id, leave_type_id, used_days, remaining_days, total_quota)
+SELECT 
+  u.id,
+  lt.id,
+  0,
+  CASE lt.name
+    WHEN 'Annual Leave' THEN 7
+    WHEN 'Sick Leave' THEN 14
+    WHEN 'Childcare Leave' THEN 7
+  END,
+  CASE lt.name
+    WHEN 'Annual Leave' THEN 7
+    WHEN 'Sick Leave' THEN 14
+    WHEN 'Childcare Leave' THEN 7
+  END
+FROM public.users u
+CROSS JOIN public.leave_types lt
+WHERE u.role_id != 1; -- exclude admin
+
+COMMIT;
