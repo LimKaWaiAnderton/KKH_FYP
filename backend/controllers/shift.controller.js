@@ -200,3 +200,45 @@ export const publishSchedule = async (req, res) => {
     res.status(500).json({ message: "Failed to publish schedule" });
   }
 };
+
+/* =========================
+   GET ALL EMPLOYEES WITH PUBLISHED SHIFTS (FOR EMPLOYEE VIEW)
+   ========================= */
+export const getAllEmployeesWithPublishedShifts = async (req, res) => {
+  try {
+    const result = await pool.query(
+      `
+      SELECT 
+        u.id as user_id,
+        u.first_name,
+        u.last_name,
+        u.email,
+        d.id as department_id,
+        d.name as department_name,
+        sr.id as shift_request_id,
+        TO_CHAR(sr.date, 'YYYY-MM-DD') as date,
+        sr.title,
+        sr.start_time,
+        sr.end_time,
+        sr.status,
+        sr.published,
+        sr.shift_type_id,
+        st.name as shift_type_name,
+        st.color_hex
+      FROM users u
+      INNER JOIN departments d ON u.department_id = d.id
+      LEFT JOIN shift_requests sr ON u.id = sr.user_id 
+        AND sr.status = 'approved' 
+        AND sr.published = true
+      LEFT JOIN shift_types st ON sr.shift_type_id = st.id
+      WHERE u.role_id = 2
+      ORDER BY d.name, u.last_name, u.first_name, sr.date
+      `
+    );
+
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Failed to fetch employees with published shifts" });
+  }
+};
