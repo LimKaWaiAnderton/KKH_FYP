@@ -5,7 +5,8 @@ import {
   getShiftTypes,
   getAllUsersWithPendingShifts,
   approveShiftRequest,
-  rejectShiftRequest
+  rejectShiftRequest,
+  publishSchedule
 } from "../controllers/shift.controller.js";
 import auth from "../middlewares/auth.middleware.js";
 
@@ -17,5 +18,6 @@ shiftRoutes.get("/types", auth, getShiftTypes);
 shiftRoutes.get("/users-with-pending", auth, getAllUsersWithPendingShifts);
 shiftRoutes.patch("/:requestId/approve", auth, approveShiftRequest);
 shiftRoutes.patch("/:requestId/reject", auth, rejectShiftRequest);
+shiftRoutes.post("/publish", auth, publishSchedule);
 
 export default shiftRoutes;

@@ -94,9 +94,38 @@ export default function ManagerSchedule() {
         setSelectedEmployee(null);
     };
 
-    const handlePublish = () => {
-        // TODO: Implement publish functionality
-        console.log('Publish schedule');
+    const handlePublish = async () => {
+        try {
+            // Calculate the date range for the current week view
+            const endDate = new Date(startDate);
+            endDate.setDate(startDate.getDate() + 6);
+
+            const formatDate = (date) => {
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                return `${year}-${month}-${day}`;
+            };
+
+            const res = await authFetch("http://localhost:5000/api/shifts/publish", {
+                method: "POST",
+                body: JSON.stringify({
+                    startDate: formatDate(startDate),
+                    endDate: formatDate(endDate)
+                })
+            });
+
+            if (res && res.ok) {
+                const data = await res.json();
+                alert(`Schedule published! ${data.publishedCount} approved shifts are now visible to employees.`);
+                refreshShifts();
+            } else {
+                alert('Failed to publish schedule');
+            }
+        } catch (err) {
+            console.error('Error publishing schedule:', err);
+            alert('Error publishing schedule');
+        }
     };
 
     const handleNotifications = () => {

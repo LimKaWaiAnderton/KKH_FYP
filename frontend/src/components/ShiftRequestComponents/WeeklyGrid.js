@@ -34,8 +34,17 @@ export default function WeeklyGrid({ week }) {
                   </div>
                   <div className="shift-divider" style={{ backgroundColor: shift.borderColor }}></div>
                   <div className="shift-right">
-                    {shift.time && <span className="shift-time">{shift.time}</span>}
-                    <span className="shift-label" style={{ color: shift.borderColor }}>{shift.label}</span>
+                    <div className="shift-info-row">
+                      <div className="shift-details">
+                        {shift.time && <span className="shift-time">{shift.time}</span>}
+                        <span className="shift-label" style={{ color: shift.borderColor }}>{shift.label}</span>
+                      </div>
+                      {shift.status && (
+                        <span className={`shift-status-badge ${shift.status}`}>
+                          {shift.status === 'pending' ? 'Pending' : shift.status === 'approved' ? 'Approved' : 'Rejected'}
+                        </span>
+                      )}
+                    </div>
                   </div>
                 </div>
               )}

@@ -138,6 +138,7 @@ CREATE TABLE
     start_time TIME,
     end_time TIME,
     status VARCHAR(20) NOT NULL DEFAULT 'pending',
+    published BOOLEAN NOT NULL DEFAULT false,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_sr_user FOREIGN KEY (user_id) REFERENCES public.users (id),
     CONSTRAINT fk_sr_shift_type FOREIGN KEY (shift_type_id) REFERENCES public.shift_types (id),

@@ -18,6 +18,7 @@ export const getMyShiftRequests = async (req, res) => {
         shift_type_id,
         start_time,
         end_time,
+        COALESCE(published, false) as published,
         created_at
       FROM shift_requests
       WHERE user_id = $1
@@ -94,6 +95,7 @@ export const getAllUsersWithPendingShifts = async (req, res) => {
         sr.start_time,
         sr.end_time,
         sr.status,
+        COALESCE(sr.published, false) as published,
         sr.shift_type_id,
         st.name as shift_type_name,
         st.color_hex
@@ -166,5 +168,35 @@ export const rejectShiftRequest = async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Failed to reject shift request" });
+  }
+};
+
+/* =========================
+   PUBLISH SCHEDULE
+   ========================= */
+export const publishSchedule = async (req, res) => {
+  try {
+    const { startDate, endDate } = req.body;
+
+    // Update all approved shifts within the date range to published
+    const result = await pool.query(
+      `
+      UPDATE shift_requests
+      SET published = true
+      WHERE status = 'approved'
+        AND date >= $1
+        AND date <= $2
+      RETURNING *
+      `,
+      [startDate, endDate]
+    );
+
+    res.json({ 
+      message: "Schedule published successfully", 
+      publishedCount: result.rows.length 
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Failed to publish schedule" });
   }
 };
