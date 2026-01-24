@@ -48,7 +48,7 @@
   display: flex;             /* Flex layout */
   align-items: center;       /* Center icon */
   justify-content: center;   /* Center icon */
-  font-size: 20px;           /* Icon size */
+  font-size: 209px;           /* Icon size */
   cursor: pointer;           /* Pointer cursor */
   transition: background-color 0.2s;  /* Smooth transition */
 }
