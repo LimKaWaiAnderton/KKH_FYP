@@ -34,7 +34,7 @@ export default function ManagerScheduleGrid({ weekDays, searchTerm, onAddShift, 
 
             const employee = employeeMap.get(entry.user_id);
 
-            // Only add shifts if there's a shift assigned
+            // Add manager-assigned shifts (from shifts table)
             if (entry.shift_id) {
                 let shiftInfo = {
                     date: entry.date,
@@ -47,6 +47,24 @@ export default function ManagerScheduleGrid({ weekDays, searchTerm, onAddShift, 
                     published: entry.published,
                     shiftId: entry.shift_id,
                     isCustom: !entry.shift_type_id  // Flag for custom styling
+                };
+
+                employee.shifts.push(shiftInfo);
+            }
+            
+            // Add employee shift requests (from shift_requests table)
+            if (entry.shift_request_id) {
+                let shiftInfo = {
+                    date: entry.date,
+                    type: entry.title || entry.shift_type_name,
+                    color: entry.shift_type_id ? `${entry.color_hex}30` : '#FFFFFF',
+                    borderColor: entry.color_hex || '#000000',
+                    textColor: entry.shift_type_id ? undefined : '#000000',
+                    time: entry.start_time && entry.end_time ? formatTimeRange(entry.start_time, entry.end_time) : '',
+                    published: false,
+                    shiftRequestId: entry.shift_request_id,
+                    status: entry.request_status, // pending, approved, rejected
+                    isRequest: true // Flag to identify shift requests
                 };
 
                 employee.shifts.push(shiftInfo);

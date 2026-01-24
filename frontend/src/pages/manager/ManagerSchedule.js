@@ -116,13 +116,14 @@ export default function ManagerSchedule() {
             return `${day} ${month}`;
         };
 
-        // Count shifts that will be published (unpublished shifts in the date range)
+        // Count shifts that will be published (only unpublished shifts, not pending requests)
         let shiftCount = 0;
         const startDateStr = formatDate(startDate);
         const endDateStr = formatDate(endDate);
 
         usersWithShifts.forEach(entry => {
-            // Check if this entry has a shift that's not yet published
+            // Count unpublished manager-assigned shifts and approved employee requests
+            // (approved requests are already moved to shifts table with published=false)
             if (entry.shift_id && 
                 entry.date >= startDateStr && 
                 entry.date <= endDateStr && 

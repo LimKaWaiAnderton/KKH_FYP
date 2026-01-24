@@ -190,7 +190,7 @@ export default function ShiftRequestPage() {
             bgColor: bg,
             borderColor: border,
             rowIndex: w.shifts.length,
-            status: s.published && s.status === 'approved' ? 'approved' : s.status === 'rejected' ? 'rejected' : 'pending',
+            status: s.status || 'pending',
           });
         });
       }
