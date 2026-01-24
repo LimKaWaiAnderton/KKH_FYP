@@ -13,10 +13,11 @@ export const getMyShiftRequests = async (req, res) => {
         id,
         user_id,
         TO_CHAR(date, 'YYYY-MM-DD') as date,
-        preferred_shift,
+        title,
         status,
         shift_type_id,
-        time,
+        start_time,
+        end_time,
         created_at
       FROM shift_requests
       WHERE user_id = $1
@@ -38,16 +39,16 @@ export const getMyShiftRequests = async (req, res) => {
 export const createShiftRequest = async (req, res) => {
   try {
     const userId = req.user.id;
-    const { date, preferred_shift, time, shift_type_id } = req.body;
+    const { date, title, start_time, end_time, shift_type_id } = req.body;
 
     const result = await pool.query(
       `
       INSERT INTO shift_requests
-      (user_id, date, preferred_shift, time, shift_type_id, status)
-      VALUES ($1, $2, $3, $4, $5, 'pending')
+      (user_id, date, title, start_time, end_time, shift_type_id, status)
+      VALUES ($1, $2, $3, $4, $5, $6, 'pending')
       RETURNING *
       `,
-      [userId, date, preferred_shift, time, shift_type_id ?? null]
+      [userId, date, title ?? null, start_time ?? null, end_time ?? null, shift_type_id ?? null]
     );
 
     res.status(201).json(result.rows[0]);
@@ -89,14 +90,15 @@ export const getAllUsersWithPendingShifts = async (req, res) => {
         d.name as department_name,
         sr.id as shift_request_id,
         TO_CHAR(sr.date, 'YYYY-MM-DD') as date,
-        sr.preferred_shift,
-        sr.time,
+        sr.title,
+        sr.start_time,
+        sr.end_time,
         sr.status,
         sr.shift_type_id,
         st.name as shift_type_name,
         st.color_hex
       FROM users u
-      LEFT JOIN departments d ON u.department_id = d.id
+      INNER JOIN departments d ON u.department_id = d.id
       LEFT JOIN shift_requests sr ON u.id = sr.user_id AND sr.status IN ('pending', 'approved')
       LEFT JOIN shift_types st ON sr.shift_type_id = st.id
       WHERE u.role_id = 2
@@ -107,7 +109,7 @@ export const getAllUsersWithPendingShifts = async (req, res) => {
     res.json(result.rows);
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Failed to fetch users with pending shifts" });
+    res.status(500).json({ message: "Failed to fetch users with shifts" });
   }
 };
 

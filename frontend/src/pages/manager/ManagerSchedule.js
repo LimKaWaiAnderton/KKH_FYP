@@ -17,13 +17,13 @@ export default function ManagerSchedule() {
     const [usersWithShifts, setUsersWithShifts] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    // Fetch users with pending shift requests
+    // Fetch all users and their shifts
     useEffect(() => {
-        async function loadUsersWithPendingShifts() {
+        async function loadUsersAndShifts() {
             try {
                 const res = await authFetch("http://localhost:5000/api/shifts/users-with-pending");
                 if (!res || !res.ok) {
-                    console.error("Failed to fetch users with pending shifts");
+                    console.error("Failed to fetch users and shifts");
                     setLoading(false);
                     return;
                 }
@@ -32,15 +32,15 @@ export default function ManagerSchedule() {
                 setUsersWithShifts(data);
                 setLoading(false);
             } catch (err) {
-                console.error("Error loading users with pending shifts:", err);
+                console.error("Error loading users and shifts:", err);
                 setLoading(false);
             }
         }
 
-        loadUsersWithPendingShifts();
+        loadUsersAndShifts();
     }, []);
 
-    // Function to refresh shifts after approve/reject
+    // Function to refresh users and shifts after approve/reject
     const refreshShifts = async () => {
         try {
             const res = await authFetch("http://localhost:5000/api/shifts/users-with-pending");

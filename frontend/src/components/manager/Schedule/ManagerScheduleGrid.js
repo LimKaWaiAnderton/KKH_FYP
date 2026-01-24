@@ -4,6 +4,7 @@ import '../../../styles/ManagerScheduleGrid.css';
 import ScheduleGroupsModal from './ScheduleGroupsModal';
 import AddRemoveUsersModal from './AddRemoveUsersModal';
 import { authFetch } from '../../../utils/authFetch';
+import { formatTimeRange } from '../../../utils/dateUtils';
 
 export default function ManagerScheduleGrid({ weekDays, viewOption, searchTerm, onAddShift, usersWithShifts, onShiftUpdate }) {
     const [collapsedDepartments, setCollapsedDepartments] = useState({});
@@ -37,10 +38,10 @@ export default function ManagerScheduleGrid({ weekDays, viewOption, searchTerm, 
             if (entry.shift_request_id) {
                 let shiftInfo = {
                     date: entry.date,
-                    type: entry.preferred_shift,
+                    type: entry.title || entry.shift_type_name,
                     color: entry.color_hex ? `${entry.color_hex}30` : '#DFF7DF',
                     borderColor: entry.color_hex || '#249D46',
-                    time: entry.time || '',
+                    time: entry.start_time && entry.end_time ? formatTimeRange(entry.start_time, entry.end_time) : '',
                     status: entry.status,
                     shiftRequestId: entry.shift_request_id
                 };
