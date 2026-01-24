@@ -152,7 +152,8 @@ export default function EmployeeSidebar({ expanded, onMouseEnter, onMouseLeave }
                     <div
                         className="nav-pill"
                         onClick={() => {
-                            // add real logout logic later
+                            localStorage.removeItem("token");
+                            navigate("/");
                         }}
                     >
                         <HiOutlineArrowRightStartOnRectangle className="icon" />
