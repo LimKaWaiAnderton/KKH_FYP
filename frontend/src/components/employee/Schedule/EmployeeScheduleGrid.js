@@ -3,7 +3,7 @@ import { HiOutlineUser, HiOutlineExclamation } from 'react-icons/hi';
 import '../../../styles/EmployeeScheduleGrid.css';
 import { formatTimeRange } from '../../../utils/dateUtils';
 
-export default function EmployeeScheduleGrid({ weekDays, viewOption, searchTerm, employeesWithShifts }) {
+export default function EmployeeScheduleGrid({ weekDays, viewOption, searchTerm, employeesWithShifts, currentUserId }) {
     const [collapsedDepartments, setCollapsedDepartments] = useState({});
 
     // Transform database data to match the component's expected format
@@ -43,8 +43,14 @@ export default function EmployeeScheduleGrid({ weekDays, viewOption, searchTerm,
 
     const employees = transformScheduleData();
 
-    // Filter employees based on search term (case insensitive)
-    const filteredEmployees = employees.filter(emp => {
+    // Filter employees based on view option
+    let filteredByView = employees;
+    if (viewOption === 'View only me' && currentUserId) {
+        filteredByView = employees.filter(emp => emp.id === currentUserId);
+    }
+
+    // Further filter by search term (case insensitive)
+    const filteredEmployees = filteredByView.filter(emp => {
         if (!searchTerm) return true;
         const search = searchTerm.toLowerCase();
         return emp.name.toLowerCase().includes(search) || 
