@@ -46,9 +46,9 @@ export default function ShiftCreationDrawer({ isOpen, onClose, selectedDate, sel
         setFormData({
             title: template.title,
             color: template.color,
-            startTime: template.start_time,
-            endTime: template.end_time,
-            shift_type: template.shift_type
+            startTime: template.startTime,  // Use camelCase from ShiftTemplates
+            endTime: template.endTime,      // Use camelCase from ShiftTemplates
+            shift_type_id: template.shift_type_id
         });
         setActiveTab('details');
     };

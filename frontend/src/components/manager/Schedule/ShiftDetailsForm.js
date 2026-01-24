@@ -6,7 +6,7 @@ import toast from 'react-hot-toast';
 
 export default function ShiftDetailsForm({ selectedDate, selectedEmployee, onClose, onSave, initialData }) {
     const [shiftTitle, setShiftTitle] = useState('');
-    const [shiftColor, setShiftColor] = useState('#4CAF50'); // Default green
+    const [shiftColor, setShiftColor] = useState('#FFFFFF'); // Default white for custom shifts
     const [date, setDate] = useState('');
     const [startTime, setStartTime] = useState('7:00 am');
     const [endTime, setEndTime] = useState('4:00 pm');
@@ -14,8 +14,10 @@ export default function ShiftDetailsForm({ selectedDate, selectedEmployee, onClo
     const [isPublishModalOpen, setIsPublishModalOpen] = useState(false);
     const [isColorDropdownOpen, setIsColorDropdownOpen] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
+    const [shiftTypeId, setShiftTypeId] = useState(null); // Track if using template
 
     const colorOptions = [
+        { value: '#FFFFFF', label: 'White' },
         { value: '#4CAF50', label: 'Green' },
         { value: '#E8E8E8', label: 'Grey' },
         { value: '#FFCCBC', label: 'Orange' },
@@ -69,13 +71,51 @@ export default function ShiftDetailsForm({ selectedDate, selectedEmployee, onClo
     }, [selectedEmployee]);
 
     useEffect(() => {
+        console.log('ShiftDetailsForm received initialData:', initialData);
         if (initialData) {
+            // Set shift_type_id FIRST
+            if (initialData.shift_type_id) {
+                setShiftTypeId(initialData.shift_type_id);
+            } else {
+                setShiftTypeId(null);
+            }
+            
+            // Then set other fields
             if (initialData.title) setShiftTitle(initialData.title);
             if (initialData.color) setShiftColor(initialData.color);
-            if (initialData.startTime) setStartTime(initialData.startTime);
-            if (initialData.endTime) setEndTime(initialData.endTime);
+            
+            // Update times - handle undefined, null, and empty strings
+            if (initialData.hasOwnProperty('startTime')) {
+                // If undefined or null, set to empty string (no time)
+                const newStartTime = (initialData.startTime === null || initialData.startTime === undefined) 
+                    ? '' 
+                    : (initialData.startTime || '7:00 am');
+                console.log('Setting start time to:', newStartTime);
+                setStartTime(newStartTime);
+            }
+            if (initialData.hasOwnProperty('endTime')) {
+                // If undefined or null, set to empty string (no time)
+                const newEndTime = (initialData.endTime === null || initialData.endTime === undefined) 
+                    ? '' 
+                    : (initialData.endTime || '4:00 pm');
+                console.log('Setting end time to:', newEndTime);
+                setEndTime(newEndTime);
+            }
         }
     }, [initialData]);
+
+    // Clear shift_type_id when user manually types a custom title
+    const handleShiftTitleChange = (e) => {
+        const newTitle = e.target.value;
+        setShiftTitle(newTitle);
+        
+        // If user is typing a custom title, clear the template association
+        // and set white background for custom shifts
+        if (newTitle && newTitle.trim() !== '') {
+            setShiftTypeId(null);
+            setShiftColor('#FFFFFF'); // White background for custom shifts
+        }
+    };
 
     // Convert 12-hour time format (7:00 am) to 24-hour format (07:00:00)
     const convertTo24Hour = (time12h) => {
@@ -100,8 +140,8 @@ export default function ShiftDetailsForm({ selectedDate, selectedEmployee, onClo
     };
 
     const handleSaveDraft = async () => {
-        if (!shiftTitle.trim()) {
-            toast.error('Please enter a shift title');
+        if (!shiftTitle.trim() && !shiftTypeId) {
+            toast.error('Please enter a shift title or select a template');
             return;
         }
 
@@ -112,15 +152,21 @@ export default function ShiftDetailsForm({ selectedDate, selectedEmployee, onClo
 
         setIsSaving(true);
         try {
+            // Only convert times if they're not empty strings
+            const hasStartTime = startTime && startTime.trim() !== '';
+            const hasEndTime = endTime && endTime.trim() !== '';
+            
             const shiftData = {
                 user_id: selectedEmployee.id,
                 date: convertDateFormat(date),
-                title: shiftTitle,
-                start_time: convertTo24Hour(startTime),
-                end_time: convertTo24Hour(endTime),
-                shift_type_id: null,
-                color_hex: shiftColor
+                title: shiftTypeId ? null : shiftTitle,  // null if using template
+                start_time: hasStartTime ? convertTo24Hour(startTime) : null,
+                end_time: hasEndTime ? convertTo24Hour(endTime) : null,
+                shift_type_id: shiftTypeId,  // null if custom shift
+                color_hex: shiftTypeId ? null : shiftColor  // null if using template
             };
+
+            console.log('Saving shift data:', shiftData); // Debug log
 
             const response = await authFetch('http://localhost:5000/api/shifts/create-for-employee', {
                 method: 'POST',
@@ -186,7 +232,7 @@ export default function ShiftDetailsForm({ selectedDate, selectedEmployee, onClo
                         type="text"
                         placeholder="Type here"
                         value={shiftTitle}
-                        onChange={(e) => setShiftTitle(e.target.value)}
+                        onChange={handleShiftTitleChange}
                         className="shift-title-input"
                     />
                     <div className="color-selector">
@@ -233,36 +279,39 @@ export default function ShiftDetailsForm({ selectedDate, selectedEmployee, onClo
                 />
             </div>
 
-            <div className="form-group time-group">
-                <div className="time-input-wrapper">
-                    <label>Start</label>
-                    <select
-                        value={startTime}
-                        onChange={(e) => setStartTime(e.target.value)}
-                        className="time-input"
-                    >
-                        {timeOptions.map((time) => (
-                            <option key={`start-${time}`} value={time}>
-                                {time}
-                            </option>
-                        ))}
-                    </select>
+            {/* Only show time fields if the shift needs times */}
+            {(startTime || endTime) && (
+                <div className="form-group time-group">
+                    <div className="time-input-wrapper">
+                        <label>Start</label>
+                        <select
+                            value={startTime}
+                            onChange={(e) => setStartTime(e.target.value)}
+                            className="time-input"
+                        >
+                            {timeOptions.map((time) => (
+                                <option key={`start-${time}`} value={time}>
+                                    {time}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                    <div className="time-input-wrapper">
+                        <label>End</label>
+                        <select
+                            value={endTime}
+                            onChange={(e) => setEndTime(e.target.value)}
+                            className="time-input"
+                        >
+                            {timeOptions.map((time) => (
+                                <option key={`end-${time}`} value={time}>
+                                    {time}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
                 </div>
-                <div className="time-input-wrapper">
-                    <label>End</label>
-                    <select
-                        value={endTime}
-                        onChange={(e) => setEndTime(e.target.value)}
-                        className="time-input"
-                    >
-                        {timeOptions.map((time) => (
-                            <option key={`end-${time}`} value={time}>
-                                {time}
-                            </option>
-                        ))}
-                    </select>
-                </div>
-            </div>
+            )}
 
             <div className="form-group">
                 <label>Users</label>

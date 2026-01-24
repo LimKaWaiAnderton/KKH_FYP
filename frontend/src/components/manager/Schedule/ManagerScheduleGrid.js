@@ -34,16 +34,19 @@ export default function ManagerScheduleGrid({ weekDays, searchTerm, onAddShift, 
 
             const employee = employeeMap.get(entry.user_id);
 
-            // Only add shifts if there's a pending shift request
-            if (entry.shift_request_id) {
+            // Only add shifts if there's a shift assigned
+            if (entry.shift_id) {
                 let shiftInfo = {
                     date: entry.date,
                     type: entry.title || entry.shift_type_name,
-                    color: entry.color_hex ? `${entry.color_hex}30` : '#DFF7DF',
-                    borderColor: entry.color_hex || '#249D46',
+                    // Custom shifts (no shift_type_id) get white background
+                    color: entry.shift_type_id ? `${entry.color_hex}30` : '#FFFFFF',
+                    borderColor: entry.color_hex || '#000000',
+                    textColor: entry.shift_type_id ? undefined : '#000000', // Black text for custom shifts
                     time: entry.start_time && entry.end_time ? formatTimeRange(entry.start_time, entry.end_time) : '',
-                    status: entry.status,
-                    shiftRequestId: entry.shift_request_id
+                    published: entry.published,
+                    shiftId: entry.shift_id,
+                    isCustom: !entry.shift_type_id  // Flag for custom styling
                 };
 
                 employee.shifts.push(shiftInfo);
@@ -216,7 +219,8 @@ export default function ManagerScheduleGrid({ weekDays, searchTerm, onAddShift, 
                                                             className="shift-box"
                                                             style={{
                                                                 backgroundColor: shift.color,
-                                                                borderLeft: `4px solid ${shift.borderColor}`
+                                                                borderLeft: `4px solid ${shift.borderColor}`,
+                                                                color: shift.textColor // Apply black text for custom shifts
                                                             }}
                                                         >
                                                             {shift.time && (
