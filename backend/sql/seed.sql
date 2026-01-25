@@ -63,4 +63,107 @@ FROM public.users u
 CROSS JOIN public.leave_types lt
 WHERE u.role_id != 1; -- exclude admin
 
+
+------------------------------------------------------------------------------------------
+-- FOR TESTING PURPOSES: INSERT SAMPLE LEAVE REQUESTS & UPDAT LEAVE BALANCE FOR USERS ----
+------------------------------------------------------------------------------------------
+-- 7 approved leave requests on 2 Feb 2026
+INSERT INTO public.leave_requests
+  (user_id, leave_type_id, start_date, end_date, total_days, status)
+VALUES
+-- Clara – Annual Leave
+(
+  (SELECT id FROM public.users WHERE email = 'clara@kkh.com.sg'),
+  (SELECT id FROM public.leave_types WHERE name = 'Annual Leave'),
+  '2026-02-02', '2026-02-02', 1, 'approved'
+),
+
+-- Sonia – Sick Leave
+(
+  (SELECT id FROM public.users WHERE email = 'sonia@kkh.com.sg'),
+  (SELECT id FROM public.leave_types WHERE name = 'Sick Leave'),
+  '2026-02-02', '2026-02-02', 1, 'approved'
+),
+
+-- Nico – Childcare Leave
+(
+  (SELECT id FROM public.users WHERE email = 'nico@kkh.com.sg'),
+  (SELECT id FROM public.leave_types WHERE name = 'Childcare Leave'),
+  '2026-02-02', '2026-02-02', 1, 'approved'
+),
+
+-- Likai – Annual Leave
+(
+  (SELECT id FROM public.users WHERE email = 'likai@kkh.com.sg'),
+  (SELECT id FROM public.leave_types WHERE name = 'Annual Leave'),
+  '2026-02-02', '2026-02-02', 1, 'approved'
+),
+
+-- Charlotte – Sick Leave
+(
+  (SELECT id FROM public.users WHERE email = 'charlotte@kkh.com.sg'),
+  (SELECT id FROM public.leave_types WHERE name = 'Sick Leave'),
+  '2026-02-02', '2026-02-02', 1, 'approved'
+),
+
+-- Insyirah – Annual Leave
+(
+  (SELECT id FROM public.users WHERE email = 'insyirah@kkh.com.sg'),
+  (SELECT id FROM public.leave_types WHERE name = 'Annual Leave'),
+  '2026-02-02', '2026-02-02', 1, 'approved'
+),
+
+-- Angelica – Childcare Leave (7th person)
+(
+  (SELECT id FROM public.users WHERE email = 'angelica@kkh.com.sg'),
+  (SELECT id FROM public.leave_types WHERE name = 'Childcare Leave'),
+  '2026-02-02', '2026-02-02', 1, 'approved'
+);
+
+-- Insert leave shifts (draft, unpublished)
+INSERT INTO public.shifts
+  (user_id, date, title, color_hex, start_time, end_time, published)
+SELECT
+  lr.user_id,
+  lr.start_date,
+  lt.name,          
+  '#009999',        
+  NULL,
+  NULL,
+  true             
+FROM public.leave_requests lr
+JOIN public.leave_types lt
+  ON lr.leave_type_id = lt.id
+WHERE lr.status = 'approved'
+  AND lr.start_date = '2026-02-02';
+
+-- Update user leave balances
+UPDATE public.user_leave_balance ulb
+SET
+  used_days = used_days + 1,
+  remaining_days = remaining_days - 1
+WHERE (user_id, leave_type_id) IN (
+
+  ((SELECT id FROM public.users WHERE email = 'clara@kkh.com.sg'),
+   (SELECT id FROM public.leave_types WHERE name = 'Annual Leave')),
+
+  ((SELECT id FROM public.users WHERE email = 'sonia@kkh.com.sg'),
+   (SELECT id FROM public.leave_types WHERE name = 'Sick Leave')),
+
+  ((SELECT id FROM public.users WHERE email = 'nico@kkh.com.sg'),
+   (SELECT id FROM public.leave_types WHERE name = 'Childcare Leave')),
+
+  ((SELECT id FROM public.users WHERE email = 'likai@kkh.com.sg'),
+   (SELECT id FROM public.leave_types WHERE name = 'Annual Leave')),
+
+  ((SELECT id FROM public.users WHERE email = 'charlotte@kkh.com.sg'),
+   (SELECT id FROM public.leave_types WHERE name = 'Sick Leave')),
+
+  ((SELECT id FROM public.users WHERE email = 'insyirah@kkh.com.sg'),
+   (SELECT id FROM public.leave_types WHERE name = 'Annual Leave')),
+
+  ((SELECT id FROM public.users WHERE email = 'angelica@kkh.com.sg'),
+   (SELECT id FROM public.leave_types WHERE name = 'Childcare Leave'))
+);
+
 COMMIT;
