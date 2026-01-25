@@ -1,43 +1,44 @@
 import React, { useState } from 'react';
 import { HiOutlineUser, HiOutlineExclamation } from 'react-icons/hi';
 import '../../../styles/EmployeeScheduleGrid.css';
-import { scheduleData } from '../../../mock/ScheduleData';
-import { getShiftColor, getShiftTime } from '../../../mock/ShiftColorConfig';
+import { formatTimeRange } from '../../../utils/dateUtils';
 
-export default function EmployeeScheduleGrid({ weekDays, viewOption, searchTerm }) {
+export default function EmployeeScheduleGrid({ weekDays, viewOption, searchTerm, employeesWithShifts, currentUserId }) {
     const [collapsedDepartments, setCollapsedDepartments] = useState({});
 
-    // Transform schedule data to match the component's expected format
+    // Transform database data to match the component's expected format
     const transformScheduleData = () => {
         const employeeMap = new Map();
         
-        scheduleData.forEach(entry => {
-            if (!employeeMap.has(entry.name)) {
-                employeeMap.set(entry.name, {
-                    name: entry.name,
-                    department: entry.department_id,
+        employeesWithShifts.forEach(entry => {
+            const userName = `${entry.first_name} ${entry.last_name}`;
+            
+            if (!employeeMap.has(entry.user_id)) {
+                employeeMap.set(entry.user_id, {
+                    id: entry.user_id,
+                    name: userName,
+                    department: entry.department_name || 'Unknown',
                     shifts: []
                 });
             }
             
-            const employee = employeeMap.get(entry.name);
+            const employee = employeeMap.get(entry.user_id);
             
-            // Determine shift display based on data
-            let shiftInfo = {
-                date: entry.date,
-                type: entry.leave_type || entry.shift_type,
-                color: getShiftColor(entry.shift_type, entry.leave_type)
-            };
-            
-            // Add time for shifts (not for leave)
-            if (entry.shift_type && !entry.leave_type) {
-                const time = getShiftTime(entry.shift_type);
-                if (time) {
-                    shiftInfo.time = time;
-                }
+            // Only add published shifts
+            if (entry.shift_id && entry.published) {
+                let shiftInfo = {
+                    date: entry.date,
+                    type: entry.title || entry.shift_type_name,
+                    // Custom shifts (no shift_type_id) get white background
+                    color: entry.shift_type_id ? `${entry.color_hex}30` : '#FFFFFF',
+                    borderColor: entry.color_hex || '#000000',
+                    textColor: entry.shift_type_id ? undefined : '#000000', // Black text for custom shifts
+                    time: entry.start_time && entry.end_time ? formatTimeRange(entry.start_time, entry.end_time) : '',
+                    isCustom: !entry.shift_type_id  // Flag for custom styling
+                };
+                
+                employee.shifts.push(shiftInfo);
             }
-            
-            employee.shifts.push(shiftInfo);
         });
         
         return Array.from(employeeMap.values());
@@ -45,8 +46,14 @@ export default function EmployeeScheduleGrid({ weekDays, viewOption, searchTerm 
 
     const employees = transformScheduleData();
 
-    // Filter employees based on search term (case insensitive)
-    const filteredEmployees = employees.filter(emp => {
+    // Filter employees based on view option
+    let filteredByView = employees;
+    if (viewOption === 'View only me' && currentUserId) {
+        filteredByView = employees.filter(emp => emp.id === currentUserId);
+    }
+
+    // Further filter by search term (case insensitive)
+    const filteredEmployees = filteredByView.filter(emp => {
         if (!searchTerm) return true;
         const search = searchTerm.toLowerCase();
         return emp.name.toLowerCase().includes(search) || 
@@ -119,12 +126,19 @@ export default function EmployeeScheduleGrid({ weekDays, viewOption, searchTerm 
                                             return (
                                                 <div key={dayIndex} className="shift-cell">
                                                     {shift && (
-                                                        <div className={`shift-box ${shift.color}`}>
+                                                        <div 
+                                                            className="shift-box"
+                                                            style={{
+                                                                backgroundColor: shift.color,
+                                                                borderLeft: `4px solid ${shift.borderColor}`,
+                                                                color: shift.textColor // Apply black text for custom shifts
+                                                            }}
+                                                        >
                                                             {shift.time && (
                                                                 <div className="shift-time">{shift.time}</div>
                                                             )}
                                                             <div className="shift-type">
-                                                                {shift.subtitle || shift.type}
+                                                                {shift.type}
                                                             </div>
                                                         </div>
                                                     )}

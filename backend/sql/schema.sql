@@ -91,26 +91,42 @@ create table
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     name VARCHAR(20) NOT NULL,
     color_hex VARCHAR(7) NOT NULL,
+    start_time TIME,
+    end_time TIME,
     CONSTRAINT uq_shift_types_name UNIQUE (name)
   );
 
-------------------------------------------------------------
--- Actual shifts derived from templates or custom defined --
-------------------------------------------------------------
+--------------------------------------------------------------------
+-- Actual scheduled shifts (manager assigns to employees)        --
+-- This table stores the actual schedule with drafts and published --
+--------------------------------------------------------------------
 CREATE TABLE
   public.shifts (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    -- NULL = custom approved shift
-    -- NOT NULL = based on a template
+    user_id UUID NOT NULL,
+    date DATE NOT NULL,
+    -- NULL = custom shift, NOT NULL = based on template
     shift_type_id BIGINT,
     -- For custom shifts
-    title VARCHAR(50) NOT NULL,
-    color_hex VARCHAR(7) NOT NULL DEFAULT '#FFFFFF',
-    -- NULL for leave / off / full-day shifts
+    title VARCHAR(50),
+    color_hex VARCHAR(7),
     start_time TIME,
     end_time TIME,
+    published BOOLEAN NOT NULL DEFAULT false,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_shifts_user FOREIGN KEY (user_id) REFERENCES public.users (id),
     CONSTRAINT fk_shifts_shift_type FOREIGN KEY (shift_type_id) REFERENCES public.shift_types (id),
+    -- Either template OR custom, never both
+    CONSTRAINT chk_shifts_definition CHECK (
+      (
+        shift_type_id IS NOT NULL
+        AND title IS NULL
+      )
+      OR (
+        shift_type_id IS NULL
+        AND title IS NOT NULL
+      )
+    ),
     CONSTRAINT chk_shift_time_consistency CHECK (
       (
         start_time IS NULL
@@ -123,9 +139,10 @@ CREATE TABLE
     )
   );
 
---------------------------------
--- Shift change / shift requests
---------------------------------
+-------------------------------------------------------------
+-- Employee-initiated shift change/swap requests          --
+-- This is separate from manager-assigned shifts           --
+-------------------------------------------------------------
 CREATE TABLE
   public.shift_requests (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -163,36 +180,6 @@ CREATE TABLE
         AND end_time IS NOT NULL
       )
     )
-  );
-
-------------------------------------
--- Daily schedules per department --
-------------------------------------
-create table
-  public.schedules (
-    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    date DATE NOT NULL,
-    department_id BIGINT NOT NULL,
-    published BOOLEAN NOT NULL DEFAULT false,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fk_schedules_department FOREIGN KEY (department_id) REFERENCES public.departments (id),
-    CONSTRAINT uq_schedule_per_day UNIQUE (date, department_id)
-  );
-
--------------------------------------------------------------------------
--- Nurse assignments within a schedule (Which nurse works which shift) --
--------------------------------------------------------------------------
-CREATE TABLE
-  public.nurse_schedule (
-    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    schedule_id BIGINT NOT NULL,
-    user_id UUID NOT NULL,
-    shift_id BIGINT NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fk_ns_schedule FOREIGN KEY (schedule_id) REFERENCES public.schedules (id),
-    CONSTRAINT fk_ns_user FOREIGN KEY (user_id) REFERENCES public.users (id),
-    CONSTRAINT fk_ns_shift FOREIGN KEY (shift_id) REFERENCES public.shifts (id),
-    CONSTRAINT uq_nurse_per_schedule UNIQUE (schedule_id, user_id)
   );
 
 create table

@@ -1,18 +1,11 @@
 import React, { useState } from 'react';
 import '../../../styles/PublishNotificationModal.css';
 
-export default function PublishNotificationModal({ isOpen, onClose, onPublish, shiftData }) {
+export default function PublishNotificationModal({ isOpen, onClose, onPublish, publishData }) {
     const [notifyUsers, setNotifyUsers] = useState(true);
     const [notificationMessage, setNotificationMessage] = useState('Your schedule has been updated with new shifts');
 
     if (!isOpen) return null;
-
-    // Format date range string
-    const getDateInfo = () => {
-        if (!shiftData || !shiftData.date) return '';
-        // Assuming date is in DD/MM/YYYY format
-        return shiftData.date;
-    };
 
     const handlePublish = () => {
         onPublish({
@@ -34,7 +27,7 @@ export default function PublishNotificationModal({ isOpen, onClose, onPublish, s
                     <div className="publish-info-banner">
                         <span className="banner-icon">▶</span>
                         <span className="banner-text">
-                            21 shifts will be published for 20 Oct - 26 Oct
+                            {publishData ? `${publishData.shiftCount} shift${publishData.shiftCount !== 1 ? 's' : ''} will be published for ${publishData.startDateDisplay} - ${publishData.endDateDisplay}` : 'Loading...'}
                         </span>
                     </div>
 

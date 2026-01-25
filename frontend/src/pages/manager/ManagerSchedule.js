@@ -5,25 +5,28 @@ import ManagerScheduleHead from '../../components/manager/Schedule/ManagerSchedu
 import ManagerScheduleGrid from '../../components/manager/Schedule/ManagerScheduleGrid';
 import ShiftCreationDrawer from '../../components/manager/Schedule/ShiftCreationDrawer';
 import HeaderWithPublishBtn from '../../components/Header/HeaderWithPublishBtn';
+import PublishNotificationModal from '../../components/manager/Schedule/PublishNotificationModal';
 import { authFetch } from '../../utils/authFetch';
+import toast from 'react-hot-toast';
 
 export default function ManagerSchedule() {
     const [startDate, setStartDate] = useState(new Date());
-    const [viewOption, setViewOption] = useState('View everyone');
     const [searchTerm, setSearchTerm] = useState('');
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
     const [selectedDate, setSelectedDate] = useState(null);
     const [selectedEmployee, setSelectedEmployee] = useState(null);
     const [usersWithShifts, setUsersWithShifts] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [isPublishModalOpen, setIsPublishModalOpen] = useState(false);
+    const [publishData, setPublishData] = useState(null);
 
-    // Fetch users with pending shift requests
+    // Fetch all users and their shifts
     useEffect(() => {
-        async function loadUsersWithPendingShifts() {
+        async function loadUsersAndShifts() {
             try {
                 const res = await authFetch("http://localhost:5000/api/shifts/users-with-pending");
                 if (!res || !res.ok) {
-                    console.error("Failed to fetch users with pending shifts");
+                    console.error("Failed to fetch users and shifts");
                     setLoading(false);
                     return;
                 }
@@ -32,15 +35,15 @@ export default function ManagerSchedule() {
                 setUsersWithShifts(data);
                 setLoading(false);
             } catch (err) {
-                console.error("Error loading users with pending shifts:", err);
+                console.error("Error loading users and shifts:", err);
                 setLoading(false);
             }
         }
 
-        loadUsersWithPendingShifts();
+        loadUsersAndShifts();
     }, []);
 
-    // Function to refresh shifts after approve/reject
+    // Function to refresh users and shifts after approve/reject
     const refreshShifts = async () => {
         try {
             const res = await authFetch("http://localhost:5000/api/shifts/users-with-pending");
@@ -94,9 +97,77 @@ export default function ManagerSchedule() {
         setSelectedEmployee(null);
     };
 
-    const handlePublish = () => {
-        // TODO: Implement publish functionality
-        console.log('Publish schedule');
+    const handlePublish = async () => {
+        // Calculate the date range for the current week view
+        const endDate = new Date(startDate);
+        endDate.setDate(startDate.getDate() + 6);
+
+        const formatDate = (date) => {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        };
+
+        const formatDisplayDate = (date) => {
+            const day = date.getDate();
+            const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            const month = monthNames[date.getMonth()];
+            return `${day} ${month}`;
+        };
+
+        // Count shifts that will be published (only unpublished shifts, not pending requests)
+        let shiftCount = 0;
+        const startDateStr = formatDate(startDate);
+        const endDateStr = formatDate(endDate);
+
+        usersWithShifts.forEach(entry => {
+            // Count unpublished manager-assigned shifts and approved employee requests
+            // (approved requests are already moved to shifts table with published=false)
+            if (entry.shift_id && 
+                entry.date >= startDateStr && 
+                entry.date <= endDateStr && 
+                entry.published === false) {
+                shiftCount++;
+            }
+        });
+
+        // Prepare data for modal
+        setPublishData({
+            startDate: formatDate(startDate),
+            endDate: formatDate(endDate),
+            startDateDisplay: formatDisplayDate(startDate),
+            endDateDisplay: formatDisplayDate(endDate),
+            shiftCount: shiftCount
+        });
+
+        // Open modal
+        setIsPublishModalOpen(true);
+    };
+
+    const handleConfirmPublish = async (notificationSettings) => {
+        try {
+            const res = await authFetch("http://localhost:5000/api/shifts/publish", {
+                method: "POST",
+                body: JSON.stringify({
+                    startDate: publishData.startDate,
+                    endDate: publishData.endDate,
+                    ...notificationSettings
+                })
+            });
+
+            if (res && res.ok) {
+                const data = await res.json();
+                toast.success(`Schedule published! ${data.publishedCount} approved shifts are now visible to employees.`);
+                setIsPublishModalOpen(false);
+                refreshShifts();
+            } else {
+                toast.error('Failed to publish schedule');
+            }
+        } catch (err) {
+            console.error('Error publishing schedule:', err);
+            toast.error('Error publishing schedule');
+        }
     };
 
     const handleNotifications = () => {
@@ -118,15 +189,12 @@ export default function ManagerSchedule() {
                     <ManagerScheduleHead
                         startDate={startDate}
                         setStartDate={setStartDate}
-                        viewOption={viewOption}
-                        setViewOption={setViewOption}
                         weekDays={weekDays}
                         searchTerm={searchTerm}
                         setSearchTerm={setSearchTerm}
                     />
                     <ManagerScheduleGrid
                         weekDays={weekDays}
-                        viewOption={viewOption}
                         searchTerm={searchTerm}
                         onAddShift={handleAddShift}
                         usersWithShifts={usersWithShifts}
@@ -138,6 +206,13 @@ export default function ManagerSchedule() {
                     onClose={handleCloseDrawer}
                     selectedDate={selectedDate}
                     selectedEmployee={selectedEmployee}
+                    onShiftUpdate={refreshShifts}
+                />
+                <PublishNotificationModal
+                    isOpen={isPublishModalOpen}
+                    onClose={() => setIsPublishModalOpen(false)}
+                    onPublish={handleConfirmPublish}
+                    publishData={publishData}
                 />
             </div>
     );
