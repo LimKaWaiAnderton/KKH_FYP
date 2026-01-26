@@ -292,6 +292,55 @@ export const manageLeaveRequest = async (req, res) => {
                 throw new Error('Insufficient leave balance.');
             }
 
+            const conflictRes = await client.query(
+                `
+                SELECT COUNT(*) AS conflict_count
+                FROM shifts s
+                JOIN leave_requests lr ON lr.id = $1
+                JOIN generate_series(
+                lr.start_date,
+                lr.end_date,
+                interval '1 day'
+                ) d ON s.date = d::date
+                 WHERE s.user_id = lr.user_id
+                `,
+                [id]
+            );
+
+            if (Number(conflictRes.rows[0].conflict_count) > 0) {
+                throw new Error(
+                    'User already has assigned shifts during the leave period.'
+                );
+            }
+
+            const leaveCapRes = await client.query(
+                `
+                SELECT
+                  d::date AS leave_date,
+                  COUNT(s.id) AS leave_count
+                FROM leave_requests lr
+                JOIN generate_series(
+                  lr.start_date,
+                  lr.end_date,
+                  interval '1 day'
+                ) d ON true
+                LEFT JOIN shifts s
+                  ON s.date = d::date
+                  AND s.title IS NOT NULL
+                  AND s.shift_type_id IS NULL
+                WHERE lr.id = $1
+                GROUP BY d::date
+                HAVING COUNT(s.id) >= 7
+                `,
+                [id]
+              );
+              
+              if (leaveCapRes.rows.length > 0) {
+                throw new Error(
+                  'Leave limit reached. Maximum 7 staff can be on leave on a given day.'
+                );
+              }              
+
             await client.query(
                 `
                 UPDATE user_leave_balance
@@ -331,6 +380,26 @@ export const manageLeaveRequest = async (req, res) => {
         WHERE lr.id = $1`,
             [id]
         );
+
+        if (status === 'approved') {
+            await client.query(
+                `
+                INSERT INTO shifts (user_id, date, title, color_hex, published)
+                SELECT
+                  lr.user_id,
+                  d::date,
+                  lt.name,
+                  '#009999',
+                  true
+                FROM leave_requests lr
+                JOIN leave_types lt ON lr.leave_type_id = lt.id
+                JOIN generate_series(lr.start_date, lr.end_date, interval '1 day') d
+                  ON true
+                WHERE lr.id = $1
+                `,
+                [id]
+            );
+        }
 
         const message =
             status === 'approved'
