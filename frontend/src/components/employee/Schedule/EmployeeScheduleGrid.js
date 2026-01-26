@@ -78,7 +78,7 @@ export default function EmployeeScheduleGrid({ weekDays, viewOption, searchTerm,
         const deptEmployees = employees.filter(emp => emp.department === dept);
         const working = deptEmployees.filter(emp => {
             const shift = getShiftForDate(emp, date);
-            return shift && !['Annual Leave', 'Medical Leave', 'Compassionate Leave', 'OFF'].includes(shift.type);
+            return shift && !['Annual Leave', 'Medical Leave', 'Compassionate Leave', 'Childcare Leave', 'Sick Leave', 'Maternity Leave', 'Paternity Leave', 'OFF'].includes(shift.type);
         }).length;
         return `${working}/${deptEmployees.length}`;
     };
