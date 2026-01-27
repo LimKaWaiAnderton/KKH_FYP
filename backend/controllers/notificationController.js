@@ -1,7 +1,7 @@
-const pool = require('../config/database');
+import pool from '../db/pool.js';
 
 // Get all notifications for a user
-const getUserNotifications = async (req, res) => {
+export const getUserNotifications = async (req, res) => {
   try {
     const { userId } = req.params;
     const { is_read } = req.query;
@@ -36,7 +36,7 @@ const getUserNotifications = async (req, res) => {
 };
 
 // Create notification
-const createNotification = async (req, res) => {
+export const createNotification = async (req, res) => {
   try {
     const { user_id, title, message, type } = req.body;
     
@@ -58,7 +58,7 @@ const createNotification = async (req, res) => {
 };
 
 // Create notifications for multiple users
-const createBulkNotifications = async (req, res) => {
+export const createBulkNotifications = async (req, res) => {
   const client = await pool.connect();
   
   try {
@@ -98,7 +98,7 @@ const createBulkNotifications = async (req, res) => {
 };
 
 // Mark notification as read
-const markAsRead = async (req, res) => {
+export const markAsRead = async (req, res) => {
   try {
     const { id } = req.params;
     
@@ -121,7 +121,7 @@ const markAsRead = async (req, res) => {
 };
 
 // Mark all notifications as read for a user
-const markAllAsRead = async (req, res) => {
+export const markAllAsRead = async (req, res) => {
   try {
     const { userId } = req.params;
     
@@ -143,7 +143,7 @@ const markAllAsRead = async (req, res) => {
 };
 
 // Delete notification
-const deleteNotification = async (req, res) => {
+export const deleteNotification = async (req, res) => {
   try {
     const { id } = req.params;
     
@@ -161,13 +161,4 @@ const deleteNotification = async (req, res) => {
     console.error('Error deleting notification:', error);
     res.status(500).json({ error: 'Failed to delete notification' });
   }
-};
-
-module.exports = {
-  getUserNotifications,
-  createNotification,
-  createBulkNotifications,
-  markAsRead,
-  markAllAsRead,
-  deleteNotification
 };

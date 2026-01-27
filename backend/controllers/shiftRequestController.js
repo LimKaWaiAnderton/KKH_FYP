@@ -1,4 +1,4 @@
-const pool = require('../config/database');
+const pool = require('../db/pool');
 
 // Get all shift requests
 const getAllShiftRequests = async (req, res) => {
