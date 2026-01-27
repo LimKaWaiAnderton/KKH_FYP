@@ -41,6 +41,26 @@ export const createShiftRequest = async (req, res) => {
     const userId = req.user.id;
     const { date, title, start_time, end_time, shift_type_id } = req.body;
 
+    // Check if user has approved leave on this date
+    const leaveCheck = await pool.query(
+      `
+      SELECT id, title
+      FROM shifts
+      WHERE user_id = $1 
+        AND date = $2 
+        AND title IS NOT NULL 
+        AND shift_type_id IS NULL
+        AND published = true
+      `,
+      [userId, date]
+    );
+
+    if (leaveCheck.rows.length > 0) {
+      return res.status(400).json({ 
+        message: `Cannot request shift on this date. You have an approved ${leaveCheck.rows[0].title} scheduled.` 
+      });
+    }
+
     const result = await pool.query(
       `
       INSERT INTO shift_requests
@@ -189,6 +209,27 @@ export const approveShiftRequest = async (req, res) => {
     }
 
     const request = requestResult.rows[0];
+
+    // Check if user has approved leave on this date
+    const leaveCheck = await pool.query(
+      `
+      SELECT id, title
+      FROM shifts
+      WHERE user_id = $1 
+        AND date = $2 
+        AND title IS NOT NULL 
+        AND shift_type_id IS NULL
+        AND published = true
+      `,
+      [request.user_id, request.date]
+    );
+
+    if (leaveCheck.rows.length > 0) {
+      await pool.query('ROLLBACK');
+      return res.status(400).json({ 
+        message: `Cannot approve shift request. User has an approved ${leaveCheck.rows[0].title} on this date.` 
+      });
+    }
 
     // Move to shifts table with published=false
     // Keep shift_request status as 'pending' so employee doesn't see approval yet
