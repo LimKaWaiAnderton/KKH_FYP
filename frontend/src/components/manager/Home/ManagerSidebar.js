@@ -24,8 +24,8 @@ export default function ManagerSidebar({ expanded, onMouseEnter, onMouseLeave })
         activeKey = "home";
     } else if (pathname === "/manager/schedule") {
         activeKey = "schedule";
-    } else if (pathname === "/manager/users") {
-        activeKey = "users"; // Manager-only: Users management
+    } else if (pathname === "/manager/team-list") {
+        activeKey = "team-list"; // Manager-only: Users management
     } else if (pathname === "/manager/settings") {
         activeKey = "settings";
     } else if (pathname.startsWith("/manager/requests/leave")) {
@@ -81,7 +81,7 @@ export default function ManagerSidebar({ expanded, onMouseEnter, onMouseLeave })
                 <div
                     className={`nav-item ${activeKey === "users" ? "active" : ""}`}
                 >
-                    <div className="nav-pill" onClick={() => go("/manager/users")}>
+                    <div className="nav-pill" onClick={() => go("/manager/team-list")}>
                         <HiOutlineUser className="icon" />
                         {expanded && <span className="label">Users</span>}
                     </div>

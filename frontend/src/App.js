@@ -16,7 +16,6 @@ import ManagerSidebar from './components/manager/Home/ManagerSidebar';
 import './App.css';
 import TeamList from "./pages/manager/TeamList";
 import AddUser from "./pages/manager/AddUser";
-import MainLayout from "./layouts/MainLayout";
 
 
 function AppContent() {
