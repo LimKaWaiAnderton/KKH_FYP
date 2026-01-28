@@ -20,17 +20,16 @@ INSERT INTO public.roles (name) VALUES
 ('admin'),
 ('user');
 
-INSERT INTO public.users (id, first_name, last_name, email, department_id, role_id, password_hash) VALUES
--- Password for all users: mypassword
-(gen_random_uuid(), 'Anderton', 'Lim', 'anderton@kkh.com.sg', 1, 1, '$2b$10$0xXkA7/kUrmDJa.B5vVO2.Ik/DrQcf6/Zm/Vtf9ME6fQnI8TCIcoa'),
-(gen_random_uuid(), 'Clara', 'Lim', 'clara@kkh.com.sg', 1, 2, '$2b$10$0xXkA7/kUrmDJa.B5vVO2.Ik/DrQcf6/Zm/Vtf9ME6fQnI8TCIcoa'),
-(gen_random_uuid(), 'Sonia', 'Yeong', 'sonia@kkh.com.sg', 1, 2, '$2b$10$0xXkA7/kUrmDJa.B5vVO2.Ik/DrQcf6/Zm/Vtf9ME6fQnI8TCIcoa'),
-(gen_random_uuid(), 'Nico', 'Sim', 'nico@kkh.com.sg', 1, 2, '$2b$10$0xXkA7/kUrmDJa.B5vVO2.Ik/DrQcf6/Zm/Vtf9ME6fQnI8TCIcoa'),
-(gen_random_uuid(), 'Likai', 'Tan', 'likai@kkh.com.sg', 1, 2, '$2b$10$0xXkA7/kUrmDJa.B5vVO2.Ik/DrQcf6/Zm/Vtf9ME6fQnI8TCIcoa'),
-(gen_random_uuid(), 'Charlotte', 'Chia', 'charlotte@kkh.com.sg', 7, 2, '$2b$10$0xXkA7/kUrmDJa.B5vVO2.Ik/DrQcf6/Zm/Vtf9ME6fQnI8TCIcoa'),
-(gen_random_uuid(), 'Insyirah', 'Nur', 'insyirah@kkh.com.sg', 7, 2, '$2b$10$0xXkA7/kUrmDJa.B5vVO2.Ik/DrQcf6/Zm/Vtf9ME6fQnI8TCIcoa'),
-(gen_random_uuid(), 'Angelica', 'Torres', 'angelica@kkh.com.sg', 8, 2, '$2b$10$0xXkA7/kUrmDJa.B5vVO2.Ik/DrQcf6/Zm/Vtf9ME6fQnI8TCIcoa'),
-(gen_random_uuid(), 'John', 'Doe', 'john@kkh.com.sg', 8, 2, '$2b$10$0xXkA7/kUrmDJa.B5vVO2.Ik/DrQcf6/Zm/Vtf9ME6fQnI8TCIcoa');
+INSERT INTO public.users (id, first_name, last_name, email, mobile_number, department_id, role_id, password_hash) VALUES
+(gen_random_uuid(), 'Anderton', 'Lim', 'anderton@kkh.com.sg', '12348594', 1, 1, '$2b$10$0xXkA7/kUrmDJa.B5vVO2.Ik/DrQcf6/Zm/Vtf9ME6fQnI8TCIcoa'),
+(gen_random_uuid(), 'Clara', 'Lim', 'clara@kkh.com.sg', '95737291', 1, 2, '$2b$10$0xXkA7/kUrmDJa.B5vVO2.Ik/DrQcf6/Zm/Vtf9ME6fQnI8TCIcoa'),
+(gen_random_uuid(), 'Sonia', 'Yeong', 'sonia@kkh.com.sg', '93028374', 1, 2, '$2b$10$0xXkA7/kUrmDJa.B5vVO2.Ik/DrQcf6/Zm/Vtf9ME6fQnI8TCIcoa'),
+(gen_random_uuid(), 'Nico', 'Sim', 'nico@kkh.com.sg', '64838264' , 1, 2, '$2b$10$0xXkA7/kUrmDJa.B5vVO2.Ik/DrQcf6/Zm/Vtf9ME6fQnI8TCIcoa'),
+(gen_random_uuid(), 'Likai', 'Tan', 'likai@kkh.com.sg', '71359402' , 1, 2, '$2b$10$0xXkA7/kUrmDJa.B5vVO2.Ik/DrQcf6/Zm/Vtf9ME6fQnI8TCIcoa'),
+(gen_random_uuid(), 'Charlotte', 'Chia', 'charlotte@kkh.com.sg', '46920261', 7, 2, '$2b$10$0xXkA7/kUrmDJa.B5vVO2.Ik/DrQcf6/Zm/Vtf9ME6fQnI8TCIcoa'),
+(gen_random_uuid(), 'Insyirah', 'Nur', 'insyirah@kkh.com.sg', '84629140' , 7, 2, '$2b$10$0xXkA7/kUrmDJa.B5vVO2.Ik/DrQcf6/Zm/Vtf9ME6fQnI8TCIcoa'),
+(gen_random_uuid(), 'Angelica', 'Torres', 'angelica@kkh.com.sg', '12345678', 8, 2, '$2b$10$0xXkA7/kUrmDJa.B5vVO2.Ik/DrQcf6/Zm/Vtf9ME6fQnI8TCIcoa'),
+(gen_random_uuid(), 'John', 'Doe', 'john@kkh.com.sg', '83021443' , 8, 2, '$2b$10$0xXkA7/kUrmDJa.B5vVO2.Ik/DrQcf6/Zm/Vtf9ME6fQnI8TCIcoa');
 
 INSERT INTO public.shift_types (name, color_hex, start_time, end_time) VALUES
 ('AM', '#000000', '07:00:00', '16:00:00'),

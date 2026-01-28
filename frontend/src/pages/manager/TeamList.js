@@ -89,6 +89,11 @@ const TeamList = () => {
     navigate('/manager/add-user');
   };
 
+  // Handler to switch to members tab (called when admin is demoted)
+  const handleSwitchToMembers = () => {
+    setActiveTab('members');
+  };
+
   if (loading) {
     return (
       <div className="team-list-container">
@@ -152,7 +157,11 @@ const TeamList = () => {
             {activeTab === 'members' ? (
               <TeamListEmployee data={currentItems} />
             ) : (
-              <TeamListAdmin data={currentItems} />
+              <TeamListAdmin 
+                data={currentItems} 
+                onUserUpdated={fetchUsers}
+                onSwitchToMembers={handleSwitchToMembers}
+              />
             )}
 
             {/* Pagination controls - only show if there are multiple pages */}
