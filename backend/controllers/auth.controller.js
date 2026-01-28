@@ -310,6 +310,37 @@ export const deleteUser = async (req, res) => {
   }
 };
 
+// Update user role (for admin access toggle)
+export const updateUserRole = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { role_id } = req.body;
+
+    // Validate role_id
+    if (role_id !== 1 && role_id !== 2 && role_id !== '1' && role_id !== '2') {
+      return res.status(400).json({ message: "Invalid role_id. Must be 1 (admin) or 2 (user)" });
+    }
+
+    // Update the user's role
+    const result = await pool.query(
+      `UPDATE users SET role_id = $1 WHERE id = $2 RETURNING id, first_name, last_name, role_id`,
+      [role_id, id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.json({ 
+      message: "User role updated successfully",
+      user: result.rows[0]
+    });
+  } catch (err) {
+    console.error("Error updating user role:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
 // Get all users with department names (for Team List)
 export const getAllUsers = async (req, res) => {
   try {
