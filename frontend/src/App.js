@@ -16,7 +16,6 @@ import ManagerSidebar from './components/manager/Home/ManagerSidebar';
 import './App.css';
 import TeamList from "./pages/manager/TeamList";
 import AddUser from "./pages/manager/AddUser";
-import MainLayout from "./layouts/MainLayout";
 
 
 function AppContent() {
@@ -71,6 +70,8 @@ function AppContent() {
           <Route path="/employee/requests/*" element={<></>} />
           <Route path="/employee/settings" element={<></>} />
           <Route path="/manager/*" element={<></>} />
+          <Route path="/manager/team-list" element={<ProtectedRoute><TeamList /></ProtectedRoute>} />
+          <Route path="/manager/add-user" element={<ProtectedRoute><AddUser /></ProtectedRoute>} />
         </Routes>
       </main>
     </div>
@@ -105,10 +106,6 @@ export default function App() {
         }}
       />
       <AppContent />
-      <Routes>
-        <Route path="/manager/team-list" element={<ProtectedRoute><MainLayout><TeamList /></MainLayout></ProtectedRoute>} />
-        <Route path="/manager/add-user" element={<ProtectedRoute><MainLayout><AddUser /></MainLayout></ProtectedRoute>} />
-      </Routes>
     </Router>
   );
 }
