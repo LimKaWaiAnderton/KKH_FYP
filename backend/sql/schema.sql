@@ -196,4 +196,18 @@ create table
     CONSTRAINT chk_notification_type CHECK (type IN ('info', 'warning', 'success'))
   );
 
+-------------------------------------------------------------
+-- Password reset tokens for forgot password functionality --
+-------------------------------------------------------------
+CREATE TABLE
+  public.password_reset_tokens (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    user_id UUID NOT NULL,
+    token VARCHAR(255) NOT NULL UNIQUE,
+    expires_at TIMESTAMP NOT NULL,
+    used BOOLEAN NOT NULL DEFAULT false,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_prt_user FOREIGN KEY (user_id) REFERENCES public.users (id)
+  );
+
 commit;

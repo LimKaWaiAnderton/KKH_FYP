@@ -1,11 +1,17 @@
 import express from "express";
-import { login, me, addUser, deleteUser, getAllUsers, updateUserRole } from "../controllers/auth.controller.js";
+import { login, me, addUser, deleteUser, getAllUsers, updateUserRole, forgotPassword, resetPassword } from "../controllers/auth.controller.js";
 import auth from "../middlewares/auth.middleware.js";
 
 const router = express.Router();
 
 // Login
 router.post("/login", login);
+
+// Forgot Password (no auth required)
+router.post("/forgot-password", forgotPassword);
+
+// Reset Password (no auth required)
+router.post("/reset-password", resetPassword);
 
 // Get logged-in user (protected)
 router.get("/me", auth, me);
