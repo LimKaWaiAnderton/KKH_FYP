@@ -6,6 +6,8 @@ import EmployeeLeaveRequest from "./pages/employee/LeaveRequest";
 import ManagerLeaveRequest from "./pages/manager/LeaveRequest";
 import ShiftRequestPage from "./pages/employee/ShiftRequestPage";
 import Login from "./pages/auth/Login";
+import ForgotPassword from "./pages/auth/ForgotPassword";
+import ResetPassword from "./pages/auth/ResetPassword";
 import ProtectedRoute from "./components/ProtectedRoute";
 import ManagerHome from './pages/manager/ManagerHome';
 import ManagerSchedule from './pages/manager/ManagerSchedule';
@@ -20,7 +22,10 @@ import AddUser from "./pages/manager/AddUser";
 
 function AppContent() {
   const location = useLocation();
-  const isLoginPage = location.pathname === '/';
+  const isLoginPage = location.pathname === '/' || location.pathname === '/login';
+  const isForgotPasswordPage = location.pathname === '/forgot-password';
+  const isResetPasswordPage = location.pathname === '/reset-password';
+  const isAuthPage = isLoginPage || isForgotPasswordPage || isResetPasswordPage;
   const isEmployeePage = location.pathname.startsWith('/employee');
   const isManagerPage = location.pathname.startsWith('/manager');
 
@@ -43,14 +48,14 @@ function AppContent() {
 
   return (
     <div style={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
-      {!isLoginPage && isEmployeePage && (
+      {!isAuthPage && isEmployeePage && (
         <EmployeeSidebar
           expanded={expanded}
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
         />
       )}
-      {!isLoginPage && isManagerPage && (
+      {!isAuthPage && isManagerPage && (
         <ManagerSidebar
           expanded={expanded}
           onMouseEnter={handleMouseEnter}
@@ -60,6 +65,9 @@ function AppContent() {
       <main style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', background: '#f5f5f5' }}>
         <Routes>
           <Route path="/" element={<Login />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/employee/home" element={<EmployeeHome />} />
           <Route path="/employee/requests/shift" element={<ProtectedRoute><ShiftRequestPage /></ProtectedRoute>} />
           <Route path="/employee/requests/leave" element={<ProtectedRoute><EmployeeLeaveRequest /></ProtectedRoute>} />
@@ -72,8 +80,6 @@ function AppContent() {
           <Route path="/employee/requests/*" element={<></>} />
           <Route path="/employee/settings" element={<></>} />
           <Route path="/manager/*" element={<></>} />
-          <Route path="/manager/team-list" element={<ProtectedRoute><TeamList /></ProtectedRoute>} />
-          <Route path="/manager/add-user" element={<ProtectedRoute><AddUser /></ProtectedRoute>} />
         </Routes>
       </main>
     </div>
