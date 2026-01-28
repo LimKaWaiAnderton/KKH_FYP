@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../../styles/TeamList.css';
 
@@ -10,7 +10,7 @@ const AddUser = () => {
     name: '',
     email: '',
     mobile: '',
-    dept_id: '1',
+    dept_id: '',
     role_id: '2'
   });
 
@@ -18,6 +18,42 @@ const AddUser = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+  
+  // Department list state
+  const [departments, setDepartments] = useState([]);
+
+  // Fetch departments on component mount
+  useEffect(() => {
+    const fetchDepartments = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/departments", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${localStorage.getItem("token")}`
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch departments");
+        }
+
+        const data = await response.json();
+        setDepartments(data);
+        
+        // Set the first department as default if departments exist
+        if (data.length > 0) {
+          setFormData(prev => ({ ...prev, dept_id: data[0].id.toString() }));
+        }
+      } catch (err) {
+        console.error("Error fetching departments:", err);
+        // Fallback to empty if API fails
+        setDepartments([]);
+      }
+    };
+
+    fetchDepartments();
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -84,10 +120,10 @@ const AddUser = () => {
         role_id: '2'
       });
 
-      // Redirect to team list after 2 seconds with refresh flag
+      // Redirect to users page after 2 seconds with refresh flag
       setTimeout(() => {
-        console.log('Navigating to team list with refresh flag');
-        navigate('/manager/team-list', { state: { refresh: true } });
+        console.log('Navigating to users page with refresh flag');
+        navigate('/manager/users', { state: { refresh: true } });
       }, 2000);
 
     } catch (err) {
@@ -99,7 +135,7 @@ const AddUser = () => {
   };
 
   const handleCancel = () => {
-    navigate('/manager/team-list');
+    navigate('/manager/users');
   };
 
   const handleInputChange = (e) => {
@@ -175,12 +211,15 @@ const AddUser = () => {
               <select
                 name="dept_id"
                 value={formData.dept_id}
-                disabled={loading}
+                disabled={loading || departments.length === 0}
                 onChange={handleInputChange}
               >
-                <option value="1">Nursing</option>
-                <option value="2">Pharmacy</option>
-                <option value="3">Administration</option>
+                <option value="">-- Select Department --</option>
+                {departments.map((dept) => (
+                  <option key={dept.id} value={dept.id.toString()}>
+                    {dept.name}
+                  </option>
+                ))}
               </select>
             </div>
 

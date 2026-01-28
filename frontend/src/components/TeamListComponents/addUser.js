@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import '../styles/TeamList.css'; 
 
 const AddUserModal = ({ isOpen, onClose, onUserAdded }) => {
@@ -7,9 +7,46 @@ const AddUserModal = ({ isOpen, onClose, onUserAdded }) => {
     name: '',
     email: '',
     mobile: '',
-    dept_id: '1', // Default to first department
+    dept_id: '', // Will be set after departments load
     role_id: '2'  // Default to Employee
   });
+
+  // Department list state
+  const [departments, setDepartments] = useState([]);
+
+  // Fetch departments when modal opens
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const fetchDepartments = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/departments", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${localStorage.getItem("token")}`
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch departments");
+        }
+
+        const data = await response.json();
+        setDepartments(data);
+        
+        // Set the first department as default if departments exist
+        if (data.length > 0) {
+          setFormData(prev => ({ ...prev, dept_id: data[0].id.toString() }));
+        }
+      } catch (err) {
+        console.error("Error fetching departments:", err);
+        setDepartments([]);
+      }
+    };
+
+    fetchDepartments();
+  }, [isOpen]);
 
   // Check visibility AFTER hooks are defined
   if (!isOpen) return null;
@@ -101,10 +138,17 @@ const AddUserModal = ({ isOpen, onClose, onUserAdded }) => {
           </div>
           <div className="form-group">
             <label>Department</label>
-            <select value={formData.dept_id} onChange={(e) => setFormData({...formData, dept_id: e.target.value})}>
-              <option value="1">Nursing</option>
-              <option value="2">Pharmacy</option>
-              <option value="3">Administration</option>
+            <select 
+              value={formData.dept_id} 
+              onChange={(e) => setFormData({...formData, dept_id: e.target.value})}
+              disabled={departments.length === 0}
+            >
+              <option value="">-- Select Department --</option>
+              {departments.map((dept) => (
+                <option key={dept.id} value={dept.id.toString()}>
+                  {dept.name}
+                </option>
+              ))}
             </select>
           </div>
           <div className="form-group">

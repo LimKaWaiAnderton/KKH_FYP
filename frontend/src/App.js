@@ -68,6 +68,8 @@ function AppContent() {
           <Route path="/manager/requests/leave" element={<ProtectedRoute><ManagerLeaveRequest /></ProtectedRoute>} />
           <Route path="/manager/home" element={<ManagerHome />} />
           <Route path="/manager/schedule" element={<ManagerSchedule />} />
+          <Route path="/manager/users" element={<ProtectedRoute><TeamList /></ProtectedRoute>} />
+          <Route path="/manager/add-user" element={<ProtectedRoute><AddUser /></ProtectedRoute>} />
           <Route path="/employee/requests/*" element={<></>} />
           <Route path="/employee/settings" element={<></>} />
           <Route path="/manager/*" element={<></>} />
@@ -105,14 +107,8 @@ export default function App() {
         }}
       />
       <AppContent />
-      <Routes>
-        <Route path="/manager/team-list" element={<ProtectedRoute><MainLayout><TeamList /></MainLayout></ProtectedRoute>} />
-        <Route path="/manager/add-user" element={<ProtectedRoute><MainLayout><AddUser /></MainLayout></ProtectedRoute>} />
-      </Routes>
     </Router>
   );
 }
-
-
 
 
