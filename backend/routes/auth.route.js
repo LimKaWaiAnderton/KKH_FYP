@@ -1,5 +1,5 @@
 import express from "express";
-import { login, me, addUser, deleteUser, getAllUsers} from "../controllers/auth.controller.js";
+import { login, me, addUser, deleteUser, getAllUsers, updateUserRole } from "../controllers/auth.controller.js";
 import auth from "../middlewares/auth.middleware.js";
 
 const router = express.Router();
@@ -18,5 +18,8 @@ router.post("/add-user", auth, addUser);
 
 //Delete User
 router.patch("/delete-user/:id", auth, deleteUser);
+
+//Update User Role
+router.patch("/update-role/:id", auth, updateUserRole);
 
 export default router;

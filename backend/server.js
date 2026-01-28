@@ -6,6 +6,7 @@ import pool from './db/pool.js';
 import leaveRouter from './routes/leave.route.js';
 import authRoutes from "./routes/auth.route.js";
 import shiftRoutes from "./routes/shift.route.js";
+import departmentRoutes from "./routes/departments.js";
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -17,6 +18,7 @@ app.use(express.json());
 app.use('/api/leaves', leaveRouter);
 app.use('/api/shifts', shiftRoutes);
 app.use("/auth", authRoutes);
+app.use("/departments", departmentRoutes);
 
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);

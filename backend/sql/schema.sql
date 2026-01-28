@@ -21,6 +21,7 @@ create table
     first_name VARCHAR(50) NOT NULL,
     last_name VARCHAR(50) NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE,
+    mobile_number BIGINT,
     department_id BIGINT NOT NULL,
     role_id BIGINT NOT NULL,
     password_hash TEXT NOT NULL,

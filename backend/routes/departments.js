@@ -1,20 +1,15 @@
-const express = require('express');
+import express from 'express';
+import { 
+  getAllDepartments, 
+  getDepartmentById, 
+} from '../controllers/departmentController.js';
+
 const router = express.Router();
-const departmentController = require('../controllers/departmentController');
 
 // GET all departments
-router.get('/', departmentController.getAllDepartments);
+router.get('/', getAllDepartments);
 
 // GET department by ID
-router.get('/:id', departmentController.getDepartmentById);
+router.get('/:id', getDepartmentById);
 
-// POST create new department
-router.post('/', departmentController.createDepartment);
-
-// PUT update department
-router.put('/:id', departmentController.updateDepartment);
-
-// DELETE department
-router.delete('/:id', departmentController.deleteDepartment);
-
-module.exports = router;
+export default router;
