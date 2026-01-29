@@ -1,11 +1,17 @@
 import React, { useState } from 'react';
 import { HiOutlineCalendar, HiOutlineCog } from 'react-icons/hi';
 import CustomCalendar from './CustomCalendar';
+import { generateRoster } from '../../../api/schedule.api';
+import toast from 'react-hot-toast';
 import '../../../styles/ManagerScheduleHead.css';
 
-export default function ManagerScheduleHead({ startDate, setStartDate, weekDays, searchTerm, setSearchTerm }) {
+export default function ManagerScheduleHead({ startDate, setStartDate, weekDays, searchTerm, setSearchTerm, onRosterGenerated }) {
     const [showCalendar, setShowCalendar] = useState(false);
     const [showAddDropdown, setShowAddDropdown] = useState(false);
+    const [showGenerateRosterModal, setShowGenerateRosterModal] = useState(false);
+    const [rosterStartDate, setRosterStartDate] = useState('');
+    const [rosterEndDate, setRosterEndDate] = useState('');
+    const [isGenerating, setIsGenerating] = useState(false);
 
     // Format date range string
     const getDateRangeString = () => {
@@ -38,7 +44,37 @@ export default function ManagerScheduleHead({ startDate, setStartDate, weekDays,
     const handleAddShiftOption = (option) => {
         console.log(`Selected: ${option}`);
         setShowAddDropdown(false);
-        // Add your logic here for each option
+        if (option === 'Generate roster') {
+            setShowGenerateRosterModal(true);
+        }
+    };
+
+    // Handle generate roster submission
+    const handleGenerateRoster = async () => {
+        try {
+            setIsGenerating(true);
+            const result = await generateRoster(rosterStartDate, rosterEndDate);
+            
+            // Show success message
+            toast.success(
+                `Roster generated successfully! ${result.shiftsCreated} shifts created, ${result.shiftsSkipped} skipped (existing).`,
+                { duration: 5000 }
+            );
+            
+            // Close modal and reset
+            setShowGenerateRosterModal(false);
+            setRosterStartDate('');
+            setRosterEndDate('');
+            
+            // Callback to parent to refresh data
+            if (onRosterGenerated) {
+                onRosterGenerated();
+            }
+        } catch (error) {
+            toast.error(`Failed to generate roster: ${error.message}`);
+        } finally {
+            setIsGenerating(false);
+        }
     };
 
     return (
@@ -92,21 +128,9 @@ export default function ManagerScheduleHead({ startDate, setStartDate, weekDays,
                         <div className="add-dropdown">
                             <div 
                                 className="add-option-item"
-                                onClick={() => handleAddShiftOption('Add shift')}
+                                onClick={() => handleAddShiftOption('Generate roster')}
                             >
-                                Add shift
-                            </div>
-                            <div 
-                                className="add-option-item"
-                                onClick={() => handleAddShiftOption('Add multiple shifts')}
-                            >
-                                Add multiple shifts
-                            </div>
-                            <div 
-                                className="add-option-item"
-                                onClick={() => handleAddShiftOption('Add shifts from template')}
-                            >
-                                Add shifts from template
+                                Generate roster
                             </div>
                         </div>
                     )}
@@ -136,6 +160,60 @@ export default function ManagerScheduleHead({ startDate, setStartDate, weekDays,
                     ))}
                 </div>
             </div>
+
+            {/* Generate Roster Modal */}
+            {showGenerateRosterModal && (
+                <div className="modal-overlay" onClick={() => setShowGenerateRosterModal(false)}>
+                    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                        <div className="modal-header">
+                            <h2>Generate Roster</h2>
+                            <button 
+                                className="close-btn" 
+                                onClick={() => setShowGenerateRosterModal(false)}
+                            >
+                                ×
+                            </button>
+                        </div>
+                        <p className="modal-description">
+                            Select the date range for roster generation. The system will automatically assign shifts to available employees.
+                        </p>
+                        <div className="modal-body">
+                            <div className="date-input-group">
+                                <label>Start Date</label>
+                                <input 
+                                    type="date" 
+                                    value={rosterStartDate}
+                                    onChange={(e) => setRosterStartDate(e.target.value)}
+                                />
+                            </div>
+                            <div className="date-input-group">
+                                <label>End Date</label>
+                                <input 
+                                    type="date" 
+                                    value={rosterEndDate}
+                                    onChange={(e) => setRosterEndDate(e.target.value)}
+                                />
+                            </div>
+                        </div>
+                        <div className="modal-actions">
+                            <button 
+                                className="cancel-btn" 
+                                onClick={() => setShowGenerateRosterModal(false)}
+                                disabled={isGenerating}
+                            >
+                                Cancel
+                            </button>
+                            <button 
+                                className="generate-btn" 
+                                onClick={handleGenerateRoster}
+                                disabled={!rosterStartDate || !rosterEndDate || isGenerating}
+                            >
+                                {isGenerating ? 'Generating...' : 'Generate Roster'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

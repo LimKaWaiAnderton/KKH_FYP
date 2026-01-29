@@ -192,6 +192,7 @@ export default function ManagerSchedule() {
                         weekDays={weekDays}
                         searchTerm={searchTerm}
                         setSearchTerm={setSearchTerm}
+                        onRosterGenerated={refreshShifts}
                     />
                     <ManagerScheduleGrid
                         weekDays={weekDays}

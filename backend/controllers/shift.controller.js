@@ -142,6 +142,7 @@ export const getAllUsersWithPendingShifts = async (req, res) => {
         s.shift_type_id,
         st.name as shift_type_name,
         COALESCE(s.color_hex, st.color_hex) as color_hex,
+        COALESCE(s.is_rrt, false) as is_rrt,
         NULL as shift_request_id,
         CASE 
           WHEN EXISTS (
@@ -180,6 +181,7 @@ export const getAllUsersWithPendingShifts = async (req, res) => {
         sr.shift_type_id,
         st.name as shift_type_name,
         st.color_hex as color_hex,
+        false as is_rrt,
         sr.id as shift_request_id,
         sr.status as request_status
       FROM users u
@@ -420,7 +422,8 @@ export const getAllEmployeesWithPublishedShifts = async (req, res) => {
         s.published,
         s.shift_type_id,
         st.name as shift_type_name,
-        COALESCE(s.color_hex, st.color_hex) as color_hex
+        COALESCE(s.color_hex, st.color_hex) as color_hex,
+        COALESCE(s.is_rrt, false) as is_rrt
       FROM users u
       INNER JOIN departments d ON u.department_id = d.id
       LEFT JOIN shifts s ON u.id = s.user_id AND s.published = true
