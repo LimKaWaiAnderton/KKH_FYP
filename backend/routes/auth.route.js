@@ -28,4 +28,7 @@ router.patch("/delete-user/:id", auth, deleteUser);
 //Update User Role
 router.patch("/update-role/:id", auth, updateUserRole);
 
+//Update User Information
+router.patch("/update-user/:id", auth, updateUser);
+
 export default router;
