@@ -272,10 +272,39 @@ export const addUser = async (req, res) => {
     console.log(`\n👤 Creating user: ${first_name} ${last_name} (${email})`);
     console.log(`🔑 Generated temporary password (length: ${tempPassword.length})`);
 
-    // 6. Send welcome email with temporary password
+    // 6. Insert default leave balances if user is an employee (role_id = 2)
+    if (Number(role_id) === 2) {
+      try {
+        await pool.query(
+          `INSERT INTO user_leave_balance (user_id, leave_type_id, used_days, remaining_days, total_quota)
+           SELECT $1, id, 0, 
+             CASE name
+               WHEN 'Annual Leave' THEN 7
+               WHEN 'Sick Leave' THEN 14
+               WHEN 'Childcare Leave' THEN 7
+               ELSE 0
+             END,
+             CASE name
+               WHEN 'Annual Leave' THEN 7
+               WHEN 'Sick Leave' THEN 14
+               WHEN 'Childcare Leave' THEN 7
+               ELSE 0
+             END
+           FROM leave_types
+           WHERE name IN ('Annual Leave', 'Sick Leave', 'Childcare Leave')`,
+          [newUser.id]
+        );
+        console.log(`✅ Default leave balances created for new employee`);
+      } catch (leaveErr) {
+        console.error("Error creating default leave balances:", leaveErr);
+        // Don't throw - user creation was successful, just log the error
+      }
+    }
+
+    // 7. Send welcome email with temporary password
     const emailResult = await sendWelcomeEmail(email, first_name, tempPassword);
 
-    // 7. Return success response with user data (NOT the password)
+    // 8. Return success response with user data (NOT the password)
     let message = "User added successfully.";
     if (emailResult.success) {
       message += " Welcome email sent to " + email;
@@ -300,12 +329,24 @@ export const addUser = async (req, res) => {
 export const deleteUser = async (req, res) => {
   try {
     const { id } = req.params;
-    await pool.query(
-      `UPDATE users SET is_active = false WHERE id = $1`, 
+    
+    // Update user's is_active to false
+    const result = await pool.query(
+      `UPDATE users SET is_active = false WHERE id = $1 RETURNING id, first_name, last_name, email, is_active`, 
       [id]
     );
-    res.json({ message: "User deactivated successfully" });
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const deactivatedUser = result.rows[0];
+    res.json({ 
+      message: "User deactivated successfully",
+      user: deactivatedUser
+    });
   } catch (err) {
+    console.error("Delete user error:", err);
     res.status(500).json({ message: "Server error" });
   }
 };

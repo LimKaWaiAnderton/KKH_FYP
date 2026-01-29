@@ -12,11 +12,25 @@ const TeamList = () => {
 
   const [activeTab, setActiveTab] = useState('members');
   const [allUsers, setAllUsers] = useState([]); // Store all users from backend
+  const [currentUser, setCurrentUser] = useState(null); // Store current logged-in user's ID
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
+
+  // Fetch current user's info
+  const fetchCurrentUser = async () => {
+    try {
+      const res = await authFetch('http://localhost:5000/auth/me');
+      if (!res.ok) throw new Error("Failed to fetch current user");
+      const data = await res.json();
+      setCurrentUser(data.id);
+      console.log('Current user ID:', data.id);
+    } catch (err) {
+      console.error("Error fetching current user:", err);
+    }
+  };
 
   // Fetch users from backend
   const fetchUsers = async () => {
@@ -45,6 +59,7 @@ const TeamList = () => {
   // Fetch users on component mount and when returning from AddUser
   useEffect(() => {
     console.log('TeamList mounted or refresh triggered');
+    fetchCurrentUser();
     fetchUsers();
     
     // Clear the refresh flag from navigation state to prevent unnecessary re-fetches
@@ -155,10 +170,11 @@ const TeamList = () => {
         ) : (
           <>
             {activeTab === 'members' ? (
-              <TeamListEmployee data={currentItems} />
+              <TeamListEmployee data={currentItems} onUserUpdated={fetchUsers} />
             ) : (
               <TeamListAdmin 
                 data={currentItems} 
+                currentUserId={currentUser}
                 onUserUpdated={fetchUsers}
                 onSwitchToMembers={handleSwitchToMembers}
               />
