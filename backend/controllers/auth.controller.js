@@ -273,10 +273,39 @@ export const addUser = async (req, res) => {
     console.log(`\n👤 Creating user: ${first_name} ${last_name} (${email})`);
     console.log(`🔑 Generated temporary password (length: ${tempPassword.length})`);
 
-    // 6. Send welcome email with temporary password
+    // 6. Insert default leave balances if user is an employee (role_id = 2)
+    if (Number(role_id) === 2) {
+      try {
+        await pool.query(
+          `INSERT INTO user_leave_balance (user_id, leave_type_id, used_days, remaining_days, total_quota)
+           SELECT $1, id, 0, 
+             CASE name
+               WHEN 'Annual Leave' THEN 7
+               WHEN 'Sick Leave' THEN 14
+               WHEN 'Childcare Leave' THEN 7
+               ELSE 0
+             END,
+             CASE name
+               WHEN 'Annual Leave' THEN 7
+               WHEN 'Sick Leave' THEN 14
+               WHEN 'Childcare Leave' THEN 7
+               ELSE 0
+             END
+           FROM leave_types
+           WHERE name IN ('Annual Leave', 'Sick Leave', 'Childcare Leave')`,
+          [newUser.id]
+        );
+        console.log(`✅ Default leave balances created for new employee`);
+      } catch (leaveErr) {
+        console.error("Error creating default leave balances:", leaveErr);
+        // Don't throw - user creation was successful, just log the error
+      }
+    }
+
+    // 7. Send welcome email with temporary password
     const emailResult = await sendWelcomeEmail(email, first_name, tempPassword);
 
-    // 7. Return success response with user data (NOT the password)
+    // 8. Return success response with user data (NOT the password)
     let message = "User added successfully.";
     if (emailResult.success) {
       message += " Welcome email sent to " + email;
@@ -301,12 +330,24 @@ export const addUser = async (req, res) => {
 export const deleteUser = async (req, res) => {
   try {
     const { id } = req.params;
-    await pool.query(
-      `UPDATE users SET is_active = false WHERE id = $1`, 
+    
+    // Update user's is_active to false
+    const result = await pool.query(
+      `UPDATE users SET is_active = false WHERE id = $1 RETURNING id, first_name, last_name, email, is_active`, 
       [id]
     );
-    res.json({ message: "User deactivated successfully" });
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const deactivatedUser = result.rows[0];
+    res.json({ 
+      message: "User deactivated successfully",
+      user: deactivatedUser
+    });
   } catch (err) {
+    console.error("Delete user error:", err);
     res.status(500).json({ message: "Server error" });
   }
 };
@@ -342,12 +383,73 @@ export const updateUserRole = async (req, res) => {
   }
 };
 
+// Update user information
+export const updateUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { first_name, last_name, email, mobile_number, department_id, role_id } = req.body;
+
+    // Build dynamic update query
+    const updates = [];
+    const values = [];
+    let paramCount = 1;
+
+    if (first_name !== undefined) {
+      updates.push(`first_name = $${paramCount++}`);
+      values.push(first_name);
+    }
+    if (last_name !== undefined) {
+      updates.push(`last_name = $${paramCount++}`);
+      values.push(last_name);
+    }
+    if (email !== undefined) {
+      updates.push(`email = $${paramCount++}`);
+      values.push(email);
+    }
+    if (mobile_number !== undefined) {
+      updates.push(`mobile_number = $${paramCount++}`);
+      values.push(mobile_number);
+    }
+    if (department_id !== undefined) {
+      updates.push(`department_id = $${paramCount++}`);
+      values.push(department_id);
+    }
+    if (role_id !== undefined) {
+      updates.push(`role_id = $${paramCount++}`);
+      values.push(role_id);
+    }
+
+    if (updates.length === 0) {
+      return res.status(400).json({ message: "No fields to update" });
+    }
+
+    // Add user ID as final parameter
+    values.push(id);
+
+    // Execute update query
+    const query = `UPDATE users SET ${updates.join(', ')} WHERE id = $${paramCount} RETURNING *`;
+    const result = await pool.query(query, values);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.json({ 
+      message: "User updated successfully",
+      user: result.rows[0]
+    });
+  } catch (err) {
+    console.error("Error updating user:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
 // Get all users with department names (for Team List)
 export const getAllUsers = async (req, res) => {
   try {
     // This query joins with departments and roles to get readable names
     const result = await pool.query(
-      `SELECT u.id, u.first_name, u.last_name, u.email, u.role_id, u.mobile_number, u.is_active, d.name as department_name 
+      `SELECT u.id, u.first_name, u.last_name, u.email, u.role_id, u.mobile_number, u.is_active, u.department_id, d.name as department_name 
        FROM users u
        LEFT JOIN departments d ON u.department_id = d.id`
     );
