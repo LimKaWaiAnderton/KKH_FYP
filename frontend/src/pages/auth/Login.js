@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from 'react-router-dom';
 import "../../styles/Auth/Login.css";
 import logo from "../../assets/kkh.webp"; // put logo here
 
@@ -13,6 +14,7 @@ export default function Login() {
   const [remember, setRemember] = useState(false);
   const [passwordType, setPasswordType] = useState("password");
   const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -104,7 +106,13 @@ export default function Login() {
             Remember me
           </label>
 
-          <span className="forgot">Forgot Password?</span>
+          <span 
+            className="forgot" 
+            onClick={() => navigate('/forgot-password')}
+            style={{ cursor: 'pointer' }}
+          >
+            Forgot Password?
+          </span>
         </div>
 
         <div className="login-actions">
