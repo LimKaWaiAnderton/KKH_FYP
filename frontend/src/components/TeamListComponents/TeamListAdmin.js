@@ -1,11 +1,17 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { authFetch } from '../../utils/authFetch';
 
 // TeamListAdmin Component - Displays admin users
 const TeamListAdmin = ({ data, currentUserId, onUserUpdated, onSwitchToMembers }) => {
   console.log('TeamListAdmin rendering with data:', data);
+  const navigate = useNavigate();
   const [processing, setProcessing] = useState(null);
   const [showActionMenu, setShowActionMenu] = useState(null);
+
+  const handleEditClick = (admin) => {
+    navigate(`/manager/edit-user/${admin.id}`);
+  };
 
   const handleAdminAccessToggle = async (admin, isChecked) => {
     // If turning OFF admin access, show confirmation
@@ -162,6 +168,27 @@ const TeamListAdmin = ({ data, currentUserId, onUserUpdated, onSwitchToMembers }
                     }}
                   >
                     <button
+                      onClick={() => handleEditClick(admin)}
+                      onMouseEnter={(e) => {
+                        e.target.style.backgroundColor = '#e3f2fd';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.target.style.backgroundColor = 'transparent';
+                      }}
+                      style={{
+                        padding: '6px 12px',
+                        border: 'none',
+                        borderRight: '1px solid #ddd',
+                        background: 'none',
+                        textAlign: 'left',
+                        cursor: 'pointer',
+                        color: '#105bcb',
+                        fontSize: '0.8em',
+                      }}
+                    >
+                      Edit
+                    </button>
+                    <button
                       onClick={() => handleDeactivateClick(admin)}
                       disabled={isCurrentUser(admin.id) || isUserInactive(admin) || processing === admin.id}
                       onMouseEnter={(e) => {
@@ -173,7 +200,6 @@ const TeamListAdmin = ({ data, currentUserId, onUserUpdated, onSwitchToMembers }
                         e.target.style.backgroundColor = 'transparent';
                       }}
                       style={{
-                        width: '100%',
                         padding: '6px 12px',
                         border: 'none',
                         background: 'none',

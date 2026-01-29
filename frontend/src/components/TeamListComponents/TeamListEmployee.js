@@ -1,11 +1,17 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { authFetch } from '../../utils/authFetch';
 
 // TeamListEmployee Component - Displays employee/member users
 const TeamListEmployee = ({ data, onUserUpdated }) => {
   console.log('TeamListEmployee rendering with data:', data);
+  const navigate = useNavigate();
   const [processing, setProcessing] = useState(null);
   const [showActionMenu, setShowActionMenu] = useState(null);
+
+  const handleEditClick = (member) => {
+    navigate(`/manager/edit-user/${member.id}`);
+  };
 
   const handleDeactivateClick = async (member) => {
     const confirmed = window.confirm(
@@ -102,6 +108,27 @@ const TeamListEmployee = ({ data, onUserUpdated }) => {
                     }}
                   >
                     <button
+                      onClick={() => handleEditClick(member)}
+                      onMouseEnter={(e) => {
+                        e.target.style.backgroundColor = '#e3f2fd';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.target.style.backgroundColor = 'transparent';
+                      }}
+                      style={{
+                        padding: '6px 12px',
+                        border: 'none',
+                        borderRight: '1px solid #ddd',
+                        background: 'none',
+                        textAlign: 'left',
+                        cursor: 'pointer',
+                        color: '#105bcb',
+                        fontSize: '0.8em',
+                      }}
+                    >
+                      Edit
+                    </button>
+                    <button
                       onClick={() => handleDeactivateClick(member)}
                       disabled={isUserInactive(member) || processing === member.id}
                       onMouseEnter={(e) => {
@@ -113,7 +140,6 @@ const TeamListEmployee = ({ data, onUserUpdated }) => {
                         e.target.style.backgroundColor = 'transparent';
                       }}
                       style={{
-                        width: '100%',
                         padding: '6px 12px',
                         border: 'none',
                         background: 'none',

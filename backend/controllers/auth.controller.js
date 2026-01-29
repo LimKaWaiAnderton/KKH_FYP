@@ -382,12 +382,73 @@ export const updateUserRole = async (req, res) => {
   }
 };
 
+// Update user information
+export const updateUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { first_name, last_name, email, mobile_number, department_id, role_id } = req.body;
+
+    // Build dynamic update query
+    const updates = [];
+    const values = [];
+    let paramCount = 1;
+
+    if (first_name !== undefined) {
+      updates.push(`first_name = $${paramCount++}`);
+      values.push(first_name);
+    }
+    if (last_name !== undefined) {
+      updates.push(`last_name = $${paramCount++}`);
+      values.push(last_name);
+    }
+    if (email !== undefined) {
+      updates.push(`email = $${paramCount++}`);
+      values.push(email);
+    }
+    if (mobile_number !== undefined) {
+      updates.push(`mobile_number = $${paramCount++}`);
+      values.push(mobile_number);
+    }
+    if (department_id !== undefined) {
+      updates.push(`department_id = $${paramCount++}`);
+      values.push(department_id);
+    }
+    if (role_id !== undefined) {
+      updates.push(`role_id = $${paramCount++}`);
+      values.push(role_id);
+    }
+
+    if (updates.length === 0) {
+      return res.status(400).json({ message: "No fields to update" });
+    }
+
+    // Add user ID as final parameter
+    values.push(id);
+
+    // Execute update query
+    const query = `UPDATE users SET ${updates.join(', ')} WHERE id = $${paramCount} RETURNING *`;
+    const result = await pool.query(query, values);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.json({ 
+      message: "User updated successfully",
+      user: result.rows[0]
+    });
+  } catch (err) {
+    console.error("Error updating user:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
 // Get all users with department names (for Team List)
 export const getAllUsers = async (req, res) => {
   try {
     // This query joins with departments and roles to get readable names
     const result = await pool.query(
-      `SELECT u.id, u.first_name, u.last_name, u.email, u.role_id, u.mobile_number, u.is_active, d.name as department_name 
+      `SELECT u.id, u.first_name, u.last_name, u.email, u.role_id, u.mobile_number, u.is_active, u.department_id, d.name as department_name 
        FROM users u
        LEFT JOIN departments d ON u.department_id = d.id`
     );

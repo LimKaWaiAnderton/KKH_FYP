@@ -13,9 +13,11 @@ import EmployeeHome from './pages/employee/EmployeeHome';
 import EmployeeSchedule from './pages/employee/EmployeeSchedule';
 import EmployeeSidebar from './components/EmployeeSideBar/EmployeeSideBar';
 import ManagerSidebar from './components/manager/Home/ManagerSidebar';
+import Settings from './components/Settings';
 import './App.css';
 import TeamList from "./pages/manager/TeamList";
 import AddUser from "./pages/manager/AddUser";
+import EditUser from "./pages/manager/EditUser";
 
 
 function AppContent() {
@@ -69,11 +71,14 @@ function AppContent() {
           <Route path="/manager/schedule" element={<ManagerSchedule />} />
           <Route path="/manager/users" element={<ProtectedRoute><TeamList /></ProtectedRoute>} />
           <Route path="/manager/add-user" element={<ProtectedRoute><AddUser /></ProtectedRoute>} />
+          <Route path="/manager/edit-user/:userId" element={<ProtectedRoute><EditUser /></ProtectedRoute>} />
           <Route path="/employee/requests/*" element={<></>} />
-          <Route path="/employee/settings" element={<></>} />
+          <Route path="/employee/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+          <Route path="/manager/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
           <Route path="/manager/*" element={<></>} />
           <Route path="/manager/team-list" element={<ProtectedRoute><TeamList /></ProtectedRoute>} />
           <Route path="/manager/add-user" element={<ProtectedRoute><AddUser /></ProtectedRoute>} />
+          <Route path="/manager/edit-user/:userId" element={<ProtectedRoute><EditUser /></ProtectedRoute>} />
         </Routes>
       </main>
     </div>

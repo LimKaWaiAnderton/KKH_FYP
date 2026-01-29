@@ -15,6 +15,7 @@ const TeamList = () => {
   const [currentUser, setCurrentUser] = useState(null); // Store current logged-in user's ID
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [searchQuery, setSearchQuery] = useState(''); // Add search query state
   
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
@@ -76,12 +77,27 @@ const TeamList = () => {
   console.log('Members:', members.length);
   console.log('Admins:', admins.length);
 
-  // Get current tab data
+  // Get current tab data and filter by search query
   const currentTabData = activeTab === 'members' ? members : admins;
-  const totalPages = Math.ceil(currentTabData.length / itemsPerPage);
+  
+  // Filter users based on search query
+  const filteredData = currentTabData.filter(user => {
+    if (!searchQuery) return true;
+    
+    const query = searchQuery.toLowerCase();
+    const fullName = `${user.first_name} ${user.last_name}`.toLowerCase();
+    const email = user.email.toLowerCase();
+    const department = (user.department_name || '').toLowerCase();
+    
+    return fullName.includes(query) || 
+           email.includes(query) || 
+           department.includes(query);
+  });
+
+  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = currentTabData.slice(indexOfFirstItem, indexOfLastItem);
+  const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
 
   console.log('Current tab:', activeTab, '| Current items:', currentItems.length);
 
@@ -89,6 +105,11 @@ const TeamList = () => {
   useEffect(() => {
     setCurrentPage(1);
   }, [activeTab]);
+
+  // Reset pagination when search query changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery]);
 
   // Pagination handlers
   const handleNext = () => {
@@ -159,13 +180,19 @@ const TeamList = () => {
         </div>
 
         <div className="search-bar-wrapper">
-          <input type="text" placeholder="Search.." className="search-input"/>
+          <input 
+            type="text" 
+            placeholder="Search by name, email, or department..." 
+            className="search-input"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
         </div>
 
         {/* Display current tab data or empty message */}
-        {currentTabData.length === 0 ? (
+        {filteredData.length === 0 ? (
           <div style={{ padding: '20px', textAlign: 'center', color: '#666' }}>
-            No {activeTab === 'members' ? 'members' : 'admins'} found.
+            {searchQuery ? `No results found for "${searchQuery}"` : `No ${activeTab === 'members' ? 'members' : 'admins'} found.`}
           </div>
         ) : (
           <>
