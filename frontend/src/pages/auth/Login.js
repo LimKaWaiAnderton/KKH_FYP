@@ -36,9 +36,9 @@ export default function Login() {
     localStorage.setItem("role", data.role); // Store role for authorization
 
     if (data.role === "admin") {
-      window.location.href = "/manager/requests/leave";
+      window.location.href = "/manager/home";
     } else {
-      window.location.href = "/employee/requests/shift";
+      window.location.href = "/employee/home";
     }
   };
 
