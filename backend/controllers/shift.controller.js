@@ -160,6 +160,7 @@ export const getAllUsersWithPendingShifts = async (req, res) => {
       LEFT JOIN shifts s ON u.id = s.user_id
       LEFT JOIN shift_types st ON s.shift_type_id = st.id
       WHERE u.role_id = 2
+        AND u.is_active = true
       
       UNION ALL
       
@@ -186,6 +187,7 @@ export const getAllUsersWithPendingShifts = async (req, res) => {
       INNER JOIN shift_requests sr ON u.id = sr.user_id
       LEFT JOIN shift_types st ON sr.shift_type_id = st.id
       WHERE u.role_id = 2
+        AND u.is_active = true
         AND sr.status = 'pending'
         AND NOT EXISTS (
           SELECT 1 FROM shifts s
@@ -424,6 +426,7 @@ export const getAllEmployeesWithPublishedShifts = async (req, res) => {
       LEFT JOIN shifts s ON u.id = s.user_id AND s.published = true
       LEFT JOIN shift_types st ON s.shift_type_id = st.id
       WHERE u.role_id = 2
+        AND u.is_active = true
       ORDER BY d.name, u.last_name, u.first_name, s.date
       `
     );
