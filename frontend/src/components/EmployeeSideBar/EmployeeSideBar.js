@@ -153,6 +153,7 @@ export default function EmployeeSidebar({ expanded, onMouseEnter, onMouseLeave }
                         className="nav-pill"
                         onClick={() => {
                             localStorage.removeItem("token");
+                            localStorage.removeItem("role");
                             navigate("/");
                         }}
                     >

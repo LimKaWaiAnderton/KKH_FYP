@@ -33,6 +33,7 @@ export default function Login() {
     }
 
     localStorage.setItem("token", data.token);
+    localStorage.setItem("role", data.role); // Store role for authorization
 
     if (data.role === "admin") {
       window.location.href = "/manager/requests/leave";

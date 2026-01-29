@@ -70,23 +70,25 @@ function AppContent() {
           <Route path="/login" element={<Login />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
-          <Route path="/employee/home" element={<EmployeeHome />} />
-          <Route path="/employee/requests/shift" element={<ProtectedRoute><ShiftRequestPage /></ProtectedRoute>} />
-          <Route path="/employee/requests/leave" element={<ProtectedRoute><EmployeeLeaveRequest /></ProtectedRoute>} />
-          <Route path="/employee/schedule" element={<EmployeeSchedule />} />
-          <Route path="/manager/requests/leave" element={<ProtectedRoute><ManagerLeaveRequest /></ProtectedRoute>} />
-          <Route path="/manager/home" element={<ManagerHome />} />
-          <Route path="/manager/schedule" element={<ManagerSchedule />} />
-          <Route path="/manager/users" element={<ProtectedRoute><TeamList /></ProtectedRoute>} />
-          <Route path="/manager/add-user" element={<ProtectedRoute><AddUser /></ProtectedRoute>} />
-          <Route path="/manager/edit-user/:userId" element={<ProtectedRoute><EditUser /></ProtectedRoute>} />
+          
+          {/* Employee Routes - Protected */}
+          <Route path="/employee/home" element={<ProtectedRoute requiredRole="employee"><EmployeeHome /></ProtectedRoute>} />
+          <Route path="/employee/requests/shift" element={<ProtectedRoute requiredRole="employee"><ShiftRequestPage /></ProtectedRoute>} />
+          <Route path="/employee/requests/leave" element={<ProtectedRoute requiredRole="employee"><EmployeeLeaveRequest /></ProtectedRoute>} />
+          <Route path="/employee/schedule" element={<ProtectedRoute requiredRole="employee"><EmployeeSchedule /></ProtectedRoute>} />
+          <Route path="/employee/settings" element={<ProtectedRoute requiredRole="employee"><Settings /></ProtectedRoute>} />
           <Route path="/employee/requests/*" element={<></>} />
-          <Route path="/employee/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
-          <Route path="/manager/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+          
+          {/* Manager Routes - Protected */}
+          <Route path="/manager/home" element={<ProtectedRoute requiredRole="admin"><ManagerHome /></ProtectedRoute>} />
+          <Route path="/manager/requests/leave" element={<ProtectedRoute requiredRole="admin"><ManagerLeaveRequest /></ProtectedRoute>} />
+          <Route path="/manager/schedule" element={<ProtectedRoute requiredRole="admin"><ManagerSchedule /></ProtectedRoute>} />
+          <Route path="/manager/users" element={<ProtectedRoute requiredRole="admin"><TeamList /></ProtectedRoute>} />
+          <Route path="/manager/team-list" element={<ProtectedRoute requiredRole="admin"><TeamList /></ProtectedRoute>} />
+          <Route path="/manager/add-user" element={<ProtectedRoute requiredRole="admin"><AddUser /></ProtectedRoute>} />
+          <Route path="/manager/edit-user/:userId" element={<ProtectedRoute requiredRole="admin"><EditUser /></ProtectedRoute>} />
+          <Route path="/manager/settings" element={<ProtectedRoute requiredRole="admin"><Settings /></ProtectedRoute>} />
           <Route path="/manager/*" element={<></>} />
-          <Route path="/manager/team-list" element={<ProtectedRoute><TeamList /></ProtectedRoute>} />
-          <Route path="/manager/add-user" element={<ProtectedRoute><AddUser /></ProtectedRoute>} />
-          <Route path="/manager/edit-user/:userId" element={<ProtectedRoute><EditUser /></ProtectedRoute>} />
         </Routes>
       </main>
     </div>
