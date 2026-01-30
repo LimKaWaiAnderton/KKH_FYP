@@ -34,6 +34,7 @@ INSERT INTO public.users (id, first_name, last_name, email, mobile_number, depar
 INSERT INTO public.shift_types (name, color_hex, start_time, end_time) VALUES
 ('AM', '#000000', '07:00:00', '16:00:00'),
 ('PM', '#1E8A3C', '11:30:00', '20:30:00'),
+('N', '#800080', '20:00:00', '07:30:00'),
 ('RRT', '#005983', NULL, NULL),
 ('DO', '#E69A00', NULL, NULL),
 ('RD', '#E69A00', NULL, NULL);

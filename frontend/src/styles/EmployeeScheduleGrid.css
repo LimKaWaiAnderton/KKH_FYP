@@ -225,17 +225,4 @@
 .shift-box.gray-border::before {
   background: #999;                  /* Light gray line */
 }
-
-/* ==================== RRT SHIFT VISUAL CLARITY ==================== */
-.shift-box.rrt-shift {
-  border-left: 4px solid #d32f2f !important;   /* Red left border for RRT shifts */
-  font-weight: 600;                             /* Bold text for emphasis */
-  background: #ffebee !important;               /* Light red background tint */
-}
-
-.shift-box.rrt-shift .shift-type::after {
-  content: ' ⚕';                                /* Medical symbol for RRT */
-  color: #d32f2f;                               /* Red color */
-  font-size: 1em;                               /* Same size as text */
-  margin-left: 4px;                             /* Space before symbol */
-}
+  
