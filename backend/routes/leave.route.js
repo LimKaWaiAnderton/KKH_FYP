@@ -8,7 +8,8 @@ import {
     applyLeave,
     getLeaveRequestById,
     manageLeaveRequest,
-    updateUserLeaveBalance
+    updateUserLeaveBalance,
+    getUserLeaveBalanceById
 } from '../controllers/leave.controller.js';
 
 const leaveRouter = Router();
@@ -23,7 +24,7 @@ leaveRouter.post('/', auth, applyLeave);
 
 // Admin
 leaveRouter.get('/:id', auth, getLeaveRequestById);
-
+leaveRouter.get('/balance/:userId', auth, getUserLeaveBalanceById);
 leaveRouter.patch('/:id', auth, manageLeaveRequest);
 leaveRouter.patch('/balance/:userId', auth, updateUserLeaveBalance);
 
