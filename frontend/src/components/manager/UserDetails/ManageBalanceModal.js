@@ -1,6 +1,6 @@
 import { useState } from "react";
 import toast from 'react-hot-toast';
-import { authFetch } from '../../../utils/authFetch'; // Adjust path if needed
+import { authFetch } from '../../../utils/authFetch';
 
 import '../../../styles/EmployeeLeaveReq.css'; 
 import CloseIcon from '@mui/icons-material/Close';
@@ -12,6 +12,7 @@ export default function ManageBalanceModal({ isOpen, onClose, onRefresh, userId,
   const [reason, setReason] = useState("");
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+
 
   // Find the specific leave data (e.g., Annual Leave) based on what is selected
   const selectedLeaveData = currentBalanceData?.find(
@@ -137,9 +138,9 @@ export default function ManageBalanceModal({ isOpen, onClose, onRefresh, userId,
               </select>
             </div>
 
-            <div style={{ display: 'flex', gap: '15px' }}>
+            <div className="leave-action-group">
               {/* 2. ACTION (Add/Deduct) */}
-              <div className="leave-type-input" style={{ flex: 1 }}>
+              <div className="leave-type-input">
                 <label>Action</label>
                 <select
                   value={adjustmentType}
@@ -151,7 +152,7 @@ export default function ManageBalanceModal({ isOpen, onClose, onRefresh, userId,
               </div>
 
               {/* 3. DAYS INPUT */}
-              <div className="leave-startDate-input" style={{ flex: 1 }}>
+              <div className="leave-days-input">
                 <label>Days</label>
                 <input
                   type="number"
@@ -172,7 +173,6 @@ export default function ManageBalanceModal({ isOpen, onClose, onRefresh, userId,
                 placeholder="e.g. Compensation for weekend work"
                 value={reason}
                 onChange={(e) => setReason(e.target.value)}
-                style={{ width: '100%', padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
               />
             </div>
 
