@@ -475,27 +475,56 @@ export const manageLeaveRequest = async (req, res) => {
     }
 };
 
+export const getUserLeaveBalanceById = async (req, res) => {
+    const { userId } = req.params; 
+
+    try {
+        const balance = await pool.query(
+            `SELECT
+                ulb.id,
+                ulb.used_days,
+                ulb.remaining_days,
+                ulb.total_quota,
+                lt.name AS leave_type,
+                lt.id AS leave_type_id 
+            FROM user_leave_balance ulb
+            JOIN leave_types lt
+            ON ulb.leave_type_id = lt.id
+            WHERE ulb.user_id = $1`, 
+            [userId] 
+        );
+
+        if (balance.rows.length === 0) {
+            return res.status(200).json([]);
+        }
+
+        res.json(balance.rows);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+};
+
 export const updateUserLeaveBalance = async (req, res) => {
     try {
-        // const { id } = req.params; 
-        const id = "ba8c0f60-3ed2-456b-bc7a-82a5e643072d"; // Keep your test ID for now
-        
-        const { leave_type_id, adjustment_days } = req.body;
+        const { user_id, leave_type_id, adjustment_days, reason } = req.body;
 
         if (!adjustment_days || typeof adjustment_days !== 'number') {
             return res.status(400).json({ msg: "Please provide a valid number for adjustment_days" });
         }
 
+        // ERROR 2 FIX: Removed the invalid JOIN
         const result = await pool.query(
             `
             UPDATE public.user_leave_balance
             SET 
                 remaining_days = remaining_days + $1, 
                 total_quota = total_quota + $1, 
-                updated_at = NOW()
+                updated_at = NOW(),
+                adjustment_reason = $4
             WHERE user_id = $2 AND leave_type_id = $3
             RETURNING * `,
-            [adjustment_days, id, leave_type_id]
+            [adjustment_days, user_id, leave_type_id, reason]
         );
 
         if (result.rows.length === 0) {
@@ -504,7 +533,7 @@ export const updateUserLeaveBalance = async (req, res) => {
 
         res.json({ 
             message: 'User leave balance adjusted successfully',
-            updatedData: result.rows[0]
+            updatedData: result.rows[0] 
         });
 
     } catch (error) {
