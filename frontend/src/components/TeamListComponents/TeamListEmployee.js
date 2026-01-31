@@ -27,7 +27,6 @@ const TeamListEmployee = ({ data }) => {
             <tr 
               key={member.id}
               onClick={() => handleViewClick(member)}
-              style={{ cursor: 'pointer' }}
               className="clickable-row"
             >
               <td>{`${member.first_name} ${member.last_name}`}</td>

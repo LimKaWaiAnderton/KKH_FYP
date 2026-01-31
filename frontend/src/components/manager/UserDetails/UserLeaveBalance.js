@@ -1,11 +1,12 @@
 import { useState, useEffect, useCallback } from 'react';
 import { authFetch } from '../../../utils/authFetch';
 import '../../../styles/EmployeeLeaveReq.css';
+import '../../../styles/ManagerUserDetails.css';
 import ManageBalanceModal from './ManageBalanceModal'; // Import modal here
 
 export default function UserLeaveBalance({ user_id }) {
     const [leaveBalance, setLeaveBalance] = useState([]);
-    
+
     // 1. Move Modal State HERE
     const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -29,19 +30,20 @@ export default function UserLeaveBalance({ user_id }) {
     const leaveBalance_Rows = leaveBalance.map((row) => ({
         id: row.id,
         leaveType: row.leave_type,
-        remainingDays: row.remaining_days,
-        annualQuota: row.total_quota,
+        // Wrap these in Number() or parseFloat() to strip .0
+        remainingDays: Number(row.remaining_days),
+        annualQuota: Number(row.total_quota),
     }));
 
     return (
         <div className='container'>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div class="container-header">
                 <h2>Leave Balance</h2>
                 <button className="btn-primary" onClick={() => setIsModalOpen(true)}>
                     Edit
                 </button>
             </div>
-            
+
             <div className="leaveBalanceGroup">
                 {leaveBalance_Rows.length > 0 ? (
                     leaveBalance_Rows.map((row) => (
@@ -55,7 +57,7 @@ export default function UserLeaveBalance({ user_id }) {
                 )}
             </div>
 
-            <ManageBalanceModal 
+            <ManageBalanceModal
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
                 onRefresh={fetchUserLeaveBalance}

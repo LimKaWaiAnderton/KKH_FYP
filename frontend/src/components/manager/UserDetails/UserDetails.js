@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // 1. Import useNavigate
+import { useNavigate } from 'react-router-dom';
 import { authFetch } from '../../../utils/authFetch';
 
 export default function UserDetails({ user_id }) {
-    const navigate = useNavigate(); // 2. Initialize navigation
+    const navigate = useNavigate();
     const [userDetails, setUserDetails] = useState(null);
     const [error, setError] = useState(null);
     const [processing, setProcessing] = useState(false);
@@ -57,6 +57,8 @@ export default function UserDetails({ user_id }) {
             setUserDetails(prev => ({ ...prev, is_active: false }));
 
             alert(`${userDetails.first_name} ${userDetails.last_name} has been deactivated successfully.`);
+
+            navigate(`/manager/users`);
         } catch (error) {
             console.error('Error deactivating user:', error);
             alert('Failed to deactivate user. Please try again.');
@@ -70,11 +72,12 @@ export default function UserDetails({ user_id }) {
             <div className="user-details-card">
                 {userDetails ? (
                     <div>
-                        <div>
+                        <div className="container-header">
                             <h2>Profile</h2>
                             <div className="action-buttons">
-                                <button onClick={handleEditClick}>Edit</button>
+                                <button className="btn-primary" onClick={handleEditClick}>Edit</button>
                                 <button
+                                    className="btn-danger"
                                     onClick={handleDeactivateClick}
                                     // 6. Disable if already inactive OR currently processing
                                     disabled={userDetails.is_active === false || processing}
@@ -83,14 +86,10 @@ export default function UserDetails({ user_id }) {
                                 </button>
                             </div>
                         </div>
-
-                        <p><strong>Name:</strong> {userDetails.first_name} {userDetails.last_name}</p>
-                        <p><strong>Email:</strong> {userDetails.email}</p>
-                        <p><strong>Mobile Number:</strong> {userDetails.mobile_number || 'N/A'}</p>
-                        <p><strong>Department:</strong> {userDetails.department_name || userDetails.department_id}</p>
-
-                        {/* Optional: Add a visual indicator of status */}
-                        <p><strong>Status:</strong> {userDetails.is_active !== false ? 'Active' : 'Deactivated'}</p>
+                        <p><span className="user-details-title">Name:</span> {userDetails.first_name} {userDetails.last_name}</p>
+                        <p><span className="user-details-title">Department:</span>  {userDetails.department_name}</p>
+                        <p><span className="user-details-title">Email:</span> {userDetails.email}</p>
+                        <p><span className="user-details-title">Mobile No.:</span> {userDetails.mobile_number}</p>
                     </div>
                 ) : error ? (
                     <p className="error-message">{error}</p>
