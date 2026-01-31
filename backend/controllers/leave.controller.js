@@ -474,3 +474,41 @@ export const manageLeaveRequest = async (req, res) => {
         client.release();
     }
 };
+
+export const updateUserLeaveBalance = async (req, res) => {
+    try {
+        // const { id } = req.params; 
+        const id = "ba8c0f60-3ed2-456b-bc7a-82a5e643072d"; // Keep your test ID for now
+        
+        const { leave_type_id, adjustment_days } = req.body;
+
+        if (!adjustment_days || typeof adjustment_days !== 'number') {
+            return res.status(400).json({ msg: "Please provide a valid number for adjustment_days" });
+        }
+
+        const result = await pool.query(
+            `
+            UPDATE public.user_leave_balance
+            SET 
+                remaining_days = remaining_days + $1, 
+                total_quota = total_quota + $1, 
+                updated_at = NOW()
+            WHERE user_id = $2 AND leave_type_id = $3
+            RETURNING * `,
+            [adjustment_days, id, leave_type_id]
+        );
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ msg: "User balance not found for this leave type" });
+        }
+
+        res.json({ 
+            message: 'User leave balance adjusted successfully',
+            updatedData: result.rows[0]
+        });
+
+    } catch (error) {
+        console.error('Error updating user leave balance:', error);
+        res.status(500).json({ error: 'Failed to update user leave balance' });
+    }
+};
