@@ -147,19 +147,16 @@
   cursor: pointer;
 }
 
-/* Approve (Primary Pink) */
 .btn-approve {
-  background-color: var(--status-approved-bg);
-  color: var(--status-approved);
+  background-color: var(--primary-color-blue);
+  color: var(--primary-color-lightblue);
 }
 
-/* Reject (Soft Red) */
 .btn-reject {
   background-color: var(--status-rejected-bg);
   color: var(--status-rejected);
 }
 
-/* Cancel (Neutral Grey) */
 .btn-cancel {
   background-color: #e5e7eb;
   color: #374151;

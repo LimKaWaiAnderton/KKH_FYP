@@ -9,6 +9,7 @@ import Chip from '@mui/material/Chip';
 import CloseIcon from '@mui/icons-material/Close';
 import ThumbUpOffAltIcon from '@mui/icons-material/ThumbUpOffAlt';
 import ThumbDownOffAltIcon from '@mui/icons-material/ThumbDownOffAlt';
+import BlockIcon from '@mui/icons-material/Block';
 
 // API call
 import { updateLeaveRequest } from '../../../api/leave.api.js';
@@ -28,11 +29,17 @@ export default function ManageRequestModal({
       setError("");
       const data = await updateLeaveRequest({ ...request, status });
       onRefresh(data);
-      toast.success(
-        status === 'approved'
-          ? 'Leave request approved successfully'
-          : 'Leave request rejected'
-      );
+      let msg;
+
+      if (status === 'approved') {
+        msg = 'Leave request approved successfully';
+      } else if (status === 'rejected') {
+        msg = 'Leave request rejected';
+      } else if (status === 'cancelled') {
+        msg = 'Leave request cancelled';
+      }
+
+      toast.success(msg);
 
       onClose();
     } catch (error) {
@@ -44,16 +51,20 @@ export default function ManageRequestModal({
   return (
     <>
       {/* Overlay */}
-      <div className="modal-overlay" onClick={onClose}></div>
+      <div className="modal-overlay"
+        onClick={() => {
+          setError("");
+          onClose();
+        }}></div>
 
       {/* Modal */}
       <div className="modal-container">
         <div className="modal-box">
-            <div className="modal-header-group">
-              <h2 className="modal-title">Leave Request</h2>
-              <CloseIcon onClick={onClose} />
-            </div>
-            <p className="modal-description">Requested on {formatDate(request.applied_date)}</p>
+          <div className="modal-header-group">
+            <h2 className="modal-title">Leave Request</h2>
+            <CloseIcon onClick={onClose} />
+          </div>
+          <p className="modal-description">Requested on {formatDate(request.applied_date)}</p>
           <div className="review-container">
             <div className="review-box">
               <div className="review-detail">
@@ -116,16 +127,24 @@ export default function ManageRequestModal({
                 <button
                   className="btn-reject"
                   onClick={() => handleSubmit('rejected')}>
-                    Reject
-                    <ThumbDownOffAltIcon fontSize='20px'/>
-                    </button>
+                  Reject
+                  <ThumbDownOffAltIcon fontSize='20px' />
+                </button>
                 <button
                   className="btn-approve"
                   onClick={() => handleSubmit('approved')}>
-                    Approve
-                    <ThumbUpOffAltIcon fontSize='20px' />
-                    </button>
+                  Approve
+                  <ThumbUpOffAltIcon fontSize='20px' />
+                </button>
               </>
+            )}
+            {request.status === 'approved' && (
+              <button
+                className="btn-reject"
+                onClick={() => handleSubmit('cancelled')}>
+                Cancel
+                <BlockIcon fontSize='20px' />
+              </button>
             )}
           </div>
         </div>

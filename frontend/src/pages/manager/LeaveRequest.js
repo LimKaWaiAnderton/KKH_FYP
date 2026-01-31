@@ -24,7 +24,14 @@ export default function ManagerLeaveRequest() {
     // For filtering leave requests
     const [filterStatus, setFilterStatus] = useState(null);
     const filteredRequests = filterStatus
-        ? leaveRequests.filter(r => r.status === filterStatus)
+        ? leaveRequests.filter(r => {
+            // Default filter for both rejected and cancelled req is "rejected"
+            if (filterStatus === 'rejected') {
+                return r.status === 'rejected' || r.status === 'cancelled';
+            }
+            // For "approved" or "pending", just match exactly
+            return r.status === filterStatus;
+        })
         : leaveRequests;
 
     const handleOpenModal = async (request) => {
@@ -49,7 +56,7 @@ export default function ManagerLeaveRequest() {
             requested: leaveRequests.filter(r => r.status === "requested").length,
             approved: leaveRequests.filter(r => r.status === "approved").length,
             pending: leaveRequests.filter(r => r.status === "pending").length,
-            rejected: leaveRequests.filter(r => r.status === "rejected").length,
+            rejected: leaveRequests.filter(r => r.status === "rejected" || r.status === "cancelled").length,
         });
 
     }, [leaveRequests]);
@@ -76,16 +83,16 @@ export default function ManagerLeaveRequest() {
     const refreshHistory = async (data) => {
         return setLeaveRequests(previousLeaveRequests =>
             previousLeaveRequests.map(leaveRequest =>
-              leaveRequest.id === data.id
-                ? { ...leaveRequest, ...data }
-                : leaveRequest
+                leaveRequest.id === data.id
+                    ? { ...leaveRequest, ...data }
+                    : leaveRequest
             )
-          );
+        );
     }
 
     return (
         <>
-            <Header title="Requests"/>
+            <Header title="Requests" />
             <LeaveReqStatus
                 leaveReqStatusCounts={counts}
                 onStatusClick={setFilterStatus}
