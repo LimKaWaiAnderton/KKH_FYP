@@ -400,3 +400,11 @@ input:checked + .slider:before {
 .form-note p {
   margin: 0;
 }
+
+.clickable-row {
+  cursor: pointer;
+}
+
+.clickable-row:hover {
+  background-color: var(--primary-color-lightblue);
+}
