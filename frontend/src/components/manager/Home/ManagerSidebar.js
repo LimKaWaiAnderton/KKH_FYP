@@ -79,9 +79,9 @@ export default function ManagerSidebar({ expanded, onMouseEnter, onMouseLeave })
 
                 {/* USERS - Manager only */}
                 <div
-                    className={`nav-item ${activeKey === "users" ? "active" : ""}`}
+                    className={`nav-item ${activeKey === "team-list" ? "active" : ""}`}
                 >
-                    <div className="nav-pill" onClick={() => go("/manager/users")}>
+                    <div className="nav-pill" onClick={() => go("/manager/team-list")}>
                         <HiOutlineUser className="icon" />
                         {expanded && <span className="label">Users</span>}
                     </div>
