@@ -246,7 +246,7 @@ export const manageLeaveRequest = async (req, res) => {
     const { id } = req.params;
     const { status } = req.body;
 
-    const validStatuses = ['approved', 'rejected'];
+    const validStatuses = ['approved', 'rejected', 'cancelled'];
     if (!validStatuses.includes(status)) {
         return res.status(400).json({ msg: 'Invalid status value.' });
     }
@@ -271,9 +271,20 @@ export const manageLeaveRequest = async (req, res) => {
 
         const leave = leaveRes.rows[0];
 
-        if (leave.status !== 'pending') {
-            throw new Error('Leave request already processed.');
-        };
+        // 1. Prevent editing already closed tickets
+        if (['rejected', 'cancelled'].includes(leave.status)) {
+            throw new Error('This request has already been processed and closed.');
+        }
+
+        // 2. Specific Rule: "If trying to CANCEL, current status MUST be APPROVED"
+        if (status === 'cancelled' && leave.status !== 'approved') {
+            throw new Error('You can only cancel Approved requests. For Pending requests, please use "Reject".');
+        }
+
+        // 3. Specific Rule: "If trying to REJECT or APPROVE, current status MUST be PENDING"
+        if ((status === 'rejected' || status === 'approved') && leave.status !== 'pending') {
+            throw new Error(`Cannot ${status} a request that is already ${leave.status}.`);
+        }
 
         if (status === 'approved') {
             const balanceRes = await client.query(
@@ -333,13 +344,13 @@ export const manageLeaveRequest = async (req, res) => {
                 HAVING COUNT(s.id) >= 7
                 `,
                 [id]
-              );
-              
-              if (leaveCapRes.rows.length > 0) {
+            );
+
+            if (leaveCapRes.rows.length > 0) {
                 throw new Error(
-                  'Leave limit reached. Maximum 7 staff can be on leave on a given day.'
+                    'Leave limit reached. Maximum 7 staff can be on leave on a given day.'
                 );
-              }              
+            }
 
             await client.query(
                 `
@@ -352,6 +363,16 @@ export const manageLeaveRequest = async (req, res) => {
                 `,
                 [leave.total_days, leave.user_id, leave.leave_type_id]
             );
+        } else if (status === 'cancelled') {
+            await client.query(
+                `UPDATE user_leave_balance
+                SET
+                used_days = used_days - $1,
+                remaining_days = remaining_days + $1
+                WHERE user_id = $2
+                AND leave_type_id = $3`,
+                [leave.total_days, leave.user_id, leave.leave_type_id]
+            )
         }
 
         await client.query(
@@ -399,6 +420,19 @@ export const manageLeaveRequest = async (req, res) => {
                 `,
                 [id]
             );
+        } else if (status === 'cancelled') {
+            await client.query(
+                `
+                DELETE FROM shifts
+                WHERE user_id = $1
+                  AND date BETWEEN
+                    (SELECT start_date FROM leave_requests WHERE id = $2)
+                    AND
+                    (SELECT end_date FROM leave_requests WHERE id = $2)
+                  AND title = (SELECT lt.name FROM leave_requests lr JOIN leave_types lt ON lr.leave_type_id = lt.id WHERE lr.id = $2)
+                `,
+                [leave.user_id, id]
+            );
         }
 
         // Get leave request details for notification
@@ -406,14 +440,20 @@ export const manageLeaveRequest = async (req, res) => {
         const startDate = new Date(leaveDetails.start_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
         const endDate = new Date(leaveDetails.end_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
         const dateRange = startDate === endDate ? startDate : `${startDate} - ${endDate}`;
-        
-        const title = status === 'approved'
-            ? `Your ${leaveDetails.leave_type} has been approved`
-            : `Your ${leaveDetails.leave_type} has been rejected`;
-            
-        const message = status === 'approved'
-            ? `Your ${leaveDetails.leave_type} request for ${dateRange} (${leaveDetails.total_days} day${leaveDetails.total_days > 1 ? 's' : ''}) has been approved.`
-            : `Your ${leaveDetails.leave_type} request for ${dateRange} has been rejected.`;
+
+        let title;
+        let message;
+
+        if (status === 'approved') {
+            title = `Your ${leaveDetails.leave_type} has been approved`;
+            message = `Your ${leaveDetails.leave_type} request for ${dateRange} (${leaveDetails.total_days} day${leaveDetails.total_days > 1 ? 's' : ''}) has been approved.`;
+        } else if (status === 'rejected') {
+            title = `Your ${leaveDetails.leave_type} has been rejected`;
+            message = `Your ${leaveDetails.leave_type} request for ${dateRange} has been rejected.`;
+        } else {
+            title = `Your ${leaveDetails.leave_type} has been cancelled`;
+            message = `Your ${leaveDetails.leave_type} request for ${dateRange} has been cancelled.`;
+        }
 
         await client.query(
             `
