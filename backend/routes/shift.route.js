@@ -8,10 +8,12 @@ import {
   approveShiftRequest,
   rejectShiftRequest,
   publishSchedule,
-  getAllEmployeesWithPublishedShifts
+  getAllEmployeesWithPublishedShifts,
+  deleteShift
 } from "../controllers/shift.controller.js";
 import auth from "../middlewares/auth.middleware.js";
 import { validateRoster } from "../controllers/validate.controller.js";
+
 const shiftRoutes = express.Router();
 
 shiftRoutes.get("/", auth, getMyShiftRequests);
@@ -24,5 +26,6 @@ shiftRoutes.patch("/:requestId/approve", auth, approveShiftRequest);
 shiftRoutes.patch("/:requestId/reject", auth, rejectShiftRequest);
 shiftRoutes.post("/publish", auth, publishSchedule);
 shiftRoutes.post("/validate", validateRoster);
+shiftRoutes.delete('/:id', auth, deleteShift);
 
 export default shiftRoutes;
