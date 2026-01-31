@@ -24,8 +24,9 @@ export default function LeaveBalance() {
     const leaveBalance_Rows = leaveBalance.map((row) => ({
         id: row.id,
         leaveType: row.leave_type,
-        remainingDays: row.remaining_days,
-        annualQuota: row.total_quota,
+        // Wrap these in Number() or parseFloat() to strip .0
+        remainingDays: Number(row.remaining_days),
+        annualQuota: Number(row.total_quota),
     }));
 
     return (

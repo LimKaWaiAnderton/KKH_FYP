@@ -1,5 +1,5 @@
 import express from "express";
-import { login, me, addUser, deleteUser, getAllUsers, updateUserRole, forgotPassword, resetPassword, updateUser } from "../controllers/auth.controller.js";
+import { login, me, addUser, deleteUser, getAllUsers, updateUserRole, forgotPassword, resetPassword, updateUser, getUserById } from "../controllers/auth.controller.js";
 import auth from "../middlewares/auth.middleware.js";
 
 const router = express.Router();
@@ -15,6 +15,9 @@ router.post("/reset-password", resetPassword);
 
 // Get logged-in user (protected)
 router.get("/me", auth, me);
+
+// Get user by ID (protected)
+router.get("/user/:id", auth, getUserById);
 
 // Get all users - for Team List (protected)
 router.get("/users", auth, getAllUsers);

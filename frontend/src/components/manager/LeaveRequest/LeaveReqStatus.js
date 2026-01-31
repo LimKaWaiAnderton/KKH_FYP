@@ -39,7 +39,7 @@ export default function LeaveReqStatus({ leaveReqStatusCounts, onStatusClick, fi
                 <h2>{leaveReqStatusCounts.rejected}</h2>
                 <div className="leave-req-status">
                     <HighlightOffIcon sx={{ color: "var(--status-rejected)" }} />
-                    <p>Rejected</p>
+                    <p>Rejected/Cancelled</p>
                 </div>
             </div>
         </div>

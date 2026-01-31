@@ -46,7 +46,7 @@ CREATE TABLE public.leave_requests (
     created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at timestamp without time zone,
     CONSTRAINT chk_leave_dates CHECK ((end_date >= start_date)),
-    CONSTRAINT chk_leave_status CHECK (((status)::text = ANY ((ARRAY['pending'::character varying, 'approved'::character varying, 'rejected'::character varying])::text[])))
+    CONSTRAINT chk_leave_status CHECK (((status)::text = ANY ((ARRAY['pending'::character varying, 'approved'::character varying, 'rejected'::character varying, 'cancelled'::character varying] )::text[])))
 );
 
 ALTER TABLE public.leave_requests ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
@@ -195,10 +195,12 @@ CREATE TABLE public.user_leave_balance (
     id bigint NOT NULL,
     user_id uuid NOT NULL,
     leave_type_id bigint NOT NULL,
-    used_days integer DEFAULT 0 NOT NULL,
-    remaining_days integer NOT NULL,
-    total_quota integer NOT NULL,
+    used_days numeric(10, 1) DEFAULT 0 NOT NULL, 
+    remaining_days numeric(10, 1) NOT NULL,      
+    total_quota numeric(10, 1) NOT NULL,         
     created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    updated_at timestamp without time zone,
+    adjustment_reason character varying(255),
     CONSTRAINT chk_leave_balance CHECK (((used_days >= 0) AND (remaining_days >= 0) AND (total_quota >= 0) AND ((used_days + remaining_days) = total_quota)))
 );
 

@@ -20,6 +20,7 @@ import './App.css';
 import TeamList from "./pages/manager/TeamList";
 import AddUser from "./pages/manager/AddUser";
 import EditUser from "./pages/manager/EditUser";
+import ViewUser from './pages/manager/ViewUser';
 
 
 function AppContent() {
@@ -86,6 +87,7 @@ function AppContent() {
           <Route path="/manager/users" element={<ProtectedRoute requiredRole="admin"><TeamList /></ProtectedRoute>} />
           <Route path="/manager/team-list" element={<ProtectedRoute requiredRole="admin"><TeamList /></ProtectedRoute>} />
           <Route path="/manager/add-user" element={<ProtectedRoute requiredRole="admin"><AddUser /></ProtectedRoute>} />
+          <Route path="/manager/view-user/:userId" element={<ProtectedRoute requiredRole="admin"><ViewUser /></ProtectedRoute>} />
           <Route path="/manager/edit-user/:userId" element={<ProtectedRoute requiredRole="admin"><EditUser /></ProtectedRoute>} />
           <Route path="/manager/settings" element={<ProtectedRoute requiredRole="admin"><Settings /></ProtectedRoute>} />
           <Route path="/manager/*" element={<></>} />

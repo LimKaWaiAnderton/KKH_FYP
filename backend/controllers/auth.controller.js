@@ -654,3 +654,25 @@ Do not reply to this email.`;
     return { success: false, error: err.message };
   }
 };
+
+export const getUserById = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+      const userResult = await pool.query(`
+          SELECT u.id, u.first_name, u.last_name, u.email, u.mobile_number, u.department_id, d.name as department_name
+          FROM users u
+          JOIN departments d ON u.department_id = d.id
+          WHERE u.id = $1`,
+          [id]);
+
+      if (userResult.rows.length === 0) {
+          return res.status(404).json({ msg: 'User not found' });
+      }
+
+      res.json(userResult.rows[0]);
+  } catch (error) {
+      console.error('Error fetching user by ID:', error);
+      res.status(500).json({ msg: 'Server error' });
+  }
+};
