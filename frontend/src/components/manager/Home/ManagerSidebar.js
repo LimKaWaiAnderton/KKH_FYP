@@ -24,8 +24,8 @@ export default function ManagerSidebar({ expanded, onMouseEnter, onMouseLeave })
         activeKey = "home";
     } else if (pathname === "/manager/schedule") {
         activeKey = "schedule";
-    } else if (pathname === "/manager/users") {
-        activeKey = "users"; // Manager-only: Users management
+    } else if (pathname === "/manager/team-list") {
+        activeKey = "team-list"; // Manager-only: Users management
     } else if (pathname === "/manager/settings") {
         activeKey = "settings";
     } else if (pathname.startsWith("/manager/requests/leave")) {
@@ -106,6 +106,7 @@ export default function ManagerSidebar({ expanded, onMouseEnter, onMouseLeave })
                         className="nav-pill"
                         onClick={() => {
                             localStorage.removeItem("token");
+                            localStorage.removeItem("role");
                             navigate("/");
                         }}
                     >

@@ -12,11 +12,26 @@ const TeamList = () => {
 
   const [activeTab, setActiveTab] = useState('members');
   const [allUsers, setAllUsers] = useState([]); // Store all users from backend
+  const [currentUser, setCurrentUser] = useState(null); // Store current logged-in user's ID
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [searchQuery, setSearchQuery] = useState(''); // Add search query state
   
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
+
+  // Fetch current user's info
+  const fetchCurrentUser = async () => {
+    try {
+      const res = await authFetch('http://localhost:5000/auth/me');
+      if (!res.ok) throw new Error("Failed to fetch current user");
+      const data = await res.json();
+      setCurrentUser(data.id);
+      console.log('Current user ID:', data.id);
+    } catch (err) {
+      console.error("Error fetching current user:", err);
+    }
+  };
 
   // Fetch users from backend
   const fetchUsers = async () => {
@@ -45,6 +60,7 @@ const TeamList = () => {
   // Fetch users on component mount and when returning from AddUser
   useEffect(() => {
     console.log('TeamList mounted or refresh triggered');
+    fetchCurrentUser();
     fetchUsers();
     
     // Clear the refresh flag from navigation state to prevent unnecessary re-fetches
@@ -61,12 +77,27 @@ const TeamList = () => {
   console.log('Members:', members.length);
   console.log('Admins:', admins.length);
 
-  // Get current tab data
+  // Get current tab data and filter by search query
   const currentTabData = activeTab === 'members' ? members : admins;
-  const totalPages = Math.ceil(currentTabData.length / itemsPerPage);
+  
+  // Filter users based on search query
+  const filteredData = currentTabData.filter(user => {
+    if (!searchQuery) return true;
+    
+    const query = searchQuery.toLowerCase();
+    const fullName = `${user.first_name} ${user.last_name}`.toLowerCase();
+    const email = user.email.toLowerCase();
+    const department = (user.department_name || '').toLowerCase();
+    
+    return fullName.includes(query) || 
+           email.includes(query) || 
+           department.includes(query);
+  });
+
+  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = currentTabData.slice(indexOfFirstItem, indexOfLastItem);
+  const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
 
   console.log('Current tab:', activeTab, '| Current items:', currentItems.length);
 
@@ -74,6 +105,11 @@ const TeamList = () => {
   useEffect(() => {
     setCurrentPage(1);
   }, [activeTab]);
+
+  // Reset pagination when search query changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery]);
 
   // Pagination handlers
   const handleNext = () => {
@@ -87,6 +123,11 @@ const TeamList = () => {
   // Handler for Add New User button - navigates to add-user page
   const handleAddUserClick = () => {
     navigate('/manager/add-user');
+  };
+
+  // Handler to switch to members tab (called when admin is demoted)
+  const handleSwitchToMembers = () => {
+    setActiveTab('members');
   };
 
   if (loading) {
@@ -139,20 +180,31 @@ const TeamList = () => {
         </div>
 
         <div className="search-bar-wrapper">
-          <input type="text" placeholder="Search.." className="search-input"/>
+          <input 
+            type="text" 
+            placeholder="Search by name, email, or department..." 
+            className="search-input"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
         </div>
 
         {/* Display current tab data or empty message */}
-        {currentTabData.length === 0 ? (
+        {filteredData.length === 0 ? (
           <div style={{ padding: '20px', textAlign: 'center', color: '#666' }}>
-            No {activeTab === 'members' ? 'members' : 'admins'} found.
+            {searchQuery ? `No results found for "${searchQuery}"` : `No ${activeTab === 'members' ? 'members' : 'admins'} found.`}
           </div>
         ) : (
           <>
             {activeTab === 'members' ? (
-              <TeamListEmployee data={currentItems} />
+              <TeamListEmployee data={currentItems} onUserUpdated={fetchUsers} />
             ) : (
-              <TeamListAdmin data={currentItems} />
+              <TeamListAdmin 
+                data={currentItems} 
+                currentUserId={currentUser}
+                onUserUpdated={fetchUsers}
+                onSwitchToMembers={handleSwitchToMembers}
+              />
             )}
 
             {/* Pagination controls - only show if there are multiple pages */}

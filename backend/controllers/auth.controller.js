@@ -2,6 +2,7 @@ import pool from "../db/pool.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import nodemailer from "nodemailer";
+import crypto from "crypto";
 
 // Log environment variables for debugging (on server startup)
 console.log('\n🔍 Email Configuration Check:');
@@ -172,7 +173,7 @@ export const login = async (req, res) => {
 
     // 1. Find user
     const result = await pool.query(
-      `SELECT id, email, password_hash, role_id
+      `SELECT id, email, password_hash, role_id, is_active
        FROM users
        WHERE email = $1`,
       [email]
@@ -184,7 +185,12 @@ export const login = async (req, res) => {
 
     const user = result.rows[0];
 
-    // 2. Check password
+    // 2. Check if account is active
+    if (!user.is_active) {
+      return res.status(403).json({ message: "Account has been deactivated. Please contact your administrator." });
+    }
+
+    // 3. Check password
     const match = await bcrypt.compare(password, user.password_hash);
     if (!match) {
       return res.status(401).json({ message: "Invalid credentials" });
@@ -272,10 +278,39 @@ export const addUser = async (req, res) => {
     console.log(`\n👤 Creating user: ${first_name} ${last_name} (${email})`);
     console.log(`🔑 Generated temporary password (length: ${tempPassword.length})`);
 
-    // 6. Send welcome email with temporary password
+    // 6. Insert default leave balances if user is an employee (role_id = 2)
+    if (Number(role_id) === 2) {
+      try {
+        await pool.query(
+          `INSERT INTO user_leave_balance (user_id, leave_type_id, used_days, remaining_days, total_quota)
+           SELECT $1, id, 0, 
+             CASE name
+               WHEN 'Annual Leave' THEN 7
+               WHEN 'Sick Leave' THEN 14
+               WHEN 'Childcare Leave' THEN 7
+               ELSE 0
+             END,
+             CASE name
+               WHEN 'Annual Leave' THEN 7
+               WHEN 'Sick Leave' THEN 14
+               WHEN 'Childcare Leave' THEN 7
+               ELSE 0
+             END
+           FROM leave_types
+           WHERE name IN ('Annual Leave', 'Sick Leave', 'Childcare Leave')`,
+          [newUser.id]
+        );
+        console.log(`✅ Default leave balances created for new employee`);
+      } catch (leaveErr) {
+        console.error("Error creating default leave balances:", leaveErr);
+        // Don't throw - user creation was successful, just log the error
+      }
+    }
+
+    // 7. Send welcome email with temporary password
     const emailResult = await sendWelcomeEmail(email, first_name, tempPassword);
 
-    // 7. Return success response with user data (NOT the password)
+    // 8. Return success response with user data (NOT the password)
     let message = "User added successfully.";
     if (emailResult.success) {
       message += " Welcome email sent to " + email;
@@ -300,12 +335,116 @@ export const addUser = async (req, res) => {
 export const deleteUser = async (req, res) => {
   try {
     const { id } = req.params;
-    await pool.query(
-      `UPDATE users SET is_active = false WHERE id = $1`, 
+    
+    // Update user's is_active to false
+    const result = await pool.query(
+      `UPDATE users SET is_active = false WHERE id = $1 RETURNING id, first_name, last_name, email, is_active`, 
       [id]
     );
-    res.json({ message: "User deactivated successfully" });
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const deactivatedUser = result.rows[0];
+    res.json({ 
+      message: "User deactivated successfully",
+      user: deactivatedUser
+    });
   } catch (err) {
+    console.error("Delete user error:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+// Update user role (for admin access toggle)
+export const updateUserRole = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { role_id } = req.body;
+
+    // Validate role_id
+    if (role_id !== 1 && role_id !== 2 && role_id !== '1' && role_id !== '2') {
+      return res.status(400).json({ message: "Invalid role_id. Must be 1 (admin) or 2 (user)" });
+    }
+
+    // Update the user's role
+    const result = await pool.query(
+      `UPDATE users SET role_id = $1 WHERE id = $2 RETURNING id, first_name, last_name, role_id`,
+      [role_id, id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.json({ 
+      message: "User role updated successfully",
+      user: result.rows[0]
+    });
+  } catch (err) {
+    console.error("Error updating user role:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+// Update user information
+export const updateUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { first_name, last_name, email, mobile_number, department_id, role_id } = req.body;
+
+    // Build dynamic update query
+    const updates = [];
+    const values = [];
+    let paramCount = 1;
+
+    if (first_name !== undefined) {
+      updates.push(`first_name = $${paramCount++}`);
+      values.push(first_name);
+    }
+    if (last_name !== undefined) {
+      updates.push(`last_name = $${paramCount++}`);
+      values.push(last_name);
+    }
+    if (email !== undefined) {
+      updates.push(`email = $${paramCount++}`);
+      values.push(email);
+    }
+    if (mobile_number !== undefined) {
+      updates.push(`mobile_number = $${paramCount++}`);
+      values.push(mobile_number);
+    }
+    if (department_id !== undefined) {
+      updates.push(`department_id = $${paramCount++}`);
+      values.push(department_id);
+    }
+    if (role_id !== undefined) {
+      updates.push(`role_id = $${paramCount++}`);
+      values.push(role_id);
+    }
+
+    if (updates.length === 0) {
+      return res.status(400).json({ message: "No fields to update" });
+    }
+
+    // Add user ID as final parameter
+    values.push(id);
+
+    // Execute update query
+    const query = `UPDATE users SET ${updates.join(', ')} WHERE id = $${paramCount} RETURNING *`;
+    const result = await pool.query(query, values);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.json({ 
+      message: "User updated successfully",
+      user: result.rows[0]
+    });
+  } catch (err) {
+    console.error("Error updating user:", err);
     res.status(500).json({ message: "Server error" });
   }
 };
@@ -315,7 +454,7 @@ export const getAllUsers = async (req, res) => {
   try {
     // This query joins with departments and roles to get readable names
     const result = await pool.query(
-      `SELECT u.id, u.first_name, u.last_name, u.email, u.role_id, u.mobile_number, u.is_active, d.name as department_name 
+      `SELECT u.id, u.first_name, u.last_name, u.email, u.role_id, u.mobile_number, u.is_active, u.department_id, d.name as department_name 
        FROM users u
        LEFT JOIN departments d ON u.department_id = d.id`
     );
@@ -323,5 +462,195 @@ export const getAllUsers = async (req, res) => {
   } catch (err) {
     console.error("Error fetching users:", err);
     res.status(500).json({ message: "Server error" });
+  }
+};
+
+/**
+ * POST /auth/forgot-password
+ * Generate reset token and send email with reset link
+ */
+export const forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({ message: "Email is required" });
+    }
+
+    // 1. Check if user exists
+    const userResult = await pool.query(
+      `SELECT id, first_name, email FROM users WHERE email = $1`,
+      [email]
+    );
+
+    if (userResult.rows.length === 0) {
+      // Don't reveal if email exists (security best practice)
+      return res.json({ 
+        message: "If an account with that email exists, a password reset link has been sent." 
+      });
+    }
+
+    const user = userResult.rows[0];
+
+    // 2. Generate secure random token
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    const expiresAt = new Date(Date.now() + 60 * 60 * 1000); // 1 hour from now
+
+    // 3. Store token in database
+    await pool.query(
+      `INSERT INTO password_reset_tokens (user_id, token, expires_at)
+       VALUES ($1, $2, $3)`,
+      [user.id, resetToken, expiresAt]
+    );
+
+    // 4. Send reset email
+    const resetLink = `http://localhost:3000/reset-password?token=${resetToken}`;
+    const emailResult = await sendPasswordResetEmail(user.email, user.first_name, resetLink);
+
+    console.log(`🔑 Password reset requested for: ${user.email}`);
+    if (emailResult.success) {
+      console.log(`✅ Reset email sent successfully\n`);
+    } else {
+      console.log(`⚠️  Email failed. Reset link: ${resetLink}\n`);
+    }
+
+    res.json({ 
+      message: "If an account with that email exists, a password reset link has been sent.",
+      emailSent: emailResult.success
+    });
+  } catch (err) {
+    console.error("Forgot password error:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+/**
+ * POST /auth/reset-password
+ * Verify token and update password
+ */
+export const resetPassword = async (req, res) => {
+  try {
+    const { token, newPassword } = req.body;
+
+    if (!token || !newPassword) {
+      return res.status(400).json({ message: "Token and new password are required" });
+    }
+
+    if (newPassword.length < 8) {
+      return res.status(400).json({ message: "Password must be at least 8 characters" });
+    }
+
+    // 1. Find valid token
+    const tokenResult = await pool.query(
+      `SELECT user_id, expires_at, used 
+       FROM password_reset_tokens 
+       WHERE token = $1`,
+      [token]
+    );
+
+    if (tokenResult.rows.length === 0) {
+      return res.status(400).json({ message: "Invalid or expired reset token" });
+    }
+
+    const resetToken = tokenResult.rows[0];
+
+    // 2. Check if token is already used
+    if (resetToken.used) {
+      return res.status(400).json({ message: "This reset link has already been used" });
+    }
+
+    // 3. Check if token is expired
+    if (new Date() > new Date(resetToken.expires_at)) {
+      return res.status(400).json({ message: "Reset token has expired. Please request a new one." });
+    }
+
+    // 4. Hash new password
+    const password_hash = await bcrypt.hash(newPassword, 10);
+
+    // 5. Update user password
+    await pool.query(
+      `UPDATE users SET password_hash = $1 WHERE id = $2`,
+      [password_hash, resetToken.user_id]
+    );
+
+    // 6. Mark token as used
+    await pool.query(
+      `UPDATE password_reset_tokens SET used = true WHERE token = $1`,
+      [token]
+    );
+
+    console.log(`✅ Password reset successful for user ID: ${resetToken.user_id}\n`);
+
+    res.json({ message: "Password reset successful. You can now login with your new password." });
+  } catch (err) {
+    console.error("Reset password error:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+// Helper function to send password reset email
+const sendPasswordResetEmail = async (email, firstName, resetLink) => {
+  if (!transporter || !isEmailConfigured()) {
+    console.log('\n' + '='.repeat(70));
+    console.log('📧 EMAIL NOT CONFIGURED - RESET LINK LOGGED TO CONSOLE');
+    console.log('='.repeat(70));
+    console.log(`👤 User: ${firstName}`);
+    console.log(`📧 Email: ${email}`);
+    console.log(`🔗 Reset Link: ${resetLink}`);
+    console.log('='.repeat(70) + '\n');
+    console.warn('⚠️  Configure EMAIL_USER and EMAIL_PASS in .env to send actual emails.\n');
+    return { success: false, reason: 'Email not configured' };
+  }
+
+  try {
+    console.log(`\n📧 Sending password reset email to: ${email}`);
+    
+    const emailText = `Password Reset Request
+
+Dear ${firstName},
+
+You have requested to reset your password for your KKH Portal account.
+
+Click the link below to reset your password (valid for 1 hour):
+${resetLink}
+
+If you did not request this password reset, please ignore this email and your password will remain unchanged.
+
+For security reasons, this link will expire in 1 hour.
+
+---
+KKH Administration Team
+Do not reply to this email.`;
+
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: "Password Reset Request - KKH Portal",
+      text: emailText,
+      html: null,
+    };
+
+    const info = await transporter.sendMail(mailOptions);
+    
+    console.log(`✅ Password reset email sent successfully!`);
+    console.log(`   Message ID: ${info.messageId}\n`);
+    
+    return { success: true, messageId: info.messageId };
+  } catch (err) {
+    console.error(`\n❌ FAILED TO SEND PASSWORD RESET EMAIL`);
+    console.error(`   Recipient: ${email}`);
+    console.error(`   Error: ${err.message}\n`);
+    
+    // Fallback: Log reset link to console
+    console.log('='.repeat(70));
+    console.log('📧 FALLBACK: RESET LINK LOGGED TO CONSOLE');
+    console.log('='.repeat(70));
+    console.log(`👤 User: ${firstName}`);
+    console.log(`📧 Email: ${email}`);
+    console.log(`🔗 Reset Link: ${resetLink}`);
+    console.log('='.repeat(70) + '\n');
+    console.warn('⚠️  Manually share this link with the user.\n');
+    
+    return { success: false, error: err.message };
   }
 };

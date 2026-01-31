@@ -81,9 +81,19 @@ export default function AddShiftModal({
 
     const result = await onSave(payload);
 
-    // NEW — handle week-limit inline red box
+    // Handle different error types
     if (result?.error === "week-limit") {
       setError("You can only request UP TO 5 shifts per week.");
+      return;
+    }
+
+    if (result?.error === "custom" && result?.message) {
+      setError(result.message);
+      return;
+    }
+
+    if (result?.error) {
+      setError("Failed to submit shift request. Please try again.");
       return;
     }
   };

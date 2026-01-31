@@ -1,4 +1,5 @@
 import pool from "../db/pool.js";
+import { checkRosterRules } from "./validate.controller.js"; // IMPORT VALIDATOR
 
 /* =========================
    GET MY SHIFT REQUESTS
@@ -40,6 +41,26 @@ export const createShiftRequest = async (req, res) => {
   try {
     const userId = req.user.id;
     const { date, title, start_time, end_time, shift_type_id } = req.body;
+
+    // Check if user has approved leave on this date
+    const leaveCheck = await pool.query(
+      `
+      SELECT id, title
+      FROM shifts
+      WHERE user_id = $1 
+        AND date = $2 
+        AND title IS NOT NULL 
+        AND shift_type_id IS NULL
+        AND published = true
+      `,
+      [userId, date]
+    );
+
+    if (leaveCheck.rows.length > 0) {
+      return res.status(400).json({
+        message: `Cannot request shift on this date. You have an approved ${leaveCheck.rows[0].title} scheduled.`
+      });
+    }
 
     const result = await pool.query(
       `
@@ -123,12 +144,24 @@ export const getAllUsersWithPendingShifts = async (req, res) => {
         st.name as shift_type_name,
         COALESCE(s.color_hex, st.color_hex) as color_hex,
         NULL as shift_request_id,
-        NULL as request_status
+        CASE 
+          WHEN EXISTS (
+            SELECT 1 FROM shift_requests sr 
+            WHERE sr.user_id = s.user_id 
+              AND sr.date = s.date
+              AND COALESCE(sr.shift_type_id, -1) = COALESCE(s.shift_type_id, -1)
+              AND COALESCE(sr.title, '') = COALESCE(s.title, '')
+              AND sr.status = 'pending'
+          ) AND s.published = false 
+          THEN 'approved'
+          ELSE NULL
+        END as request_status
       FROM users u
       INNER JOIN departments d ON u.department_id = d.id
       LEFT JOIN shifts s ON u.id = s.user_id
       LEFT JOIN shift_types st ON s.shift_type_id = st.id
       WHERE u.role_id = 2
+        AND u.is_active = true
       
       UNION ALL
       
@@ -155,6 +188,16 @@ export const getAllUsersWithPendingShifts = async (req, res) => {
       INNER JOIN shift_requests sr ON u.id = sr.user_id
       LEFT JOIN shift_types st ON sr.shift_type_id = st.id
       WHERE u.role_id = 2
+        AND u.is_active = true
+        AND sr.status = 'pending'
+        AND NOT EXISTS (
+          SELECT 1 FROM shifts s
+          WHERE s.user_id = sr.user_id
+            AND s.date = sr.date
+            AND COALESCE(s.shift_type_id, -1) = COALESCE(sr.shift_type_id, -1)
+            AND COALESCE(s.title, '') = COALESCE(sr.title, '')
+            AND s.published = false
+        )
       
       ORDER BY department_name, last_name, first_name, date
       `
@@ -189,6 +232,27 @@ export const approveShiftRequest = async (req, res) => {
     }
 
     const request = requestResult.rows[0];
+
+    // Check if user has approved leave on this date
+    const leaveCheck = await pool.query(
+      `
+      SELECT id, title
+      FROM shifts
+      WHERE user_id = $1 
+        AND date = $2 
+        AND title IS NOT NULL 
+        AND shift_type_id IS NULL
+        AND published = true
+      `,
+      [request.user_id, request.date]
+    );
+
+    if (leaveCheck.rows.length > 0) {
+      await pool.query('ROLLBACK');
+      return res.status(400).json({
+        message: `Cannot approve shift request. User has an approved ${leaveCheck.rows[0].title} on this date.`
+      });
+    }
 
     // Move to shifts table with published=false
     // Keep shift_request status as 'pending' so employee doesn't see approval yet
@@ -252,8 +316,27 @@ export const rejectShiftRequest = async (req, res) => {
    ========================= */
 export const publishSchedule = async (req, res) => {
   try {
-    const { startDate, endDate } = req.body;
+    const { startDate, endDate, notifyUsers, notificationMessage } = req.body;
 
+    // Use the provided startDate and endDate directly (inclusive)
+    const from = startDate;
+    const to = endDate;
+
+    // --- STEP 1: VALIDATE RULES BEFORE PUBLISHING ---
+    console.log(`Validating roster before publish: ${from} to ${to}`);
+    const violations = await checkRosterRules(from, to);
+
+    if (violations.length > 0) {
+      // STOP HERE IF RULES ARE BROKEN
+      return res.status(400).json({
+        message: "Cannot publish! Roster has rule violations.",
+        violationCount: violations.length,
+        violations: violations,
+        status: "FAIL"
+      });
+    }
+
+    // --- STEP 2: PROCEED TO PUBLISH ---
     // Start transaction
     await pool.query('BEGIN');
 
@@ -272,7 +355,7 @@ export const publishSchedule = async (req, res) => {
         AND sr.date >= $1
         AND sr.date <= $2
       `,
-      [startDate, endDate]
+      [from, to]
     );
 
     // Update shift_requests to 'approved' so employee can now see the approval
@@ -295,16 +378,39 @@ export const publishSchedule = async (req, res) => {
         AND date <= $2
       RETURNING *
       `,
-      [startDate, endDate]
+      [from, to]
     );
+
+    // 3. Send notifications to all affected employees
+    if (notifyUsers && result.rows.length > 0) {
+      // Get unique user IDs from published shifts
+      const userIds = [...new Set(result.rows.map(shift => shift.user_id))];
+
+      const message = notificationMessage || 'Your schedule has been updated with new shifts';
+      const formattedStartDate = new Date(startDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+      const formattedEndDate = new Date(endDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+      const title = `Schedule for ${formattedStartDate} - ${formattedEndDate} has been released.`;
+
+      // Create notifications for all affected users
+      for (const userId of userIds) {
+        await pool.query(
+          `
+          INSERT INTO notifications (user_id, title, message, type)
+          VALUES ($1, $2, $3, $4)
+          `,
+          [userId, title, message, 'info']
+        );
+      }
+    }
 
     // Commit transaction
     await pool.query('COMMIT');
 
-    res.json({ 
-      message: "Schedule published successfully", 
+    res.json({
+      message: "Schedule published successfully",
       publishedCount: result.rows.length,
-      approvedRequestsCount: approvedCount
+      approvedRequestsCount: approvedCount,
+      status: "SUCCESS"
     });
   } catch (err) {
     await pool.query('ROLLBACK');
@@ -335,12 +441,14 @@ export const getAllEmployeesWithPublishedShifts = async (req, res) => {
         s.published,
         s.shift_type_id,
         st.name as shift_type_name,
-        COALESCE(s.color_hex, st.color_hex) as color_hex
+        COALESCE(s.color_hex, st.color_hex) as color_hex,
+        COALESCE(s.is_rrt, false) as is_rrt
       FROM users u
       INNER JOIN departments d ON u.department_id = d.id
       LEFT JOIN shifts s ON u.id = s.user_id AND s.published = true
       LEFT JOIN shift_types st ON s.shift_type_id = st.id
       WHERE u.role_id = 2
+        AND u.is_active = true
       ORDER BY d.name, u.last_name, u.first_name, s.date
       `
     );

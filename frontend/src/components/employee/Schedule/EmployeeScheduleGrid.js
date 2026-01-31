@@ -26,15 +26,19 @@ export default function EmployeeScheduleGrid({ weekDays, viewOption, searchTerm,
             
             // Only add published shifts
             if (entry.shift_id && entry.published) {
+                // Use shift_type_name directly (e.g., "RRT" for RRT shifts, "PM" for regular PM)
+                const displayType = entry.title || entry.shift_type_name;
+                
                 let shiftInfo = {
                     date: entry.date,
-                    type: entry.title || entry.shift_type_name,
+                    type: displayType,
                     // Custom shifts (no shift_type_id) get white background
                     color: entry.shift_type_id ? `${entry.color_hex}30` : '#FFFFFF',
                     borderColor: entry.color_hex || '#000000',
                     textColor: entry.shift_type_id ? undefined : '#000000', // Black text for custom shifts
                     time: entry.start_time && entry.end_time ? formatTimeRange(entry.start_time, entry.end_time) : '',
-                    isCustom: !entry.shift_type_id  // Flag for custom styling
+                    isCustom: !entry.shift_type_id,  // Flag for custom styling
+                    isRrt: entry.is_rrt || false // Flag for RRT shifts
                 };
                 
                 employee.shifts.push(shiftInfo);
@@ -78,7 +82,7 @@ export default function EmployeeScheduleGrid({ weekDays, viewOption, searchTerm,
         const deptEmployees = employees.filter(emp => emp.department === dept);
         const working = deptEmployees.filter(emp => {
             const shift = getShiftForDate(emp, date);
-            return shift && !['Annual Leave', 'Medical Leave', 'Compassionate Leave', 'OFF'].includes(shift.type);
+            return shift && !['Annual Leave', 'Medical Leave', 'Compassionate Leave', 'Childcare Leave', 'Sick Leave', 'Maternity Leave', 'Paternity Leave', 'OFF'].includes(shift.type);
         }).length;
         return `${working}/${deptEmployees.length}`;
     };
@@ -127,7 +131,7 @@ export default function EmployeeScheduleGrid({ weekDays, viewOption, searchTerm,
                                                 <div key={dayIndex} className="shift-cell">
                                                     {shift && (
                                                         <div 
-                                                            className="shift-box"
+                                                            className={`shift-box ${shift.isRrt ? 'rrt-shift' : ''}`}
                                                             style={{
                                                                 backgroundColor: shift.color,
                                                                 borderLeft: `4px solid ${shift.borderColor}`,

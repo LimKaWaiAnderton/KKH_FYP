@@ -1,19 +1,22 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { HiOutlineClipboardList, HiOutlineCalendar, HiOutlineClock } from 'react-icons/hi';
 import '../../../styles/EmployeeQuickAction.css';
 
 export default function EmployeeQuickAction() {
+    const navigate = useNavigate();
+
     // Handle button clicks
     const handleRequestLeave = () => {
-        console.log('Request leave clicked');
+        navigate('/employee/requests/leave');
     };
 
     const handleRequestShift = () => {
-        console.log('Request shift clicked');
+        navigate('/employee/requests/shift');
     };
 
     const handleViewShifts = () => {
-        console.log('View shifts clicked');
+        navigate('/employee/schedule');
     };
 
     return (

@@ -401,17 +401,26 @@ export const manageLeaveRequest = async (req, res) => {
             );
         }
 
-        const message =
-            status === 'approved'
-                ? `Your leave request has been approved.`
-                : `Your leave request has been rejected.`;
+        // Get leave request details for notification
+        const leaveDetails = updatedLeaveReq.rows[0];
+        const startDate = new Date(leaveDetails.start_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+        const endDate = new Date(leaveDetails.end_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+        const dateRange = startDate === endDate ? startDate : `${startDate} - ${endDate}`;
+        
+        const title = status === 'approved'
+            ? `Your ${leaveDetails.leave_type} has been approved`
+            : `Your ${leaveDetails.leave_type} has been rejected`;
+            
+        const message = status === 'approved'
+            ? `Your ${leaveDetails.leave_type} request for ${dateRange} (${leaveDetails.total_days} day${leaveDetails.total_days > 1 ? 's' : ''}) has been approved.`
+            : `Your ${leaveDetails.leave_type} request for ${dateRange} has been rejected.`;
 
         await client.query(
             `
             INSERT INTO notifications (user_id, title, message, type)
             VALUES ($1, $2, $3, $4)
             `,
-            [leave.user_id, 'Leave Request Update', message, 'info']
+            [leave.user_id, title, message, 'info']
         );
 
         await client.query('COMMIT');

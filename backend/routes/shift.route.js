@@ -11,7 +11,7 @@ import {
   getAllEmployeesWithPublishedShifts
 } from "../controllers/shift.controller.js";
 import auth from "../middlewares/auth.middleware.js";
-
+import { validateRoster } from "../controllers/validate.controller.js";
 const shiftRoutes = express.Router();
 
 shiftRoutes.get("/", auth, getMyShiftRequests);
@@ -23,5 +23,6 @@ shiftRoutes.get("/employees-with-published", auth, getAllEmployeesWithPublishedS
 shiftRoutes.patch("/:requestId/approve", auth, approveShiftRequest);
 shiftRoutes.patch("/:requestId/reject", auth, rejectShiftRequest);
 shiftRoutes.post("/publish", auth, publishSchedule);
+shiftRoutes.post("/validate", validateRoster);
 
 export default shiftRoutes;

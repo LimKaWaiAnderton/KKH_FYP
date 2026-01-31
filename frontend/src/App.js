@@ -6,6 +6,8 @@ import EmployeeLeaveRequest from "./pages/employee/LeaveRequest";
 import ManagerLeaveRequest from "./pages/manager/LeaveRequest";
 import ShiftRequestPage from "./pages/employee/ShiftRequestPage";
 import Login from "./pages/auth/Login";
+import ForgotPassword from "./pages/auth/ForgotPassword";
+import ResetPassword from "./pages/auth/ResetPassword";
 import ProtectedRoute from "./components/ProtectedRoute";
 import ManagerHome from './pages/manager/ManagerHome';
 import ManagerSchedule from './pages/manager/ManagerSchedule';
@@ -13,15 +15,19 @@ import EmployeeHome from './pages/employee/EmployeeHome';
 import EmployeeSchedule from './pages/employee/EmployeeSchedule';
 import EmployeeSidebar from './components/EmployeeSideBar/EmployeeSideBar';
 import ManagerSidebar from './components/manager/Home/ManagerSidebar';
+import Settings from './components/Settings';
 import './App.css';
 import TeamList from "./pages/manager/TeamList";
 import AddUser from "./pages/manager/AddUser";
-import MainLayout from "./layouts/MainLayout";
+import EditUser from "./pages/manager/EditUser";
 
 
 function AppContent() {
   const location = useLocation();
-  const isLoginPage = location.pathname === '/';
+  const isLoginPage = location.pathname === '/' || location.pathname === '/login';
+  const isForgotPasswordPage = location.pathname === '/forgot-password';
+  const isResetPasswordPage = location.pathname === '/reset-password';
+  const isAuthPage = isLoginPage || isForgotPasswordPage || isResetPasswordPage;
   const isEmployeePage = location.pathname.startsWith('/employee');
   const isManagerPage = location.pathname.startsWith('/manager');
 
@@ -44,14 +50,14 @@ function AppContent() {
 
   return (
     <div style={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
-      {!isLoginPage && isEmployeePage && (
+      {!isAuthPage && isEmployeePage && (
         <EmployeeSidebar
           expanded={expanded}
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
         />
       )}
-      {!isLoginPage && isManagerPage && (
+      {!isAuthPage && isManagerPage && (
         <ManagerSidebar
           expanded={expanded}
           onMouseEnter={handleMouseEnter}
@@ -61,15 +67,27 @@ function AppContent() {
       <main style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', background: '#f5f5f5' }}>
         <Routes>
           <Route path="/" element={<Login />} />
-          <Route path="/employee/home" element={<EmployeeHome />} />
-          <Route path="/employee/requests/shift" element={<ProtectedRoute><ShiftRequestPage /></ProtectedRoute>} />
-          <Route path="/employee/requests/leave" element={<ProtectedRoute><EmployeeLeaveRequest /></ProtectedRoute>} />
-          <Route path="/employee/schedule" element={<EmployeeSchedule />} />
-          <Route path="/manager/requests/leave" element={<ProtectedRoute><ManagerLeaveRequest /></ProtectedRoute>} />
-          <Route path="/manager/home" element={<ManagerHome />} />
-          <Route path="/manager/schedule" element={<ManagerSchedule />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
+          
+          {/* Employee Routes - Protected */}
+          <Route path="/employee/home" element={<ProtectedRoute requiredRole="employee"><EmployeeHome /></ProtectedRoute>} />
+          <Route path="/employee/requests/shift" element={<ProtectedRoute requiredRole="employee"><ShiftRequestPage /></ProtectedRoute>} />
+          <Route path="/employee/requests/leave" element={<ProtectedRoute requiredRole="employee"><EmployeeLeaveRequest /></ProtectedRoute>} />
+          <Route path="/employee/schedule" element={<ProtectedRoute requiredRole="employee"><EmployeeSchedule /></ProtectedRoute>} />
+          <Route path="/employee/settings" element={<ProtectedRoute requiredRole="employee"><Settings /></ProtectedRoute>} />
           <Route path="/employee/requests/*" element={<></>} />
-          <Route path="/employee/settings" element={<></>} />
+          
+          {/* Manager Routes - Protected */}
+          <Route path="/manager/home" element={<ProtectedRoute requiredRole="admin"><ManagerHome /></ProtectedRoute>} />
+          <Route path="/manager/requests/leave" element={<ProtectedRoute requiredRole="admin"><ManagerLeaveRequest /></ProtectedRoute>} />
+          <Route path="/manager/schedule" element={<ProtectedRoute requiredRole="admin"><ManagerSchedule /></ProtectedRoute>} />
+          <Route path="/manager/users" element={<ProtectedRoute requiredRole="admin"><TeamList /></ProtectedRoute>} />
+          <Route path="/manager/team-list" element={<ProtectedRoute requiredRole="admin"><TeamList /></ProtectedRoute>} />
+          <Route path="/manager/add-user" element={<ProtectedRoute requiredRole="admin"><AddUser /></ProtectedRoute>} />
+          <Route path="/manager/edit-user/:userId" element={<ProtectedRoute requiredRole="admin"><EditUser /></ProtectedRoute>} />
+          <Route path="/manager/settings" element={<ProtectedRoute requiredRole="admin"><Settings /></ProtectedRoute>} />
           <Route path="/manager/*" element={<></>} />
         </Routes>
       </main>
@@ -105,14 +123,8 @@ export default function App() {
         }}
       />
       <AppContent />
-      <Routes>
-        <Route path="/manager/team-list" element={<ProtectedRoute><MainLayout><TeamList /></MainLayout></ProtectedRoute>} />
-        <Route path="/manager/add-user" element={<ProtectedRoute><MainLayout><AddUser /></MainLayout></ProtectedRoute>} />
-      </Routes>
     </Router>
   );
 }
-
-
 
 

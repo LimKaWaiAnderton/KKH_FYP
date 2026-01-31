@@ -21,6 +21,7 @@ create table
     first_name VARCHAR(50) NOT NULL,
     last_name VARCHAR(50) NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE,
+    mobile_number BIGINT,
     department_id BIGINT NOT NULL,
     role_id BIGINT NOT NULL,
     password_hash TEXT NOT NULL,
@@ -113,6 +114,7 @@ CREATE TABLE
     start_time TIME,
     end_time TIME,
     published BOOLEAN NOT NULL DEFAULT false,
+    is_rrt BOOLEAN NOT NULL DEFAULT false,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_shifts_user FOREIGN KEY (user_id) REFERENCES public.users (id),
     CONSTRAINT fk_shifts_shift_type FOREIGN KEY (shift_type_id) REFERENCES public.shift_types (id),
@@ -193,6 +195,20 @@ create table
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_notifications_user FOREIGN KEY (user_id) REFERENCES public.users (id),
     CONSTRAINT chk_notification_type CHECK (type IN ('info', 'warning', 'success'))
+  );
+
+-------------------------------------------------------------
+-- Password reset tokens for forgot password functionality --
+-------------------------------------------------------------
+CREATE TABLE
+  public.password_reset_tokens (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    user_id UUID NOT NULL,
+    token VARCHAR(255) NOT NULL UNIQUE,
+    expires_at TIMESTAMP NOT NULL,
+    used BOOLEAN NOT NULL DEFAULT false,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_prt_user FOREIGN KEY (user_id) REFERENCES public.users (id)
   );
 
 commit;

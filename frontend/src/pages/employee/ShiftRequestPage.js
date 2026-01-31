@@ -144,7 +144,18 @@ export default function ShiftRequestPage() {
       }),
     });
 
-    if (!res || !res.ok) return { error: "db-error" };
+    if (!res || !res.ok) {
+      // Try to get the error message from the backend
+      try {
+        const errorData = await res.json();
+        if (errorData.message) {
+          return { error: "custom", message: errorData.message };
+        }
+      } catch (e) {
+        // If parsing fails, use generic error
+      }
+      return { error: "db-error" };
+    }
 
     // Reload shifts
     const refresh = await authFetch("http://localhost:5000/api/shifts");
