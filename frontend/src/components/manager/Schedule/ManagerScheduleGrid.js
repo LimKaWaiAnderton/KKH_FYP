@@ -36,9 +36,12 @@ export default function ManagerScheduleGrid({ weekDays, searchTerm, onAddShift, 
 
             // Add manager-assigned shifts (from shifts table)
             if (entry.shift_id) {
+                // Use shift_type_name directly (e.g., "RRT" for RRT shifts, "PM" for regular PM)
+                const displayType = entry.title || entry.shift_type_name;
+                
                 let shiftInfo = {
                     date: entry.date,
-                    type: entry.title || entry.shift_type_name,
+                    type: displayType,
                     // Custom shifts (no shift_type_id) get white background
                     color: entry.shift_type_id ? `${entry.color_hex}30` : '#FFFFFF',
                     borderColor: entry.color_hex || '#000000',
@@ -46,7 +49,8 @@ export default function ManagerScheduleGrid({ weekDays, searchTerm, onAddShift, 
                     time: entry.start_time && entry.end_time ? formatTimeRange(entry.start_time, entry.end_time) : '',
                     published: entry.published,
                     shiftId: entry.shift_id,
-                    isCustom: !entry.shift_type_id  // Flag for custom styling
+                    isCustom: !entry.shift_type_id,  // Flag for custom styling
+                    isRrt: entry.is_rrt || false // Flag for RRT shifts
                 };
 
                 employee.shifts.push(shiftInfo);
@@ -234,7 +238,7 @@ export default function ManagerScheduleGrid({ weekDays, searchTerm, onAddShift, 
                                                 <div key={dayIndex} className="shift-cell">
                                                     {shift && shift.type ? (
                                                         <div 
-                                                            className="shift-box"
+                                                            className={`shift-box ${shift.isRrt ? 'rrt-shift' : ''}`}
                                                             style={{
                                                                 backgroundColor: shift.color,
                                                                 borderLeft: `4px solid ${shift.borderColor}`,

@@ -1,19 +1,22 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { HiOutlineUserAdd, HiOutlineCalendar, HiOutlineClipboardCheck } from 'react-icons/hi';
 import '../../../styles/ManagerQuickAction.css';
 
 export default function ManagerQuickAction() {
+    const navigate = useNavigate();
+
     // Handle button clicks
     const handleAddUser = () => {
-        console.log('Add user clicked');
+        navigate('/manager/add-user');
     };
 
     const handleManageSchedule = () => {
-        console.log('Manage schedule clicked');
+        navigate('/manager/schedule');
     };
 
     const handleViewRequest = () => {
-        console.log('View request clicked');
+        navigate('/manager/requests/leave');
     };
 
     return (

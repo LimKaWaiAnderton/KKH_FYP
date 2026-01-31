@@ -8,6 +8,8 @@ import authRoutes from "./routes/auth.route.js";
 import shiftRoutes from "./routes/shift.route.js";
 import departmentRoutes from "./routes/departments.js";
 import notificationRoutes from './routes/notifications.js';
+import autoScheduleRoutes from './routes/autoSchedule.route.js';
+import fairnessTrackerRoutes from './routes/fairnessTracker.route.js';
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -21,6 +23,8 @@ app.use('/api/shifts', shiftRoutes);
 app.use("/auth", authRoutes);
 app.use("/departments", departmentRoutes);
 app.use('/api/notifications', notificationRoutes);
+app.use('/api/auto-schedule', autoScheduleRoutes);
+app.use('/api/auto-schedule', fairnessTrackerRoutes);
 
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);

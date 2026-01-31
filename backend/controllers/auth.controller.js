@@ -173,7 +173,7 @@ export const login = async (req, res) => {
 
     // 1. Find user
     const result = await pool.query(
-      `SELECT id, email, password_hash, role_id
+      `SELECT id, email, password_hash, role_id, is_active
        FROM users
        WHERE email = $1`,
       [email]
@@ -185,7 +185,12 @@ export const login = async (req, res) => {
 
     const user = result.rows[0];
 
-    // 2. Check password
+    // 2. Check if account is active
+    if (!user.is_active) {
+      return res.status(403).json({ message: "Account has been deactivated. Please contact your administrator." });
+    }
+
+    // 3. Check password
     const match = await bcrypt.compare(password, user.password_hash);
     if (!match) {
       return res.status(401).json({ message: "Invalid credentials" });
