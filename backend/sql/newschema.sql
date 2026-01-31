@@ -199,6 +199,7 @@ CREATE TABLE public.user_leave_balance (
     remaining_days integer NOT NULL,
     total_quota integer NOT NULL,
     created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    updated_at timestamp without time zone,
     CONSTRAINT chk_leave_balance CHECK (((used_days >= 0) AND (remaining_days >= 0) AND (total_quota >= 0) AND ((used_days + remaining_days) = total_quota)))
 );
 
