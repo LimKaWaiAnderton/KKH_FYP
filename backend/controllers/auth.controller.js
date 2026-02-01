@@ -31,6 +31,7 @@ if (isEmailConfigured()) {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS,
       },
+      family: 4, // <--- ADD THIS LINE! This forces IPv4 connection.
     });
     console.log('✅ Email transporter created');
 
