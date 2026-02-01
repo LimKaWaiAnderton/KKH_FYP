@@ -3,7 +3,7 @@ import { authFetch } from "../utils/authFetch";
 // Generate roster for a date range
 export async function generateRoster(startDate, endDate) {
     try {
-        const res = await authFetch('http://localhost:5000/api/auto-schedule/generate', {
+        const res = await authFetch('https://kkh-fyp-backend.onrender.com/api/auto-schedule/generate', {
             method: 'POST',
             body: JSON.stringify({ startDate, endDate })
         });

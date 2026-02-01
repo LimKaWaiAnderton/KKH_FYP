@@ -29,7 +29,7 @@ export default function ShiftRequestPage() {
   useEffect(() => {
     async function loadUser() {
       try {
-        const res = await authFetch("http://localhost:5000/auth/me");
+        const res = await authFetch("https://kkh-fyp-backend.onrender.com/auth/me");
         if (!res || !res.ok) throw new Error("Auth failed");
 
         const data = await res.json();
@@ -50,7 +50,7 @@ export default function ShiftRequestPage() {
     if (!user) return;
 
     async function loadShifts() {
-      const res = await authFetch("http://localhost:5000/api/shifts");
+      const res = await authFetch("https://kkh-fyp-backend.onrender.com/api/shifts");
       if (!res || !res.ok) return;
 
       const data = await res.json();
@@ -65,7 +65,7 @@ export default function ShiftRequestPage() {
      ========================= */
   useEffect(() => {
     async function loadTypes() {
-      const res = await authFetch("http://localhost:5000/api/shifts/types");
+      const res = await authFetch("https://kkh-fyp-backend.onrender.com/api/shifts/types");
       if (!res || !res.ok) return;
 
       const data = await res.json();
@@ -133,7 +133,7 @@ export default function ShiftRequestPage() {
 
     const type = shiftTypes.find((t) => t.name === newShift.label);
 
-    const res = await authFetch("http://localhost:5000/api/shifts", {
+    const res = await authFetch("https://kkh-fyp-backend.onrender.com/api/shifts", {
       method: "POST",
       body: JSON.stringify({
         date: newShift.date,
@@ -158,7 +158,7 @@ export default function ShiftRequestPage() {
     }
 
     // Reload shifts
-    const refresh = await authFetch("http://localhost:5000/api/shifts");
+    const refresh = await authFetch("https://kkh-fyp-backend.onrender.com/api/shifts");
     setShifts(await refresh.json());
 
     setModalOpen(false);

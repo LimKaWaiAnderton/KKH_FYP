@@ -504,7 +504,7 @@ export const forgotPassword = async (req, res) => {
     );
 
     // 4. Send reset email
-    const resetLink = `http://localhost:3000/reset-password?token=${resetToken}`;
+    const resetLink = `https://kkh-fyp-frontend.onrender.com/reset-password?token=${resetToken}`;
     const emailResult = await sendPasswordResetEmail(user.email, user.first_name, resetLink);
 
     console.log(`🔑 Password reset requested for: ${user.email}`);

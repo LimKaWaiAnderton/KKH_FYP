@@ -16,7 +16,7 @@ export default function ShiftTemplates({ onSelectTemplate, onSave, onClose }) {
     const fetchShiftTypes = async () => {
         try {
             setLoading(true);
-            const response = await authFetch('http://localhost:5000/api/shifts/types');
+            const response = await authFetch('https://kkh-fyp-backend.onrender.com/api/shifts/types');
             if (response.ok) {
                 const data = await response.json();
                 console.log('Fetched shift types:', data);

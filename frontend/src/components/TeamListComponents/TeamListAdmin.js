@@ -29,7 +29,7 @@ const TeamListAdmin = ({ data, currentUserId, onUserUpdated, onSwitchToMembers }
         setProcessing(admin.id);
         
         // Call backend to update user role to regular user (role_id: 2)
-        const response = await authFetch(`http://localhost:5000/auth/update-role/${admin.id}`, {
+        const response = await authFetch(`https://kkh-fyp-backend.onrender.com/auth/update-role/${admin.id}`, {
           method: 'PATCH',
           body: JSON.stringify({ role_id: 2 })
         });
@@ -77,7 +77,7 @@ const TeamListAdmin = ({ data, currentUserId, onUserUpdated, onSwitchToMembers }
       setProcessing(admin.id);
       setShowActionMenu(null);
 
-      const response = await authFetch(`http://localhost:5000/auth/delete-user/${admin.id}`, {
+      const response = await authFetch(`https://kkh-fyp-backend.onrender.com/auth/delete-user/${admin.id}`, {
         method: 'PATCH'
       });
 

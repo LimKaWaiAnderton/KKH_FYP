@@ -77,7 +77,7 @@ export default function ManageBalanceModal({ isOpen, onClose, onRefresh, userId,
       };
 
       // 3. Make the Request
-      const response = await authFetch(`http://localhost:5000/api/leaves/balance/${userId}`, {
+      const response = await authFetch(`https://kkh-fyp-backend.onrender.com/api/leaves/balance/${userId}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',

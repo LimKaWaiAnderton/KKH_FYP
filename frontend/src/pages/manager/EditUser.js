@@ -29,7 +29,7 @@ const EditUser = () => {
   // Fetch current logged-in user info to check if admin
   const fetchCurrentUser = async () => {
     try {
-      const res = await authFetch('http://localhost:5000/auth/me');
+      const res = await authFetch('https://kkh-fyp-backend.onrender.com/auth/me');
       if (!res.ok) throw new Error("Failed to fetch current user");
       const data = await res.json();
       setCurrentUser(data);
@@ -48,7 +48,7 @@ const EditUser = () => {
   // Fetch user data
   const fetchUserData = async () => {
     try {
-      const res = await authFetch(`http://localhost:5000/auth/users`);
+      const res = await authFetch(`https://kkh-fyp-backend.onrender.com/auth/users`);
       if (!res.ok) throw new Error("Failed to fetch users");
       
       const users = await res.json();
@@ -79,7 +79,7 @@ const EditUser = () => {
   // Fetch departments
   const fetchDepartments = async () => {
     try {
-      const response = await authFetch("http://localhost:5000/departments");
+      const response = await authFetch("https://kkh-fyp-backend.onrender.com/departments");
       if (!response.ok) throw new Error("Failed to fetch departments");
       const data = await response.json();
       setDepartments(data);
@@ -137,7 +137,7 @@ const EditUser = () => {
       };
 
       // Send PATCH request to backend
-      const response = await authFetch(`http://localhost:5000/auth/update-user/${userId}`, {
+      const response = await authFetch(`https://kkh-fyp-backend.onrender.com/auth/update-user/${userId}`, {
         method: "PATCH",
         body: JSON.stringify(payload),
       });

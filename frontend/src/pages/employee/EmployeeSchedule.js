@@ -45,7 +45,7 @@ export default function EmployeeSchedule() {
     useEffect(() => {
         async function loadEmployeesAndShifts() {
             try {
-                const res = await authFetch("http://localhost:5000/api/shifts/employees-with-published");
+                const res = await authFetch("https://kkh-fyp-backend.onrender.com/api/shifts/employees-with-published");
                 if (!res || !res.ok) {
                     console.error("Failed to fetch employees and shifts");
                     setLoading(false);

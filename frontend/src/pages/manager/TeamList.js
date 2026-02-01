@@ -23,7 +23,7 @@ const TeamList = () => {
   // Fetch current user's info
   const fetchCurrentUser = async () => {
     try {
-      const res = await authFetch('http://localhost:5000/auth/me');
+      const res = await authFetch('https://kkh-fyp-backend.onrender.com/auth/me');
       if (!res.ok) throw new Error("Failed to fetch current user");
       const data = await res.json();
       setCurrentUser(data.id);
@@ -40,7 +40,7 @@ const TeamList = () => {
       setError('');
       console.log('Fetching users from backend...');
       // Ensure the path matches the backend route exactly
-      const res = await authFetch('http://localhost:5000/auth/users');
+      const res = await authFetch('https://kkh-fyp-backend.onrender.com/auth/users');
       
       if (!res.ok) throw new Error("Failed to fetch users");
       
