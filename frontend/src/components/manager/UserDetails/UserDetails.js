@@ -45,7 +45,7 @@ export default function UserDetails({ user_id }) {
         try {
             setProcessing(true); // Disable button while loading
 
-            const response = await authFetch(`http://localhost:5000/auth/delete-user/${user_id}`, {
+            const response = await authFetch(`https://kkh-fyp-backend.onrender.com/auth/delete-user/${user_id}`, {
                 method: 'PATCH'
             });
 
