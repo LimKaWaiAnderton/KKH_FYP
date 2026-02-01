@@ -1,4 +1,3 @@
-// src/components/ShiftRequestComponents/AddShiftModal.js
 import React, { useState, useMemo } from "react";
 import "../../styles/ShiftRequest/AddShiftModal.css";
 
@@ -9,7 +8,6 @@ export default function AddShiftModal({
   checkDuplicate
 }) {
   const [activeTab, setActiveTab] = useState("details");
-
   const [date, setDate] = useState("");
   const [label, setLabel] = useState("");
   const [start, setStart] = useState("");
@@ -19,13 +17,15 @@ export default function AddShiftModal({
 
   const today = useMemo(() => new Date().toISOString().split("T")[0], []);
 
-  // Templates
+  // Full list of your shift types based on the project requirements
   const templates = [
     { id: 1, label: "AM", time: "07:00 – 16:00" },
     { id: 2, label: "PM", time: "11:00 – 20:00" },
-    { id: 3, label: "NNJ", time: "" },
-    { id: 4, label: "NNJ@HOME", time: "" },
-    { id: 5, label: "RRT", time: "" }
+    { id: 3, label: "N", time: "20:00 – 07:30" },
+    { id: 4, label: "RRT", time: "07:00 – 16:00" },
+    { id: 5, label: "GPAPN", time: "11:30 – 20:30" },
+    { id: 6, label: "NNJ Clinic", time: "07:00 – 16:00" },
+    { id: 7, label: "AM (RES)", time: "08:00 – 17:00" }
   ];
 
   const filteredTemplates = useMemo(
@@ -38,36 +38,20 @@ export default function AddShiftModal({
 
   const applyTemplate = (template) => {
     setLabel(template.label);
-
     if (template.time.includes("–")) {
       const [s, e] = template.time.split("–").map((x) => x.trim());
       setStart(s);
       setEnd(e);
-    } else {
-      setStart("");
-      setEnd("");
     }
-
     setActiveTab("details");
   };
 
-  // FORM SUBMIT
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(""); // clear previous
+    setError("");
 
     if (!date || !label) {
       setError("Please fill all required fields.");
-      return;
-    }
-
-    if (date < today) {
-      setError("Cannot request past dates.");
-      return;
-    }
-
-    if (checkDuplicate && checkDuplicate(date)) {
-      setError("You already submitted a request for this date.");
       return;
     }
 
@@ -81,171 +65,103 @@ export default function AddShiftModal({
 
     const result = await onSave(payload);
 
-    // Handle different error types
-    if (result?.error === "week-limit") {
-      setError("You can only request UP TO 5 shifts per week.");
-      return;
-    }
-
-    if (result?.error === "custom" && result?.message) {
-      setError(result.message);
-      return;
-    }
-
     if (result?.error) {
-      setError("Failed to submit shift request. Please try again.");
-      return;
+      setError(result.message || "Failed to submit request.");
     }
   };
 
   if (!open) return null;
 
-  const titleText = date
-    ? new Date(date).toLocaleDateString("en-GB", {
-        weekday: "long",
-        day: "numeric",
-        month: "long",
-        year: "numeric"
-      })
-    : "Request Shift";
-
   return (
-    <div className="as-overlay">
-      <div className="as-modal" role="dialog" aria-modal="true">
+    <div className="as-overlay" onClick={onClose}>
+      <div className="as-modal" onClick={(e) => e.stopPropagation()}>
         {/* HEADER */}
         <div className="as-header">
-          <button className="as-close" onClick={onClose}>
-            ×
-          </button>
-          <div className="as-header-title">{titleText}</div>
+          <h3 className="as-title">Request Shift</h3>
+          <button className="as-close-btn" onClick={onClose}>×</button>
         </div>
 
         {/* TABS */}
         <div className="as-tabs">
           <button
-            className={`as-tab ${activeTab === "details" ? "active" : ""}`}
+            className={`as-tab-item ${activeTab === "details" ? "active" : ""}`}
             onClick={() => setActiveTab("details")}
           >
             Shift Details
           </button>
           <button
-            className={`as-tab ${activeTab === "templates" ? "active" : ""}`}
+            className={`as-tab-item ${activeTab === "templates" ? "active" : ""}`}
             onClick={() => setActiveTab("templates")}
           >
             Templates
           </button>
         </div>
 
-        {/* FORM */}
-        <form className="as-form" onSubmit={handleSubmit}>
-          {/* Red error box */}
-          {error && <div className="as-error">{error}</div>}
+        {/* BODY */}
+        <div className="as-body">
+          {error && <div className="as-error-banner">{error}</div>}
 
-          <div className="as-body">
-            {activeTab === "details" && (
-              <div className="as-section">
-                <div className="as-field">
-                  <label className="as-label">
-                    Shift Title <span className="as-required">*</span>
-                  </label>
-                  <input
-                    className="as-input"
-                    placeholder="Type here"
-                    value={label}
-                    onChange={(e) => setLabel(e.target.value)}
-                  />
+          {activeTab === "details" ? (
+            <div className="as-form-content">
+              <div className="as-input-group">
+                <label>Shift Title <span className="req">*</span></label>
+                <input
+                  type="text"
+                  placeholder="e.g. AM, PM, RRT"
+                  value={label}
+                  onChange={(e) => setLabel(e.target.value)}
+                />
+              </div>
+
+              <div className="as-input-group">
+                <label>Date <span className="req">*</span></label>
+                <input
+                  type="date"
+                  min={today}
+                  value={date}
+                  onChange={(e) => setDate(e.target.value)}
+                />
+              </div>
+
+              <div className="as-row">
+                <div className="as-input-group">
+                  <label>Start</label>
+                  <input type="time" value={start} onChange={(e) => setStart(e.target.value)} />
                 </div>
-
-                <div className="as-field">
-                  <label className="as-label">
-                    Date <span className="as-required">*</span>
-                  </label>
-                  <input
-                    type="date"
-                    min={today}
-                    className="as-input"
-                    value={date}
-                    onChange={(e) => setDate(e.target.value)}
-                  />
-                </div>
-
-                <div className="as-field-row">
-                  <div className="as-field half">
-                    <label className="as-label">Start</label>
-                    <select
-                      className="as-input"
-                      value={start}
-                      onChange={(e) => setStart(e.target.value)}
-                    >
-                      <option value="">Select time</option>
-                      <option value="07:00">7:00am</option>
-                      <option value="08:00">8:00am</option>
-                      <option value="09:00">9:00am</option>
-                    </select>
-                  </div>
-
-                  <div className="as-field half">
-                    <label className="as-label">End</label>
-                    <select
-                      className="as-input"
-                      value={end}
-                      onChange={(e) => setEnd(e.target.value)}
-                    >
-                      <option value="">Select time</option>
-                      <option value="16:00">4:00pm</option>
-                      <option value="17:00">5:00pm</option>
-                      <option value="20:00">8:00pm</option>
-                    </select>
-                  </div>
+                <div className="as-input-group">
+                  <label>End</label>
+                  <input type="time" value={end} onChange={(e) => setEnd(e.target.value)} />
                 </div>
               </div>
-            )}
-
-            {activeTab === "templates" && (
-              <div className="as-section">
-                <div className="as-search-wrapper">
-                  <span className="as-search-icon">🔍</span>
-                  <input
-                    className="as-search"
-                    placeholder="Search.."
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                  />
-                </div>
-
-                <div className="as-template-grid">
-                  {filteredTemplates.map((t) => (
-                    <button
-                      key={t.id}
-                      type="button"
-                      className="as-template-card"
-                      onClick={() => applyTemplate(t)}
-                    >
-                      {t.time && (
-                        <div className="as-template-time">{t.time}</div>
-                      )}
-                      <div className="as-template-label">{t.label}</div>
-                    </button>
-                  ))}
-                </div>
+            </div>
+          ) : (
+            <div className="as-templates-content">
+              <input
+                className="as-search-bar"
+                placeholder="Search shift types..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+              <div className="as-template-list">
+                {filteredTemplates.map((t) => (
+                  <div key={t.id} className="as-template-item" onClick={() => applyTemplate(t)}>
+                    <div className="as-template-info">
+                      <span className="as-t-label">{t.label}</span>
+                      <span className="as-t-time">{t.time}</span>
+                    </div>
+                    <div className="as-t-plus">+</div>
+                  </div>
+                ))}
               </div>
-            )}
-          </div>
+            </div>
+          )}
+        </div>
 
-          {/* FOOTER */}
-          <div className="as-footer">
-            <button
-              type="button"
-              className="as-btn as-btn-secondary"
-              onClick={onClose}
-            >
-              Cancel
-            </button>
-            <button type="submit" className="as-btn as-btn-primary">
-              Submit
-            </button>
-          </div>
-        </form>
+        {/* FOOTER */}
+        <div className="as-footer">
+          <button className="as-btn-cancel" onClick={onClose}>Cancel</button>
+          <button className="as-btn-submit" onClick={handleSubmit}>Submit Request</button>
+        </div>
       </div>
     </div>
   );

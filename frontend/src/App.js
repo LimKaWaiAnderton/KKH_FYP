@@ -84,7 +84,6 @@ function AppContent() {
           <Route path="/manager/home" element={<ProtectedRoute requiredRole="admin"><ManagerHome /></ProtectedRoute>} />
           <Route path="/manager/requests/leave" element={<ProtectedRoute requiredRole="admin"><ManagerLeaveRequest /></ProtectedRoute>} />
           <Route path="/manager/schedule" element={<ProtectedRoute requiredRole="admin"><ManagerSchedule /></ProtectedRoute>} />
-          <Route path="/manager/users" element={<ProtectedRoute requiredRole="admin"><TeamList /></ProtectedRoute>} />
           <Route path="/manager/team-list" element={<ProtectedRoute requiredRole="admin"><TeamList /></ProtectedRoute>} />
           <Route path="/manager/add-user" element={<ProtectedRoute requiredRole="admin"><AddUser /></ProtectedRoute>} />
           <Route path="/manager/view-user/:userId" element={<ProtectedRoute requiredRole="admin"><ViewUser /></ProtectedRoute>} />

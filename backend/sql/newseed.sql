@@ -12,7 +12,7 @@ SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
 
--- Data Insertions
+-- 1. Base Tables
 INSERT INTO public.departments OVERRIDING SYSTEM VALUE VALUES (1, 'CE');
 INSERT INTO public.departments OVERRIDING SYSTEM VALUE VALUES (2, 'Ward 65');
 INSERT INTO public.departments OVERRIDING SYSTEM VALUE VALUES (3, 'CICU');
@@ -36,6 +36,7 @@ INSERT INTO public.leave_types OVERRIDING SYSTEM VALUE VALUES (3, 'Childcare Lea
 INSERT INTO public.roles OVERRIDING SYSTEM VALUE VALUES (1, 'admin');
 INSERT INTO public.roles OVERRIDING SYSTEM VALUE VALUES (2, 'user');
 
+-- 2. Users
 INSERT INTO public.users VALUES ('095a7fca-c294-440e-b108-5effafbcd15e', 'Anderton', 'Lim', 'anderton@kkh.com.sg', 12348594, 1, 1, '$2b$10$0xXkA7/kUrmDJa.B5vVO2.Ik/DrQcf6/Zm/Vtf9ME6fQnI8TCIcoa', '2026-01-31 00:54:45.582252', true);
 INSERT INTO public.users VALUES ('a213d2e4-4377-418f-9db8-973d2ab04c19', 'Clara', 'Lim', 'clara@kkh.com.sg', 95737291, 1, 2, '$2b$10$0xXkA7/kUrmDJa.B5vVO2.Ik/DrQcf6/Zm/Vtf9ME6fQnI8TCIcoa', '2026-01-31 00:54:45.582252', true);
 INSERT INTO public.users VALUES ('ba8c0f60-3ed2-456b-bc7a-82a5e643072d', 'Sonia', 'Yeong', 'sonia@kkh.com.sg', 93028374, 1, 2, '$2b$10$0xXkA7/kUrmDJa.B5vVO2.Ik/DrQcf6/Zm/Vtf9ME6fQnI8TCIcoa', '2026-01-31 00:54:45.582252', true);
@@ -63,6 +64,7 @@ INSERT INTO public.users VALUES ('6b3c2094-1211-4956-8ea1-979819ac11cb', 'Olivia
 INSERT INTO public.users VALUES ('0cff9e54-a360-45c9-b9a9-7fae2c9c7593', 'Pravin', 'Kumar', 'pravinnicu@kkh.com.sg', 90010016, 4, 2, '$2b$10$0xXkA7/kUrmDJa.B5vVO2.Ik/DrQcf6/Zm/Vtf9ME6fQnI8TCIcoa', '2026-01-31 00:56:41.244367', true);
 INSERT INTO public.users VALUES ('73fd8eeb-612d-462b-b249-7b97d1385d20', 'Mabel', 'Sim', 'mabel@kkh.com.sg', 90003001, 15, 2, '$2b$10$0xXkA7/kUrmDJa.B5vVO2.Ik/DrQcf6/Zm/Vtf9ME6fQnI8TCIcoa', '2026-01-31 03:28:07.07082', true);
 
+-- 3. Leave Requests
 INSERT INTO public.leave_requests OVERRIDING SYSTEM VALUE VALUES (1, 'a213d2e4-4377-418f-9db8-973d2ab04c19', 1, '2026-02-02', '2026-02-02', 1, 'approved', '2026-01-31 00:54:45.582252', '2026-01-31 00:54:45.582252', NULL);
 INSERT INTO public.leave_requests OVERRIDING SYSTEM VALUE VALUES (2, 'ba8c0f60-3ed2-456b-bc7a-82a5e643072d', 2, '2026-02-02', '2026-02-02', 1, 'approved', '2026-01-31 00:54:45.582252', '2026-01-31 00:54:45.582252', NULL);
 INSERT INTO public.leave_requests OVERRIDING SYSTEM VALUE VALUES (3, 'e7560f2b-3ed3-425c-bbb0-88703fa83b5d', 3, '2026-02-02', '2026-02-02', 1, 'approved', '2026-01-31 00:54:45.582252', '2026-01-31 00:54:45.582252', NULL);
@@ -71,57 +73,9 @@ INSERT INTO public.leave_requests OVERRIDING SYSTEM VALUE VALUES (5, 'f9bf981c-1
 INSERT INTO public.leave_requests OVERRIDING SYSTEM VALUE VALUES (6, '3d741d2b-7918-4348-bc22-737f7fce75dc', 1, '2026-02-02', '2026-02-02', 1, 'approved', '2026-01-31 00:54:45.582252', '2026-01-31 00:54:45.582252', NULL);
 INSERT INTO public.leave_requests OVERRIDING SYSTEM VALUE VALUES (7, '15037117-ef62-49ce-b746-3887b60f9ecb', 3, '2026-02-02', '2026-02-02', 1, 'approved', '2026-01-31 00:54:45.582252', '2026-01-31 00:54:45.582252', NULL);
 
-INSERT INTO public.notifications OVERRIDING SYSTEM VALUE VALUES (1, 'f9bf981c-1eb9-4ec9-9d1a-22692882f8bf', 'Schedule for 1 Jan - 31 Dec 2026 has been released.', 'Your schedule has been updated with new shifts', 'info', false, '2026-01-31 05:01:35.474688');
-INSERT INTO public.notifications OVERRIDING SYSTEM VALUE VALUES (2, '3d741d2b-7918-4348-bc22-737f7fce75dc', 'Schedule for 1 Jan - 31 Dec 2026 has been released.', 'Your schedule has been updated with new shifts', 'info', false, '2026-01-31 05:01:35.474688');
-INSERT INTO public.notifications OVERRIDING SYSTEM VALUE VALUES (3, 'c92c04a1-7b45-4357-ae50-e46a792f9c91', 'Schedule for 1 Jan - 31 Dec 2026 has been released.', 'Your schedule has been updated with new shifts', 'info', false, '2026-01-31 05:01:35.474688');
-INSERT INTO public.notifications OVERRIDING SYSTEM VALUE VALUES (4, '15037117-ef62-49ce-b746-3887b60f9ecb', 'Schedule for 1 Jan - 31 Dec 2026 has been released.', 'Your schedule has been updated with new shifts', 'info', false, '2026-01-31 05:01:35.474688');
-INSERT INTO public.notifications OVERRIDING SYSTEM VALUE VALUES (5, '545e1502-92da-4e3c-920b-f000ea5d718b', 'Schedule for 1 Jan - 31 Dec 2026 has been released.', 'Your schedule has been updated with new shifts', 'info', false, '2026-01-31 05:01:35.474688');
-INSERT INTO public.notifications OVERRIDING SYSTEM VALUE VALUES (6, '6bebceab-31a2-4798-abbe-713e64721ec9', 'Schedule for 1 Jan - 31 Dec 2026 has been released.', 'Your schedule has been updated with new shifts', 'info', false, '2026-01-31 05:01:35.474688');
-INSERT INTO public.notifications OVERRIDING SYSTEM VALUE VALUES (7, 'b6d0c3fa-1e74-4d01-b321-1bb551238adc', 'Schedule for 1 Jan - 31 Dec 2026 has been released.', 'Your schedule has been updated with new shifts', 'info', false, '2026-01-31 05:01:35.474688');
-INSERT INTO public.notifications OVERRIDING SYSTEM VALUE VALUES (8, 'de9c175b-5695-4748-b013-eeff61af86aa', 'Schedule for 1 Jan - 31 Dec 2026 has been released.', 'Your schedule has been updated with new shifts', 'info', false, '2026-01-31 05:01:35.474688');
-INSERT INTO public.notifications OVERRIDING SYSTEM VALUE VALUES (9, '0cff9e54-a360-45c9-b9a9-7fae2c9c7593', 'Schedule for 1 Jan - 31 Dec 2026 has been released.', 'Your schedule has been updated with new shifts', 'info', false, '2026-01-31 05:01:35.474688');
-INSERT INTO public.notifications OVERRIDING SYSTEM VALUE VALUES (10, '6b3c2094-1211-4956-8ea1-979819ac11cb', 'Schedule for 1 Jan - 31 Dec 2026 has been released.', 'Your schedule has been updated with new shifts', 'info', false, '2026-01-31 05:01:35.474688');
-INSERT INTO public.notifications OVERRIDING SYSTEM VALUE VALUES (11, '88cb6094-bec3-4b43-b6e2-ef12d4493f3d', 'Schedule for 1 Jan - 31 Dec 2026 has been released.', 'Your schedule has been updated with new shifts', 'info', false, '2026-01-31 05:01:35.474688');
-INSERT INTO public.notifications OVERRIDING SYSTEM VALUE VALUES (12, '79901283-bfb9-41a3-8b48-3adec2a55b5a', 'Schedule for 1 Jan - 31 Dec 2026 has been released.', 'Your schedule has been updated with new shifts', 'info', false, '2026-01-31 05:01:35.474688');
-INSERT INTO public.notifications OVERRIDING SYSTEM VALUE VALUES (13, '223242be-eb27-445d-be9b-523831f4b955', 'Schedule for 1 Jan - 31 Dec 2026 has been released.', 'Your schedule has been updated with new shifts', 'info', false, '2026-01-31 05:01:35.474688');
-INSERT INTO public.notifications OVERRIDING SYSTEM VALUE VALUES (14, 'd4b2d549-4694-455a-8960-f84bf46f3b5b', 'Schedule for 1 Jan - 31 Dec 2026 has been released.', 'Your schedule has been updated with new shifts', 'info', false, '2026-01-31 05:01:35.474688');
-INSERT INTO public.notifications OVERRIDING SYSTEM VALUE VALUES (15, '4e286f25-0ac8-43f5-a8af-4f9686833a7a', 'Schedule for 1 Jan - 31 Dec 2026 has been released.', 'Your schedule has been updated with new shifts', 'info', false, '2026-01-31 05:01:35.474688');
-INSERT INTO public.notifications OVERRIDING SYSTEM VALUE VALUES (16, '73fd8eeb-612d-462b-b249-7b97d1385d20', 'Schedule for 1 Jan - 31 Dec 2026 has been released.', 'Your schedule has been updated with new shifts', 'info', false, '2026-01-31 05:01:35.474688');
-INSERT INTO public.notifications OVERRIDING SYSTEM VALUE VALUES (17, 'a213d2e4-4377-418f-9db8-973d2ab04c19', 'Schedule for 1 Jan - 31 Dec 2026 has been released.', 'Your schedule has been updated with new shifts', 'info', false, '2026-01-31 05:01:35.474688');
-INSERT INTO public.notifications OVERRIDING SYSTEM VALUE VALUES (18, 'e7560f2b-3ed3-425c-bbb0-88703fa83b5d', 'Schedule for 1 Jan - 31 Dec 2026 has been released.', 'Your schedule has been updated with new shifts', 'info', false, '2026-01-31 05:01:35.474688');
-INSERT INTO public.notifications OVERRIDING SYSTEM VALUE VALUES (19, '8bd79ad0-196c-4013-8404-7464f73773d7', 'Schedule for 1 Jan - 31 Dec 2026 has been released.', 'Your schedule has been updated with new shifts', 'info', false, '2026-01-31 05:01:35.474688');
-INSERT INTO public.notifications OVERRIDING SYSTEM VALUE VALUES (20, 'ba8c0f60-3ed2-456b-bc7a-82a5e643072d', 'Schedule for 1 Jan - 31 Dec 2026 has been released.', 'Your schedule has been updated with new shifts', 'info', false, '2026-01-31 05:01:35.474688');
-INSERT INTO public.notifications OVERRIDING SYSTEM VALUE VALUES (21, '69e85c17-b5fa-4685-bed9-1fa904ae88fe', 'Schedule for 1 Jan - 31 Dec 2026 has been released.', 'Your schedule has been updated with new shifts', 'info', false, '2026-01-31 05:01:35.474688');
-INSERT INTO public.notifications OVERRIDING SYSTEM VALUE VALUES (22, '8207927d-3281-4fc0-9f5a-cab827c66275', 'Schedule for 1 Jan - 31 Dec 2026 has been released.', 'Your schedule has been updated with new shifts', 'info', false, '2026-01-31 05:01:35.474688');
-INSERT INTO public.notifications OVERRIDING SYSTEM VALUE VALUES (23, 'f510cef9-2592-458c-822d-171f2f397837', 'Schedule for 1 Jan - 31 Dec 2026 has been released.', 'Your schedule has been updated with new shifts', 'info', false, '2026-01-31 05:01:35.474688');
-INSERT INTO public.notifications OVERRIDING SYSTEM VALUE VALUES (24, 'b42ba9b1-8c00-4068-9d4e-8783194e6337', 'Schedule for 1 Jan - 31 Dec 2026 has been released.', 'Your schedule has been updated with new shifts', 'info', false, '2026-01-31 05:01:35.474688');
-INSERT INTO public.notifications OVERRIDING SYSTEM VALUE VALUES (25, '3e172696-3fbf-4eec-bab2-4f62d7378071', 'Schedule for 1 Jan - 31 Dec 2026 has been released.', 'Your schedule has been updated with new shifts', 'info', false, '2026-01-31 05:01:35.474688');
-INSERT INTO public.notifications OVERRIDING SYSTEM VALUE VALUES (26, 'f9bf981c-1eb9-4ec9-9d1a-22692882f8bf', 'Schedule for 1 Jan - 31 Dec 2026 has been released.', 'Your schedule has been updated with new shifts', 'info', false, '2026-01-31 05:09:21.403384');
-INSERT INTO public.notifications OVERRIDING SYSTEM VALUE VALUES (27, '3d741d2b-7918-4348-bc22-737f7fce75dc', 'Schedule for 1 Jan - 31 Dec 2026 has been released.', 'Your schedule has been updated with new shifts', 'info', false, '2026-01-31 05:09:21.403384');
-INSERT INTO public.notifications OVERRIDING SYSTEM VALUE VALUES (28, 'c92c04a1-7b45-4357-ae50-e46a792f9c91', 'Schedule for 1 Jan - 31 Dec 2026 has been released.', 'Your schedule has been updated with new shifts', 'info', false, '2026-01-31 05:09:21.403384');
-INSERT INTO public.notifications OVERRIDING SYSTEM VALUE VALUES (29, '15037117-ef62-49ce-b746-3887b60f9ecb', 'Schedule for 1 Jan - 31 Dec 2026 has been released.', 'Your schedule has been updated with new shifts', 'info', false, '2026-01-31 05:09:21.403384');
-INSERT INTO public.notifications OVERRIDING SYSTEM VALUE VALUES (30, '545e1502-92da-4e3c-920b-f000ea5d718b', 'Schedule for 1 Jan - 31 Dec 2026 has been released.', 'Your schedule has been updated with new shifts', 'info', false, '2026-01-31 05:09:21.403384');
-INSERT INTO public.notifications OVERRIDING SYSTEM VALUE VALUES (31, '6bebceab-31a2-4798-abbe-713e64721ec9', 'Schedule for 1 Jan - 31 Dec 2026 has been released.', 'Your schedule has been updated with new shifts', 'info', false, '2026-01-31 05:09:21.403384');
-INSERT INTO public.notifications OVERRIDING SYSTEM VALUE VALUES (32, 'b6d0c3fa-1e74-4d01-b321-1bb551238adc', 'Schedule for 1 Jan - 31 Dec 2026 has been released.', 'Your schedule has been updated with new shifts', 'info', false, '2026-01-31 05:09:21.403384');
-INSERT INTO public.notifications OVERRIDING SYSTEM VALUE VALUES (33, 'de9c175b-5695-4748-b013-eeff61af86aa', 'Schedule for 1 Jan - 31 Dec 2026 has been released.', 'Your schedule has been updated with new shifts', 'info', false, '2026-01-31 05:09:21.403384');
-INSERT INTO public.notifications OVERRIDING SYSTEM VALUE VALUES (34, '0cff9e54-a360-45c9-b9a9-7fae2c9c7593', 'Schedule for 1 Jan - 31 Dec 2026 has been released.', 'Your schedule has been updated with new shifts', 'info', false, '2026-01-31 05:09:21.403384');
-INSERT INTO public.notifications OVERRIDING SYSTEM VALUE VALUES (35, '6b3c2094-1211-4956-8ea1-979819ac11cb', 'Schedule for 1 Jan - 31 Dec 2026 has been released.', 'Your schedule has been updated with new shifts', 'info', false, '2026-01-31 05:09:21.403384');
-INSERT INTO public.notifications OVERRIDING SYSTEM VALUE VALUES (36, '88cb6094-bec3-4b43-b6e2-ef12d4493f3d', 'Schedule for 1 Jan - 31 Dec 2026 has been released.', 'Your schedule has been updated with new shifts', 'info', false, '2026-01-31 05:09:21.403384');
-INSERT INTO public.notifications OVERRIDING SYSTEM VALUE VALUES (37, '79901283-bfb9-41a3-8b48-3adec2a55b5a', 'Schedule for 1 Jan - 31 Dec 2026 has been released.', 'Your schedule has been updated with new shifts', 'info', false, '2026-01-31 05:09:21.403384');
-INSERT INTO public.notifications OVERRIDING SYSTEM VALUE VALUES (38, '223242be-eb27-445d-be9b-523831f4b955', 'Schedule for 1 Jan - 31 Dec 2026 has been released.', 'Your schedule has been updated with new shifts', 'info', false, '2026-01-31 05:09:21.403384');
-INSERT INTO public.notifications OVERRIDING SYSTEM VALUE VALUES (39, 'd4b2d549-4694-455a-8960-f84bf46f3b5b', 'Schedule for 1 Jan - 31 Dec 2026 has been released.', 'Your schedule has been updated with new shifts', 'info', false, '2026-01-31 05:09:21.403384');
-INSERT INTO public.notifications OVERRIDING SYSTEM VALUE VALUES (40, '4e286f25-0ac8-43f5-a8af-4f9686833a7a', 'Schedule for 1 Jan - 31 Dec 2026 has been released.', 'Your schedule has been updated with new shifts', 'info', false, '2026-01-31 05:09:21.403384');
-INSERT INTO public.notifications OVERRIDING SYSTEM VALUE VALUES (41, '73fd8eeb-612d-462b-b249-7b97d1385d20', 'Schedule for 1 Jan - 31 Dec 2026 has been released.', 'Your schedule has been updated with new shifts', 'info', false, '2026-01-31 05:09:21.403384');
-INSERT INTO public.notifications OVERRIDING SYSTEM VALUE VALUES (42, 'a213d2e4-4377-418f-9db8-973d2ab04c19', 'Schedule for 1 Jan - 31 Dec 2026 has been released.', 'Your schedule has been updated with new shifts', 'info', false, '2026-01-31 05:09:21.403384');
-INSERT INTO public.notifications OVERRIDING SYSTEM VALUE VALUES (43, 'e7560f2b-3ed3-425c-bbb0-88703fa83b5d', 'Schedule for 1 Jan - 31 Dec 2026 has been released.', 'Your schedule has been updated with new shifts', 'info', false, '2026-01-31 05:09:21.403384');
-INSERT INTO public.notifications OVERRIDING SYSTEM VALUE VALUES (44, '8bd79ad0-196c-4013-8404-7464f73773d7', 'Schedule for 1 Jan - 31 Dec 2026 has been released.', 'Your schedule has been updated with new shifts', 'info', false, '2026-01-31 05:09:21.403384');
-INSERT INTO public.notifications OVERRIDING SYSTEM VALUE VALUES (45, 'ba8c0f60-3ed2-456b-bc7a-82a5e643072d', 'Schedule for 1 Jan - 31 Dec 2026 has been released.', 'Your schedule has been updated with new shifts', 'info', false, '2026-01-31 05:09:21.403384');
-INSERT INTO public.notifications OVERRIDING SYSTEM VALUE VALUES (46, '69e85c17-b5fa-4685-bed9-1fa904ae88fe', 'Schedule for 1 Jan - 31 Dec 2026 has been released.', 'Your schedule has been updated with new shifts', 'info', false, '2026-01-31 05:09:21.403384');
-INSERT INTO public.notifications OVERRIDING SYSTEM VALUE VALUES (47, '8207927d-3281-4fc0-9f5a-cab827c66275', 'Schedule for 1 Jan - 31 Dec 2026 has been released.', 'Your schedule has been updated with new shifts', 'info', false, '2026-01-31 05:09:21.403384');
-INSERT INTO public.notifications OVERRIDING SYSTEM VALUE VALUES (48, 'f510cef9-2592-458c-822d-171f2f397837', 'Schedule for 1 Jan - 31 Dec 2026 has been released.', 'Your schedule has been updated with new shifts', 'info', false, '2026-01-31 05:09:21.403384');
-INSERT INTO public.notifications OVERRIDING SYSTEM VALUE VALUES (49, 'b42ba9b1-8c00-4068-9d4e-8783194e6337', 'Schedule for 1 Jan - 31 Dec 2026 has been released.', 'Your schedule has been updated with new shifts', 'info', false, '2026-01-31 05:09:21.403384');
-INSERT INTO public.notifications OVERRIDING SYSTEM VALUE VALUES (50, '3e172696-3fbf-4eec-bab2-4f62d7378071', 'Schedule for 1 Jan - 31 Dec 2026 has been released.', 'Your schedule has been updated with new shifts', 'info', false, '2026-01-31 05:09:21.403384');
+-- [REMOVED] Notifications Block (as requested)
 
+-- 4. Shift Types
 INSERT INTO public.shift_types OVERRIDING SYSTEM VALUE VALUES (1, 'AM', '#000000', '07:00:00', '16:00:00');
 INSERT INTO public.shift_types OVERRIDING SYSTEM VALUE VALUES (2, 'PM', '#1E8A3C', '11:30:00', '20:30:00');
 INSERT INTO public.shift_types OVERRIDING SYSTEM VALUE VALUES (3, 'N', '#800080', '20:00:00', '07:30:00');
@@ -134,6 +88,7 @@ INSERT INTO public.shift_types OVERRIDING SYSTEM VALUE VALUES (9, 'NNJ@Home', '#
 INSERT INTO public.shift_types OVERRIDING SYSTEM VALUE VALUES (10, 'AM (RES)', '#581845', '08:00:00', '17:00:00');
 INSERT INTO public.shift_types OVERRIDING SYSTEM VALUE VALUES (11, 'PM (RES)', '#28B463', '11:30:00', '20:30:00');
 
+-- 5. User Leave Balances (Initial Seed)
 INSERT INTO public.user_leave_balance OVERRIDING SYSTEM VALUE VALUES (2, 'ba8c0f60-3ed2-456b-bc7a-82a5e643072d', 1, 0, 7, 7, '2026-01-31 00:54:45.582252');
 INSERT INTO public.user_leave_balance OVERRIDING SYSTEM VALUE VALUES (3, 'e7560f2b-3ed3-425c-bbb0-88703fa83b5d', 1, 0, 7, 7, '2026-01-31 00:54:45.582252');
 INSERT INTO public.user_leave_balance OVERRIDING SYSTEM VALUE VALUES (5, 'f9bf981c-1eb9-4ec9-9d1a-22692882f8bf', 1, 0, 7, 7, '2026-01-31 00:54:45.582252');
@@ -207,10 +162,38 @@ INSERT INTO public.user_leave_balance OVERRIDING SYSTEM VALUE VALUES (70, '3e172
 INSERT INTO public.user_leave_balance OVERRIDING SYSTEM VALUE VALUES (71, '0cff9e54-a360-45c9-b9a9-7fae2c9c7593', 1, 0, 7, 7, '2026-01-31 00:56:55.657794');
 INSERT INTO public.user_leave_balance OVERRIDING SYSTEM VALUE VALUES (72, 'f510cef9-2592-458c-822d-171f2f397837', 1, 0, 7, 7, '2026-01-31 00:56:55.657794');
 
+-- 6. Insert Approved Shifts
+INSERT INTO public.shifts (user_id, date, title, color_hex, start_time, end_time, published)
+SELECT
+    lr.user_id,
+    lr.start_date,
+    lt.name,
+    '#009999',
+    NULL,
+    NULL,
+    true
+FROM public.leave_requests lr
+JOIN public.leave_types lt ON lr.leave_type_id = lt.id
+WHERE lr.status = 'approved' AND lr.start_date = '2026-02-02';
+
+-- 7. Update User Leave Balances
+UPDATE public.user_leave_balance ulb
+SET used_days = used_days + 1, remaining_days = remaining_days - 1
+WHERE (user_id, leave_type_id) IN (
+    ((SELECT id FROM public.users WHERE email = 'clara@kkh.com.sg'), (SELECT id FROM public.leave_types WHERE name = 'Annual Leave')),
+    ((SELECT id FROM public.users WHERE email = 'sonia@kkh.com.sg'), (SELECT id FROM public.leave_types WHERE name = 'Sick Leave')),
+    ((SELECT id FROM public.users WHERE email = 'nico@kkh.com.sg'), (SELECT id FROM public.leave_types WHERE name = 'Childcare Leave')),
+    ((SELECT id FROM public.users WHERE email = 'likai@kkh.com.sg'), (SELECT id FROM public.leave_types WHERE name = 'Annual Leave')),
+    ((SELECT id FROM public.users WHERE email = 'charlotte@kkh.com.sg'), (SELECT id FROM public.leave_types WHERE name = 'Sick Leave')),
+    ((SELECT id FROM public.users WHERE email = 'insyirah@kkh.com.sg'), (SELECT id FROM public.leave_types WHERE name = 'Annual Leave')),
+    ((SELECT id FROM public.users WHERE email = 'angelica@kkh.com.sg'), (SELECT id FROM public.leave_types WHERE name = 'Childcare Leave'))
+);
+
+-- 8. Reset Sequences
 SELECT pg_catalog.setval('public.departments_id_seq', 15, true);
 SELECT pg_catalog.setval('public.leave_requests_id_seq', 7, true);
 SELECT pg_catalog.setval('public.leave_types_id_seq', 3, true);
-SELECT pg_catalog.setval('public.notifications_id_seq', 50, true);
+-- SELECT pg_catalog.setval('public.notifications_id_seq', 50, true); -- [REMOVED]
 SELECT pg_catalog.setval('public.password_reset_tokens_id_seq', 1, false);
 SELECT pg_catalog.setval('public.roles_id_seq', 2, true);
 SELECT pg_catalog.setval('public.shift_requests_id_seq', 1, false);

@@ -459,3 +459,22 @@ export const getAllEmployeesWithPublishedShifts = async (req, res) => {
     res.status(500).json({ message: "Failed to fetch employees with published shifts" });
   }
 };
+
+export const deleteShift = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const result = await pool.query(
+      "DELETE FROM shifts WHERE id = $1 RETURNING *",
+      [id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: "Shift not found" });
+    }
+
+    res.json({ message: "Shift deleted successfully" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+};

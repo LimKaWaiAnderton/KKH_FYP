@@ -1,7 +1,14 @@
 import React, { useState } from 'react';
-import { HiOutlineUser, HiOutlineExclamation } from 'react-icons/hi';
+import { HiOutlineUser } from 'react-icons/hi';
 import '../../../styles/EmployeeScheduleGrid.css';
 import { formatTimeRange } from '../../../utils/dateUtils';
+
+// Define non-working types for the count logic
+const NON_WORKING_TYPES = [
+    'DO', 'RD', 'OFF', 'PH', 'Annual Leave', 'Medical Leave', 
+    'Sick Leave', 'Hospitalization Leave', 'Compassionate Leave', 
+    'Childcare Leave', 'Maternity Leave', 'Paternity Leave', 'No Pay Leave'
+];
 
 export default function EmployeeScheduleGrid({ weekDays, viewOption, searchTerm, employeesWithShifts, currentUserId }) {
     const [collapsedDepartments, setCollapsedDepartments] = useState({});
@@ -26,19 +33,17 @@ export default function EmployeeScheduleGrid({ weekDays, viewOption, searchTerm,
             
             // Only add published shifts
             if (entry.shift_id && entry.published) {
-                // Use shift_type_name directly (e.g., "RRT" for RRT shifts, "PM" for regular PM)
                 const displayType = entry.title || entry.shift_type_name;
                 
                 let shiftInfo = {
                     date: entry.date,
                     type: displayType,
-                    // Custom shifts (no shift_type_id) get white background
                     color: entry.shift_type_id ? `${entry.color_hex}30` : '#FFFFFF',
                     borderColor: entry.color_hex || '#000000',
-                    textColor: entry.shift_type_id ? undefined : '#000000', // Black text for custom shifts
+                    textColor: entry.shift_type_id ? undefined : '#000000',
                     time: entry.start_time && entry.end_time ? formatTimeRange(entry.start_time, entry.end_time) : '',
-                    isCustom: !entry.shift_type_id,  // Flag for custom styling
-                    isRrt: entry.is_rrt || false // Flag for RRT shifts
+                    isCustom: !entry.shift_type_id,
+                    isRrt: entry.is_rrt || false
                 };
                 
                 employee.shifts.push(shiftInfo);
@@ -56,7 +61,6 @@ export default function EmployeeScheduleGrid({ weekDays, viewOption, searchTerm,
         filteredByView = employees.filter(emp => emp.id === currentUserId);
     }
 
-    // Further filter by search term (case insensitive)
     const filteredEmployees = filteredByView.filter(emp => {
         if (!searchTerm) return true;
         const search = searchTerm.toLowerCase();
@@ -64,7 +68,6 @@ export default function EmployeeScheduleGrid({ weekDays, viewOption, searchTerm,
                emp.department.toLowerCase().includes(search);
     });
 
-    // Group employees by department
     const departments = [...new Set(filteredEmployees.map(emp => emp.department))];
 
     const toggleDepartment = (dept) => {
@@ -80,11 +83,15 @@ export default function EmployeeScheduleGrid({ weekDays, viewOption, searchTerm,
 
     const getStaffingCount = (dept, date) => {
         const deptEmployees = employees.filter(emp => emp.department === dept);
+        const total = deptEmployees.length;
+        
         const working = deptEmployees.filter(emp => {
             const shift = getShiftForDate(emp, date);
-            return shift && !['Annual Leave', 'Medical Leave', 'Compassionate Leave', 'Childcare Leave', 'Sick Leave', 'Maternity Leave', 'Paternity Leave', 'OFF'].includes(shift.type);
+            if (!shift || !shift.type) return false;
+            return !NON_WORKING_TYPES.some(nwt => shift.type.toLowerCase().includes(nwt.toLowerCase()));
         }).length;
-        return `${working}/${deptEmployees.length}`;
+
+        return `${working}/${total}`;
     };
 
     return (
@@ -95,7 +102,6 @@ export default function EmployeeScheduleGrid({ weekDays, viewOption, searchTerm,
 
                 return (
                     <div key={dept} className="department-section">
-                        {/* Department Header */}
                         <div 
                             className="department-header"
                             onClick={() => toggleDepartment(dept)}
@@ -106,7 +112,6 @@ export default function EmployeeScheduleGrid({ weekDays, viewOption, searchTerm,
 
                         {!isCollapsed && (
                             <>
-                                {/* Staffing Count Row */}
                                 <div className="staffing-row">
                                     <div className="employee-name-cell"></div>
                                     {weekDays.map((day, index) => (
@@ -114,13 +119,11 @@ export default function EmployeeScheduleGrid({ weekDays, viewOption, searchTerm,
                                             <div className="staffing-content">
                                                 <span className="staff-icon"><HiOutlineUser /></span>
                                                 <span className="staff-count">{getStaffingCount(dept, day.dateString)}</span>
-                                                {index === 0 && <span className="alert-icon"><HiOutlineExclamation /></span>}
                                             </div>
                                         </div>
                                     ))}
                                 </div>
 
-                                {/* Employee Rows */}
                                 {deptEmployees.map((employee, empIndex) => (
                                     <div key={empIndex} className="employee-row">
                                         <div className="employee-name-cell">{employee.name}</div>
@@ -128,14 +131,14 @@ export default function EmployeeScheduleGrid({ weekDays, viewOption, searchTerm,
                                             const shift = getShiftForDate(employee, day.dateString);
                                             
                                             return (
-                                                <div key={dayIndex} className="shift-cell">
+                                                <div key={dayIndex} className="shift-cell employee-view-cell">
                                                     {shift && (
                                                         <div 
-                                                            className={`shift-box ${shift.isRrt ? 'rrt-shift' : ''}`}
+                                                            className={`shift-box static-box ${shift.isRrt ? 'rrt-shift' : ''}`}
                                                             style={{
                                                                 backgroundColor: shift.color,
                                                                 borderLeft: `4px solid ${shift.borderColor}`,
-                                                                color: shift.textColor // Apply black text for custom shifts
+                                                                color: shift.textColor
                                                             }}
                                                         >
                                                             {shift.time && (
