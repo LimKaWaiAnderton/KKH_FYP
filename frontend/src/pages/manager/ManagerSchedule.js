@@ -35,7 +35,7 @@ export default function ManagerSchedule() {
     useEffect(() => {
         async function loadUsersAndShifts() {
             try {
-                const res = await authFetch("http://localhost:5000/api/shifts/users-with-pending");
+                const res = await authFetch("https://kkh-fyp-backend.onrender.com/api/shifts/users-with-pending");
                 if (!res || !res.ok) {
                     console.error("Failed to fetch users and shifts");
                     setLoading(false);
@@ -54,7 +54,7 @@ export default function ManagerSchedule() {
 
     const refreshShifts = async () => {
         try {
-            const res = await authFetch("http://localhost:5000/api/shifts/users-with-pending");
+            const res = await authFetch("https://kkh-fyp-backend.onrender.com/api/shifts/users-with-pending");
             if (res && res.ok) {
                 const data = await res.json();
                 setUsersWithShifts(data);
@@ -131,7 +131,7 @@ export default function ManagerSchedule() {
     // --- UPDATED CONFIRM PUBLISH (WITH ERROR MODAL) ---
     const handleConfirmPublish = async (notificationSettings) => {
         try {
-            const res = await authFetch("http://localhost:5000/api/shifts/publish", {
+            const res = await authFetch("https://kkh-fyp-backend.onrender.com/api/shifts/publish", {
                 method: "POST",
                 body: JSON.stringify({
                     startDate: publishData.startDate,

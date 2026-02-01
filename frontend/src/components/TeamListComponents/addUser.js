@@ -20,7 +20,7 @@ const AddUserModal = ({ isOpen, onClose, onUserAdded }) => {
 
     const fetchDepartments = async () => {
       try {
-        const response = await fetch("http://localhost:5000/departments", {
+        const response = await fetch("https://kkh-fyp-backend.onrender.com/departments", {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -78,7 +78,7 @@ const AddUserModal = ({ isOpen, onClose, onUserAdded }) => {
 
     try {
       // 3. Use the correct endpoint from your auth.route.js
-      const response = await fetch("http://localhost:5000/auth/add-user", {
+      const response = await fetch("https://kkh-fyp-backend.onrender.com/auth/add-user", {
         method: "POST",
         headers: { 
           "Content-Type": "application/json",

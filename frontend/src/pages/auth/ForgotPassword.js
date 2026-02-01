@@ -19,7 +19,7 @@ export default function ForgotPassword() {
     setError("");
 
     try {
-      const res = await fetch("http://localhost:5000/auth/forgot-password", {
+      const res = await fetch("https://kkh-fyp-backend.onrender.com/auth/forgot-password", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),

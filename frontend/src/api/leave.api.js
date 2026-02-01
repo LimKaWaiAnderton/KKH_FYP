@@ -3,7 +3,7 @@ import { authFetch } from "../utils/authFetch";
 // USER & ADMIN
 export async function fetchHistory() {
     try {
-        const res = await authFetch('http://localhost:5000/api/leaves');
+        const res = await authFetch('https://kkh-fyp-backend.onrender.com/api/leaves');
         const data = await res.json();
 
         if (!res.ok) {
@@ -21,7 +21,7 @@ export async function fetchHistory() {
 // USER
 export async function addLeaveRequest(newRequest) {
     try {
-        const res = await authFetch(`http://localhost:5000/api/leaves`, {
+        const res = await authFetch(`https://kkh-fyp-backend.onrender.com/api/leaves`, {
             method: 'POST',
             body: JSON.stringify(newRequest)
         });
@@ -42,7 +42,7 @@ export async function addLeaveRequest(newRequest) {
 
 export async function fetchLeaveBalance() {
     try {
-        const res = await authFetch('http://localhost:5000/api/leaves/balance');
+        const res = await authFetch('https://kkh-fyp-backend.onrender.com/api/leaves/balance');
         const data = await res.json();
 
         if (!res.ok) {
@@ -59,7 +59,7 @@ export async function fetchLeaveBalance() {
 
 export async function fetchLeaveTypeName() {
     try {
-        const res = await authFetch('http://localhost:5000/api/leaves/types');
+        const res = await authFetch('https://kkh-fyp-backend.onrender.com/api/leaves/types');
         const data = await res.json();
 
         if (!res.ok) {
@@ -78,7 +78,7 @@ export async function fetchLeaveTypeName() {
 export async function fetchRequestedHistory(leaveReq) {
     const { id } = leaveReq;
     try {
-        const res = await authFetch(`http://localhost:5000/api/leaves/${id}`);
+        const res = await authFetch(`https://kkh-fyp-backend.onrender.com/api/leaves/${id}`);
         const data = await res.json();
 
         if (!res.ok) {
@@ -95,7 +95,7 @@ export async function fetchRequestedHistory(leaveReq) {
 export async function updateLeaveRequest(request) {
     const { id } = request;
     try {
-        const res = await authFetch(`http://localhost:5000/api/leaves/${id}`, {
+        const res = await authFetch(`https://kkh-fyp-backend.onrender.com/api/leaves/${id}`, {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',

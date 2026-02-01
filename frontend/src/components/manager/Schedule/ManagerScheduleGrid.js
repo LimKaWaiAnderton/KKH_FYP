@@ -27,7 +27,7 @@ export default function ManagerScheduleGrid({ weekDays, searchTerm, onAddShift, 
     const handleDeleteShift = async (shiftId) => {
         if (!window.confirm("Are you sure you want to remove this shift?")) return;
         try {
-            const res = await authFetch(`http://localhost:5000/api/shifts/${shiftId}`, {
+            const res = await authFetch(`https://kkh-fyp-backend.onrender.com/api/shifts/${shiftId}`, {
                 method: 'DELETE'
             });
             if (res.ok) {
@@ -113,8 +113,8 @@ export default function ManagerScheduleGrid({ weekDays, searchTerm, onAddShift, 
     const closeGroupsModal = () => { setIsGroupsModalOpen(false); setSelectedDepartment(null); };
     const handleSaveGroups = (groups) => { setScheduleGroups(groups); };
     const handleSaveEmployees = (selectedEmployees) => { console.log('Selected employees:', selectedEmployees); };
-    const handleApproveShift = async (id) => { try { const res = await authFetch(`http://localhost:5000/api/shifts/${id}/approve`, { method: 'PATCH' }); if (res.ok && onShiftUpdate) onShiftUpdate(); } catch (err) { console.error(err); } };
-    const handleRejectShift = async (id) => { try { const res = await authFetch(`http://localhost:5000/api/shifts/${id}/reject`, { method: 'PATCH' }); if (res.ok && onShiftUpdate) onShiftUpdate(); } catch (err) { console.error(err); } };
+    const handleApproveShift = async (id) => { try { const res = await authFetch(`https://kkh-fyp-backend.onrender.com/api/shifts/${id}/approve`, { method: 'PATCH' }); if (res.ok && onShiftUpdate) onShiftUpdate(); } catch (err) { console.error(err); } };
+    const handleRejectShift = async (id) => { try { const res = await authFetch(`https://kkh-fyp-backend.onrender.com/api/shifts/${id}/reject`, { method: 'PATCH' }); if (res.ok && onShiftUpdate) onShiftUpdate(); } catch (err) { console.error(err); } };
 
     return (
         <>

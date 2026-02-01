@@ -14,7 +14,7 @@ export default function UserLeaveBalance({ user_id }) {
     const fetchUserLeaveBalance = useCallback(async () => {
         if (!user_id) return;
         try {
-            const res = await authFetch(`http://localhost:5000/api/leaves/balance/${user_id}`);
+            const res = await authFetch(`https://kkh-fyp-backend.onrender.com/api/leaves/balance/${user_id}`);
             if (!res.ok) throw new Error("Failed to fetch user leave balance");
             const data = await res.json();
             setLeaveBalance(data);

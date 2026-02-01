@@ -15,7 +15,7 @@ export default function Settings() {
     const fetchUserProfile = async () => {
         try {
             setLoading(true);
-            const res = await authFetch('http://localhost:5000/auth/me');
+            const res = await authFetch('https://kkh-fyp-backend.onrender.com/auth/me');
             if (!res.ok) throw new Error('Failed to fetch user profile');
             
             const userData = await res.json();
@@ -24,7 +24,7 @@ export default function Settings() {
             setIsAdmin(userData.role_id === 1 || userData.role_id === '1');
             
             // Fetch full user details including department
-            const userDetailsRes = await authFetch(`http://localhost:5000/auth/users`);
+            const userDetailsRes = await authFetch(`https://kkh-fyp-backend.onrender.com/auth/users`);
             if (!userDetailsRes.ok) throw new Error('Failed to fetch user details');
             
             const allUsers = await userDetailsRes.json();

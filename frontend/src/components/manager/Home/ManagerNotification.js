@@ -10,12 +10,12 @@ export default function ManagerNotification() {
     useEffect(() => {
         const loadNotifications = async () => {
             try {
-                const userRes = await authFetch('http://localhost:5000/auth/me');
+                const userRes = await authFetch('https://kkh-fyp-backend.onrender.com/auth/me');
                 if (!userRes || !userRes.ok) return;
                 
                 const userData = await userRes.json();
                 
-                const notifRes = await authFetch(`http://localhost:5000/api/notifications/user/${userData.id}`);
+                const notifRes = await authFetch(`https://kkh-fyp-backend.onrender.com/api/notifications/user/${userData.id}`);
                 if (notifRes && notifRes.ok) {
                     const data = await notifRes.json();
                     setNotifications(data);
@@ -50,7 +50,7 @@ export default function ManagerNotification() {
     const handleNotificationClick = async (notificationId, isRead) => {
         if (!isRead) {
             try {
-                await authFetch(`http://localhost:5000/api/notifications/${notificationId}/read`, {
+                await authFetch(`https://kkh-fyp-backend.onrender.com/api/notifications/${notificationId}/read`, {
                     method: 'PUT'
                 });
                 

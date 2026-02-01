@@ -13,7 +13,7 @@ export default function UserDetails({ user_id }) {
 
         const fetchUserDetails = async () => {
             try {
-                const res = await authFetch(`http://localhost:5000/auth/user/${user_id}`);
+                const res = await authFetch(`https://kkh-fyp-backend.onrender.com/auth/user/${user_id}`);
                 if (!res.ok) throw new Error("Failed to fetch user details");
                 const data = await res.json();
                 console.log(data);
