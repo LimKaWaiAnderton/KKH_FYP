@@ -58,7 +58,7 @@ export default function UserDetails({ user_id }) {
 
             alert(`${userDetails.first_name} ${userDetails.last_name} has been deactivated successfully.`);
 
-            navigate(`/manager/users`);
+            navigate(`/manager/team-list`);
         } catch (error) {
             console.error('Error deactivating user:', error);
             alert('Failed to deactivate user. Please try again.');

@@ -135,7 +135,7 @@ const AddUser = () => {
   };
 
   const handleCancel = () => {
-    navigate('/manager/users');
+    navigate('/manager/team-list');
   };
 
   const handleInputChange = (e) => {
