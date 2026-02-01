@@ -123,7 +123,7 @@ const AddUser = () => {
       // Redirect to users page after 2 seconds with refresh flag
       setTimeout(() => {
         console.log('Navigating to users page with refresh flag');
-        navigate('/manager/users', { state: { refresh: true } });
+        navigate('/manager/team-list', { state: { refresh: true } });
       }, 2000);
 
     } catch (err) {

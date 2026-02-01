@@ -13,8 +13,8 @@ console.log('   EMAIL_SERVICE:', process.env.EMAIL_SERVICE || 'gmail (default)')
 // Check if email credentials are configured
 const isEmailConfigured = () => {
   const hasCredentials = process.env.EMAIL_USER && process.env.EMAIL_PASS;
-  const isNotPlaceholder = 
-    process.env.EMAIL_USER !== 'your-email@gmail.com' && 
+  const isNotPlaceholder =
+    process.env.EMAIL_USER !== 'your-email@gmail.com' &&
     process.env.EMAIL_PASS !== 'your-app-password';
   return hasCredentials && isNotPlaceholder;
 };
@@ -24,15 +24,16 @@ let transporter = null;
 if (isEmailConfigured()) {
   try {
     transporter = nodemailer.createTransport({
-      service: "gmail", // Use Gmail service (handles host/port automatically)
+      host: "smtp.gmail.com", // Explicitly set host
+      port: 465,              // Use Port 465 (Allowed by Render)
+      secure: true,           // Use SSL
       auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS,
       },
     });
-    
     console.log('✅ Email transporter created');
-    
+
     // Verify SMTP connection on startup
     transporter.verify((error, success) => {
       if (error) {
@@ -77,7 +78,7 @@ const sendWelcomeEmail = async (email, firstName, tempPassword) => {
     console.log(`\n📧 Sending welcome email to: ${email}`);
     console.log(`   Recipient Name: ${firstName}`);
     console.log(`   From: ${process.env.EMAIL_USER}`);
-    
+
     // Use plain text instead of HTML to avoid spam filters
     const emailText = `Welcome to KKH Portal
 
@@ -108,12 +109,12 @@ Do not reply to this email.`;
 
     // Send email with await to ensure it completes
     const info = await transporter.sendMail(mailOptions);
-    
+
     console.log(`✅ Email sent successfully!`);
     console.log(`   Message ID: ${info.messageId}`);
     console.log(`   Status: ${info.response}`);
     console.log(`   Recipient will receive email within minutes.\n`);
-    
+
     return { success: true, messageId: info.messageId };
   } catch (err) {
     console.error(`\n❌ FAILED TO SEND EMAIL`);
@@ -122,7 +123,7 @@ Do not reply to this email.`;
     if (err.code) console.error(`   Code: ${err.code}`);
     if (err.command) console.error(`   Command: ${err.command}`);
     if (err.response) console.error(`   Response: ${err.response}`);
-    
+
     // Provide specific troubleshooting tips based on error type
     if (err.code === 'EAUTH') {
       console.error('\n   🔧 AUTHENTICATION ERROR');
@@ -148,7 +149,7 @@ Do not reply to this email.`;
       console.error('      Check .env EMAIL_USER and EMAIL_PASS are correct');
       console.error('      Run: node test-email.js to diagnose the issue\n');
     }
-    
+
     // Fallback: Log password to console if email fails
     console.log('='.repeat(70));
     console.log('📧 FALLBACK: PASSWORD LOGGED TO CONSOLE');
@@ -158,7 +159,7 @@ Do not reply to this email.`;
     console.log(`🔑 Password: ${tempPassword}`);
     console.log('='.repeat(70) + '\n');
     console.warn('⚠️  Manually share this password with the user.\n');
-    
+
     return { success: false, error: err.message, code: err.code };
   }
 };
@@ -260,7 +261,7 @@ export const addUser = async (req, res) => {
 
     // 3. Generate a secure random temporary password
     const tempPassword = Math.random().toString(36).slice(-8) + Math.random().toString(36).slice(-8);
-    
+
     // 4. Hash the password for secure storage
     const saltRounds = 10;
     const password_hash = await bcrypt.hash(tempPassword, saltRounds);
@@ -320,8 +321,8 @@ export const addUser = async (req, res) => {
       console.log(`⚠️  User creation completed but email failed. Check logs above.\n`);
     }
 
-    res.status(201).json({ 
-      message: message, 
+    res.status(201).json({
+      message: message,
       user: newUser,
       emailSent: emailResult.success
     });
@@ -335,10 +336,10 @@ export const addUser = async (req, res) => {
 export const deleteUser = async (req, res) => {
   try {
     const { id } = req.params;
-    
+
     // Update user's is_active to false
     const result = await pool.query(
-      `UPDATE users SET is_active = false WHERE id = $1 RETURNING id, first_name, last_name, email, is_active`, 
+      `UPDATE users SET is_active = false WHERE id = $1 RETURNING id, first_name, last_name, email, is_active`,
       [id]
     );
 
@@ -347,7 +348,7 @@ export const deleteUser = async (req, res) => {
     }
 
     const deactivatedUser = result.rows[0];
-    res.json({ 
+    res.json({
       message: "User deactivated successfully",
       user: deactivatedUser
     });
@@ -378,7 +379,7 @@ export const updateUserRole = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    res.json({ 
+    res.json({
       message: "User role updated successfully",
       user: result.rows[0]
     });
@@ -439,7 +440,7 @@ export const updateUser = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    res.json({ 
+    res.json({
       message: "User updated successfully",
       user: result.rows[0]
     });
@@ -485,8 +486,8 @@ export const forgotPassword = async (req, res) => {
 
     if (userResult.rows.length === 0) {
       // Don't reveal if email exists (security best practice)
-      return res.json({ 
-        message: "If an account with that email exists, a password reset link has been sent." 
+      return res.json({
+        message: "If an account with that email exists, a password reset link has been sent."
       });
     }
 
@@ -514,7 +515,7 @@ export const forgotPassword = async (req, res) => {
       console.log(`⚠️  Email failed. Reset link: ${resetLink}\n`);
     }
 
-    res.json({ 
+    res.json({
       message: "If an account with that email exists, a password reset link has been sent.",
       emailSent: emailResult.success
     });
@@ -604,7 +605,7 @@ const sendPasswordResetEmail = async (email, firstName, resetLink) => {
 
   try {
     console.log(`\n📧 Sending password reset email to: ${email}`);
-    
+
     const emailText = `Password Reset Request
 
 Dear ${firstName},
@@ -631,16 +632,16 @@ Do not reply to this email.`;
     };
 
     const info = await transporter.sendMail(mailOptions);
-    
+
     console.log(`✅ Password reset email sent successfully!`);
     console.log(`   Message ID: ${info.messageId}\n`);
-    
+
     return { success: true, messageId: info.messageId };
   } catch (err) {
     console.error(`\n❌ FAILED TO SEND PASSWORD RESET EMAIL`);
     console.error(`   Recipient: ${email}`);
     console.error(`   Error: ${err.message}\n`);
-    
+
     // Fallback: Log reset link to console
     console.log('='.repeat(70));
     console.log('📧 FALLBACK: RESET LINK LOGGED TO CONSOLE');
@@ -650,7 +651,7 @@ Do not reply to this email.`;
     console.log(`🔗 Reset Link: ${resetLink}`);
     console.log('='.repeat(70) + '\n');
     console.warn('⚠️  Manually share this link with the user.\n');
-    
+
     return { success: false, error: err.message };
   }
 };
@@ -659,20 +660,20 @@ export const getUserById = async (req, res) => {
   const { id } = req.params;
 
   try {
-      const userResult = await pool.query(`
+    const userResult = await pool.query(`
           SELECT u.id, u.first_name, u.last_name, u.email, u.mobile_number, u.department_id, d.name as department_name
           FROM users u
           JOIN departments d ON u.department_id = d.id
           WHERE u.id = $1`,
-          [id]);
+      [id]);
 
-      if (userResult.rows.length === 0) {
-          return res.status(404).json({ msg: 'User not found' });
-      }
+    if (userResult.rows.length === 0) {
+      return res.status(404).json({ msg: 'User not found' });
+    }
 
-      res.json(userResult.rows[0]);
+    res.json(userResult.rows[0]);
   } catch (error) {
-      console.error('Error fetching user by ID:', error);
-      res.status(500).json({ msg: 'Server error' });
+    console.error('Error fetching user by ID:', error);
+    res.status(500).json({ msg: 'Server error' });
   }
 };
